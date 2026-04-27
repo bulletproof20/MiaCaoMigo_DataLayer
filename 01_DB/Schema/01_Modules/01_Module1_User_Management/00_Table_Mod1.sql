@@ -463,6 +463,18 @@ create table login_record (
     ),
     -- Ensures temporal consistency of login session
 
+    check (
+        suc_log = false
+        or (
+            id_usr is not null
+            and eml_usr is not null
+            and ip_add_log is not null
+            and sig_tim_log is not null
+            and ip_add_log is not null
+        )
+    ),
+    -- Ensures login sucess consistency
+
     constraint chk_login_email_format
     check (
         eml_usr is null
@@ -508,7 +520,7 @@ create table schedule (
     constraint chk_schedule_time
     check (
         sta_tim_sch < fin_hou_sch
-        and sta_tim_sch >= time '00:00'
+        and sta_tim_sch >= time '00:00:00'
         and fin_hou_sch <= time '23:59:59'
     ),
     -- Validates time interval within a day
@@ -689,3 +701,30 @@ create table occupies (
 );
 
 
+--=========================================================
+-- 15. HAVE
+--=========================================================
+-- Associates profiles with permissions (access control)
+
+create table have (
+    id_pro int not null,
+    -- Profile
+
+    id_per int not null,
+    -- Permission
+
+    constraint pk_have primary key (id_pro, id_per),
+    -- Composite identifier (prevents duplicates)
+
+    constraint fk_have_profile 
+        foreign key (id_pro)
+        references profile(id_pro)
+        on delete cascade,
+    -- Links to profile
+
+    constraint fk_have_permission 
+        foreign key (id_per)
+        references permission(id_per)
+        on delete cascade
+    -- Links to permission
+);

@@ -40,8 +40,11 @@ create table appointment (
     --Animal identifier    
     id_animal int NOT NULL,
 
+    -- Employee (Veterinarian) identifier
+    id_emp int NOT NULL,
+
     --client identifier
-    id_clt NOT NULL,
+    id_cli NOT NULL,
 
     sch_dat_app timestamp,
     -- Scheduled datetime
@@ -67,9 +70,15 @@ create table appointment (
         REFERENCES animal(id_ani)
         on delete cascade,
         
--- Foreign Key linkage
+    -- Foreign Key linkage to employee (veterinarian)
+    CONSTRAINT fk_appointment_employee
+        FOREIGN KEY (id_emp)
+        REFERENCES employee(id_emp)
+        on delete restrict, -- Prevent deleting employee with active appointments
+
+    -- Foreign Key linkage to client
     CONSTRAINT fk_client 
-        FOREIGN KEY (id_clt)
+        FOREIGN KEY (id_cli)
         REFERENCES client(id_cli)
         on delete cascade,
 

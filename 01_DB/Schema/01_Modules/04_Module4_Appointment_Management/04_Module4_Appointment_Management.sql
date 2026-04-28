@@ -1,5 +1,5 @@
 --=========================================================
--- MODULE 4: APPOINTMENT MANAGEMENT (incompleto)
+-- MODULE 4: APPOINTMENT MANAGEMENT (Por retificar)
 --=========================================================
 
 --=========================================================
@@ -21,23 +21,13 @@
 --=========================================================
 -- Drops only tables related to this module in reverse dependency order
 
--- Associative tables
-drop table if exists employee_prescription cascade;
-drop table if exists employee_assessment cascade;
-drop table if exists employee_anamnesis cascade;
-drop table if exists prescription_product cascade;
-drop table if exists animal_appointment cascade;
-drop table if exists client_appointment cascade;
-drop table if exists employee_appointment cascade;
 
--- Dependent entities
-drop table if exists invoice cascade;
-drop table if exists prescription cascade;
-drop table if exists assessment cascade;
-drop table if exists anamnesis cascade;
-
--- Core entity
 drop table if exists appointment cascade;
+drop table if exists overall_assessment cascade;
+drop table if exists anamnesis cascade;
+drop table if exists prescription cascade;
+drop table if exists rel_app_product cascade;
+drop table if exists rel_pre_prod cascade;
 
 --=========================================================
 -- 1. APPOINTMENT
@@ -46,6 +36,12 @@ drop table if exists appointment cascade;
 create table appointment (
     id_app int generated always as identity,
     -- Appointment identifier
+
+    --Animal identifier    
+    id_animal int NOT NULL,
+
+    --client identifier
+    id_clt NOT NULL,
 
     sch_dat_app timestamp,
     -- Scheduled datetime
@@ -65,13 +61,51 @@ create table appointment (
     constraint pk_appointment primary key (id_app),
     -- Unique identifier
 
+    -- Foreign Key linkage to animal
+    CONSTRAINT fk_animal 
+        FOREIGN KEY (id_animal)
+        REFERENCES animal(id_ani)
+        on delete cascade,
+        
+-- Foreign Key linkage
+    CONSTRAINT fk_client 
+        FOREIGN KEY (id_clt)
+        REFERENCES client(id_cli)
+        on delete cascade,
+
     constraint chk_app_time
     check (sta_dat_app < end_dat_app)
     -- Ensures valid time interval
 );
 
 --=========================================================
--- 2. ANAMNESIS
+-- 2. Overall Assessment
+--=========================================================
+-- Stores clinical history collected during appointment
+CREATE TABLE overall_assessment (
+    id_app INT NOT NULL, -- PK and FK
+    body_temp FLOAT,     -- Body temperature in °C
+    weight FLOAT,        -- Weight in kg
+    hrt_rate FLOAT,      -- Heart rate (BPM)
+    resp_rate FLOAT,     -- Respiratory rate (MPM)
+    general_status TEXT, -- Notations about the animal
+    
+    -- Defining the Primary Key
+    CONSTRAINT pk_overall_assessment PRIMARY KEY (id_app),
+    
+    -- Foreign Key linkage
+    CONSTRAINT fk_appointment 
+        FOREIGN KEY (id_app)
+        REFERENCES appointment(id_app)
+        on delete cascade,
+        
+    -- Safety checks to prevent impossible medical data
+    CONSTRAINT chk_body_temp CHECK (body_temp > 0 AND body_temp < 50),
+    CONSTRAINT chk_weight CHECK (weight > 0)
+);
+
+--=========================================================
+-- 3. ANAMNESIS
 --=========================================================
 -- Stores patient history collected during appointment
 create table anamnesis (
@@ -91,33 +125,6 @@ create table anamnesis (
     -- Unique identifier
 
     constraint fk_anamnesis_appointment 
-        foreign key (id_app)
-        references appointment(id_app)
-        on delete cascade
-    -- Links to appointment
-);
-
---=========================================================
--- 3. ASSESSMENT
---=========================================================
--- Stores clinical evaluation results
-create table assessment (
-    id_ass int generated always as identity,
-    -- Assessment identifier
-
-    id_app int not null,
-    -- Appointment
-
-    reg_dat_ass timestamp default current_timestamp,
-    -- Record date
-
-    des_ass text,
-    -- Description
-
-    constraint pk_assessment primary key (id_ass),
-    -- Unique identifier
-
-    constraint fk_assessment_appointment 
         foreign key (id_app)
         references appointment(id_app)
         on delete cascade
@@ -152,105 +159,42 @@ create table prescription (
 );
 
 --=========================================================
--- 5. INVOICE
+-- 5. ASSOCIATIVE TABLE BETWEEN APPOINTMENT AND PRODUCTS
 --=========================================================
--- Stores billing information related to appointments
-create table invoice (
-    id_inv int generated always as identity,
-    -- Invoice identifier
+create table rel_app_product (
+    id_app int not null,
+    -- Prescription
 
-    val_inv numeric(10,2),
-    -- Total value
+    id_pro int not null,
+    -- Product
 
-    dat_inv timestamp,
-    -- Issue date
+    qty_pre_pro int not null,
+    -- Quantity
 
-    bod_inv text,
-    -- Description/content
+    dos_pre_pro varchar(100),
+    -- Dosage
 
-    id_app int,
-    -- Appointment
+    constraint pk_appointment_product primary key (id_app, id_pro),
 
-    constraint pk_invoice primary key (id_inv),
-    -- Unique identifier
-
-    constraint fk_invoice_appointment 
+    constraint fk_app_pro_appointment 
         foreign key (id_app)
         references appointment(id_app)
-        on delete set null
-    -- Links to appointment
-);
-
---=========================================================
--- 6. ASSOCIATIVE TABLES
---=========================================================
--- Defines many-to-many relationships
-
--- EMPLOYEE ↔ APPOINTMENT
-create table employee_appointment (
-    id_emp int not null,
-    -- Employee
-
-    id_app int not null,
-    -- Appointment
-
-    constraint pk_employee_appointment primary key (id_emp, id_app),
-
-    constraint fk_emp_app_employee 
-        foreign key (id_emp)
-        references employee(id_emp)
         on delete cascade,
 
-    constraint fk_emp_app_appointment 
-        foreign key (id_app)
-        references appointment(id_app)
-        on delete cascade
+    constraint fk_pre_pro_product 
+        foreign key (id_pro)
+        references product(id_pro)
+        on delete restrict,
+
+    constraint chk_qty_pre
+    check (qty_pre_pro > 0)
+    -- Ensures valid quantity
 );
 
--- CLIENT ↔ APPOINTMENT
-create table client_appointment (
-    id_cli int not null,
-    -- Client
-
-    id_app int not null,
-    -- Appointment
-
-    constraint pk_client_appointment primary key (id_cli, id_app),
-
-    constraint fk_cli_app_client 
-        foreign key (id_cli)
-        references client(id_cli)
-        on delete cascade,
-
-    constraint fk_cli_app_appointment 
-        foreign key (id_app)
-        references appointment(id_app)
-        on delete cascade
-);
-
--- ANIMAL ↔ APPOINTMENT
-create table animal_appointment (
-    id_ani int not null,
-    -- Animal
-
-    id_app int not null,
-    -- Appointment
-
-    constraint pk_animal_appointment primary key (id_ani, id_app),
-
-    constraint fk_ani_app_animal 
-        foreign key (id_ani)
-        references animal(id_ani)
-        on delete cascade,
-
-    constraint fk_ani_app_appointment 
-        foreign key (id_app)
-        references appointment(id_app)
-        on delete cascade
-);
-
--- PRESCRIPTION ↔ PRODUCT
-create table prescription_product (
+--=========================================================
+-- 6. ASSOCIATIVE TABLE BETWEEN PRESCRIPTION AND PRODUCTS
+--=========================================================
+create table rel_pre_prod (
     id_pre int not null,
     -- Prescription
 
@@ -278,67 +222,4 @@ create table prescription_product (
     constraint chk_qty_pre
     check (qty_pre_pro > 0)
     -- Ensures valid quantity
-);
-
--- EMPLOYEE ↔ ANAMNESIS
-create table employee_anamnesis (
-    id_emp int not null,
-    -- Employee
-
-    id_ana int not null,
-    -- Anamnesis
-
-    constraint pk_employee_anamnesis primary key (id_emp, id_ana),
-
-    constraint fk_emp_ana_employee 
-        foreign key (id_emp)
-        references employee(id_emp)
-        on delete cascade,
-
-    constraint fk_emp_ana_anamnesis 
-        foreign key (id_ana)
-        references anamnesis(id_ana)
-        on delete cascade
-);
-
--- EMPLOYEE ↔ ASSESSMENT
-create table employee_assessment (
-    id_emp int not null,
-    -- Employee
-
-    id_ass int not null,
-    -- Assessment
-
-    constraint pk_employee_assessment primary key (id_emp, id_ass),
-
-    constraint fk_emp_ass_employee 
-        foreign key (id_emp)
-        references employee(id_emp)
-        on delete cascade,
-
-    constraint fk_emp_ass_assessment 
-        foreign key (id_ass)
-        references assessment(id_ass)
-        on delete cascade
-);
-
--- EMPLOYEE ↔ PRESCRIPTION
-create table employee_prescription (
-    id_emp int not null,
-    -- Employee
-
-    id_pre int not null,
-    -- Prescription
-
-    constraint pk_employee_prescription primary key (id_emp, id_pre),
-
-    constraint fk_emp_pre_employee 
-        foreign key (id_emp)
-        references employee(id_emp)
-        on delete cascade,
-
-    constraint fk_emp_pre_prescription 
-        foreign key (id_pre)
-        references prescription(id_pre)
-        on delete cascade
 );

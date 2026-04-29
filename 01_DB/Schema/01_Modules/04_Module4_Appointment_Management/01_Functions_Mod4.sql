@@ -118,3 +118,46 @@ begin
     return new;
 end;
 $$ language plpgsql;
+
+--=========================================================
+-- FUNCTION 6: fn_appointment_duration_check
+-- Ensures the appointment duration is valid.
+--=========================================================
+create or replace function fn_appointment_duration_check()
+returns trigger as $$
+begin
+    if new.end_dat_app <= new.sta_dat_app then
+        raise exception 'A data de término da consulta deve ser posterior à data de início.';
+    end if;
+    return new;
+end;
+$$ language plpgsql;
+
+--=========================================================
+-- FUNCTION 7: fn_appointment_warning_next_day
+-- Generates a warning message for clients who have an appointment the next day.
+--=========================================================
+create or replace function fn_appointment_warning_next_day()
+returns void as $$ -- Alterado para retornar VOID, pois será um job, não um trigger
+declare
+    consulta record;
+    v_aviso text;
+begin
+    for consulta in (
+        select
+            a.id_cli, -- Precisamos do ID do cliente para a nova tabela
+            c.nam_usr as nome_cliente,
+            e.nam_emp as nome_veterinario,
+            an.nam_ani as nome_animal
+        from appointment a
+        join client c on a.id_cli = c.id_cli
+        join animal an on a.id_animal = an.id_ani
+        join employee e on a.id_emp = e.id_emp
+        where a.sta_dat_app::date = current_date + interval '1 day'
+    ) loop
+        v_aviso := format('Bom dia %s, amanhã tem consulta com o veterinário %s para o seu animal %s.',
+                         consulta.nome_cliente, consulta.nome_veterinario, consulta.nome_animal);
+        insert into client_notification (id_cli, message) values (consulta.id_cli, v_aviso);
+    end loop;
+end;
+$$ language plpgsql;

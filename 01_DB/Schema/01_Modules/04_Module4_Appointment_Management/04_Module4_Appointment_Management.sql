@@ -27,6 +27,7 @@ drop table if exists overall_assessment cascade;
 drop table if exists anamnesis cascade;
 drop table if exists prescription cascade;
 drop table if exists rel_app_product cascade;
+drop table if exists client_notification cascade;
 drop table if exists rel_pre_prod cascade;
 
 --=========================================================
@@ -198,6 +199,30 @@ create table rel_app_product (
     constraint chk_qty_pre
     check (qty_pre_pro > 0)
     -- Ensures valid quantity
+);
+
+--=========================================================
+-- 7. CLIENT_NOTIFICATION
+--=========================================================
+-- Stores notifications generated for clients
+create table client_notification (
+    id_not int generated always as identity,
+    -- Notification identifier
+
+    id_cli int not null,
+    -- Client associated with the notification
+
+    message text not null,
+    -- The notification message
+
+    created_at timestamp default current_timestamp,
+    -- Timestamp when the notification was created
+
+    is_read boolean default false,
+    -- Flag to indicate if the client has read the notification
+
+    constraint pk_client_notification primary key (id_not),
+    constraint fk_client_notification_client foreign key (id_cli) references client(id_cli) on delete cascade
 );
 
 --=========================================================

@@ -50,6 +50,28 @@ create extension if not exists pg_cron;
 -- \i /docker-entrypoint-initdb.d/01_Modules/02_ModuleX/05_Jobs.sql
 
 
+
+
+
+
+
+
+
+-- =========================================================
+-- MODULE 4: APPOINTMENT MANAGEMENT
+-- =========================================================
+
+-- Tabelas
+\i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/04_Module4_Appointment_Management.sql
+
+-- Funções
+\i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/01_Functions_Mod4.sql
+
+-- Triggers (dependem das funções)
+\i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/02_Trigger_Mod4.sql
+
+
+
 -- =========================================================
 -- FINAL
 -- =========================================================

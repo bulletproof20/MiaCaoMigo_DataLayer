@@ -1,5 +1,5 @@
 --=========================================================
--- MODULE 4: APPOINTMENT MANAGEMENT (incompleto)
+-- MODULE 4: APPOINTMENT MANAGEMENT (Por retificar)
 --=========================================================
 
 --=========================================================
@@ -21,23 +21,14 @@
 --=========================================================
 -- Drops only tables related to this module in reverse dependency order
 
--- Associative tables
-drop table if exists employee_prescription cascade;
-drop table if exists employee_assessment cascade;
-drop table if exists employee_anamnesis cascade;
-drop table if exists prescription_product cascade;
-drop table if exists animal_appointment cascade;
-drop table if exists client_appointment cascade;
-drop table if exists employee_appointment cascade;
 
--- Dependent entities
-drop table if exists invoice cascade;
-drop table if exists prescription cascade;
-drop table if exists assessment cascade;
-drop table if exists anamnesis cascade;
-
--- Core entity
 drop table if exists appointment cascade;
+drop table if exists overall_assessment cascade;
+drop table if exists anamnesis cascade;
+drop table if exists prescription cascade;
+drop table if exists rel_app_product cascade;
+drop table if exists client_notification cascade;
+drop table if exists rel_pre_prod cascade;
 
 -- Custom types
 drop type if exists appointment_status cascade;
@@ -71,6 +62,15 @@ create table appointment (
     id_app int generated always as identity,
     -- Appointment identifier
 
+    --Animal identifier    
+    id_animal int NOT NULL,
+
+    -- Employee (Veterinarian) identifier
+    id_emp int NOT NULL,
+
+    --client identifier
+    id_cli NOT NULL,
+
     sch_dat_app timestamp,
     -- Scheduled datetime
 
@@ -92,13 +92,57 @@ create table appointment (
     constraint pk_appointment primary key (id_app),
     -- Unique identifier
 
+    -- Foreign Key linkage to animal
+    CONSTRAINT fk_animal 
+        FOREIGN KEY (id_animal)
+        REFERENCES animal(id_ani)
+        on delete cascade,
+        
+    -- Foreign Key linkage to employee (veterinarian)
+    CONSTRAINT fk_appointment_employee
+        FOREIGN KEY (id_emp)
+        REFERENCES employee(id_emp)
+        on delete restrict, -- Prevent deleting employee with active appointments
+
+    -- Foreign Key linkage to client
+    CONSTRAINT fk_client 
+        FOREIGN KEY (id_cli)
+        REFERENCES client(id_cli)
+        on delete cascade,
+
     constraint chk_app_time
     check (sta_dat_app < end_dat_app)
     -- Ensures the end time is after the start time
 );
 
 --=========================================================
--- 2. ANAMNESIS
+-- 2. Overall Assessment
+--=========================================================
+-- Stores clinical history collected during appointment
+CREATE TABLE overall_assessment (
+    id_app INT NOT NULL, -- PK and FK
+    body_temp FLOAT,     -- Body temperature in °C
+    weight FLOAT,        -- Weight in kg
+    hrt_rate FLOAT,      -- Heart rate (BPM)
+    resp_rate FLOAT,     -- Respiratory rate (MPM)
+    general_status TEXT, -- Notations about the animal
+    
+    -- Defining the Primary Key
+    CONSTRAINT pk_overall_assessment PRIMARY KEY (id_app),
+    
+    -- Foreign Key linkage
+    CONSTRAINT fk_appointment 
+        FOREIGN KEY (id_app)
+        REFERENCES appointment(id_app)
+        on delete cascade,
+        
+    -- Safety checks to prevent impossible medical data
+    CONSTRAINT chk_body_temp CHECK (body_temp > 0 AND body_temp < 50),
+    CONSTRAINT chk_weight CHECK (weight > 0)
+);
+
+--=========================================================
+-- 3. ANAMNESIS
 --=========================================================
 -- Stores patient history collected during appointment
 create table anamnesis (
@@ -125,6 +169,7 @@ create table anamnesis (
 );
 
 --=========================================================
+<<<<<<< HEAD
 -- 3. ASSESSMENT
 --=========================================================
 -- Stores clinical evaluation results
@@ -152,6 +197,8 @@ create table assessment (
 );
 
 --=========================================================
+=======
+>>>>>>> 86b290baa0a7fff5681770d597ff529f1509d490
 -- 4. PRESCRIPTION
 --=========================================================
 -- Stores prescriptions issued during appointment
@@ -179,8 +226,9 @@ create table prescription (
 );
 
 --=========================================================
--- 5. INVOICE
+-- 5. ASSOCIATIVE TABLE BETWEEN APPOINTMENT AND PRODUCTS
 --=========================================================
+<<<<<<< HEAD
 -- Stores billing information related to appointments or other sales.
 create table invoice (
     id_inv int generated always as identity,
@@ -200,13 +248,27 @@ create table invoice (
 
     id_app int,
     -- Associated appointment (optional, as an invoice can be for product sales alone)
+=======
+create table rel_app_product (
+    id_app int not null,
+    -- Prescription
 
-    constraint pk_invoice primary key (id_inv),
-    -- Unique identifier
+    id_pro int not null,
+    -- Product
 
-    constraint fk_invoice_appointment 
+    qty_pre_pro int not null,
+    -- Quantity
+
+    dos_pre_pro varchar(100),
+    -- Dosage
+
+    constraint pk_appointment_product primary key (id_app, id_pro),
+>>>>>>> 86b290baa0a7fff5681770d597ff529f1509d490
+
+    constraint fk_app_pro_appointment 
         foreign key (id_app)
         references appointment(id_app)
+<<<<<<< HEAD
         on delete set null,
     -- If an appointment is deleted, the invoice remains but is unlinked for record-keeping.
 
@@ -233,36 +295,51 @@ create table employee_appointment (
     constraint fk_emp_app_employee 
         foreign key (id_emp)
         references employee(id_emp)
+=======
+>>>>>>> 86b290baa0a7fff5681770d597ff529f1509d490
         on delete cascade,
 
-    constraint fk_emp_app_appointment 
-        foreign key (id_app)
-        references appointment(id_app)
-        on delete cascade
+    constraint fk_pre_pro_product 
+        foreign key (id_pro)
+        references product(id_pro)
+        on delete restrict,
+
+    constraint chk_qty_pre
+    check (qty_pre_pro > 0)
+    -- Ensures valid quantity
 );
 
+<<<<<<< HEAD
 -- CLIENT ↔ APPOINTMENT
 -- Associates one or more clients (tutors) with an appointment.
 create table client_appointment (
+=======
+--=========================================================
+-- 7. CLIENT_NOTIFICATION
+--=========================================================
+-- Stores notifications generated for clients
+create table client_notification (
+    id_not int generated always as identity,
+    -- Notification identifier
+
+>>>>>>> 86b290baa0a7fff5681770d597ff529f1509d490
     id_cli int not null,
-    -- Client
+    -- Client associated with the notification
 
-    id_app int not null,
-    -- Appointment
+    message text not null,
+    -- The notification message
 
-    constraint pk_client_appointment primary key (id_cli, id_app),
+    created_at timestamp default current_timestamp,
+    -- Timestamp when the notification was created
 
-    constraint fk_cli_app_client 
-        foreign key (id_cli)
-        references client(id_cli)
-        on delete cascade,
+    is_read boolean default false,
+    -- Flag to indicate if the client has read the notification
 
-    constraint fk_cli_app_appointment 
-        foreign key (id_app)
-        references appointment(id_app)
-        on delete cascade
+    constraint pk_client_notification primary key (id_not),
+    constraint fk_client_notification_client foreign key (id_cli) references client(id_cli) on delete cascade
 );
 
+<<<<<<< HEAD
 -- ANIMAL ↔ APPOINTMENT
 -- Associates one or more animals (patients) with an appointment.
 create table animal_appointment (
@@ -288,6 +365,12 @@ create table animal_appointment (
 -- PRESCRIPTION ↔ PRODUCT
 -- Details the products included in a prescription, with quantity and dosage.
 create table prescription_product (
+=======
+--=========================================================
+-- 6. ASSOCIATIVE TABLE BETWEEN PRESCRIPTION AND PRODUCTS
+--=========================================================
+create table rel_pre_prod (
+>>>>>>> 86b290baa0a7fff5681770d597ff529f1509d490
     id_pre int not null,
     -- Prescription
 
@@ -315,6 +398,7 @@ create table prescription_product (
 
     constraint chk_qty_pre
     check (qty_pre_pro > 0)
+<<<<<<< HEAD
     -- Ensures prescribed quantity is a positive number
 );
 
@@ -385,4 +469,7 @@ create table employee_prescription (
         foreign key (id_pre)
         references prescription(id_pre)
         on delete cascade
+=======
+    -- Ensures valid quantity
+>>>>>>> 86b290baa0a7fff5681770d597ff529f1509d490
 );

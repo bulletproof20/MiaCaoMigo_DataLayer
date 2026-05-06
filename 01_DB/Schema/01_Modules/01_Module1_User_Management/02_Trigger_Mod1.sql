@@ -53,4 +53,3 @@ for each row                               -- executes once per affected row
 execute function fn_block_veterinarian_if_assistant_exists(); -- calls validation
 
 
-

@@ -1,8 +1,3 @@
-drop extension if exists pg_cron cascade;
-create extension pg_cron;
-
-
-
 --=========================================================
 -- JOB 1: auto_close_clock_in_midnight
 -- Executes daily at 00:00 to automatically close open

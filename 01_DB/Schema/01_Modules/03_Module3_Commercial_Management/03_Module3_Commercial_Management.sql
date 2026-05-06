@@ -131,23 +131,8 @@ create table product (
     constraint pk_product primary key (id_pro),
     -- Unique identifier
 
-    constraint fk_product_family foreign key (id_fam) references family(id_fam)
-        on delete set null,
-    -- Links product to family
-
-    constraint fk_purchase_product foreign key(id_pur) references purchase(id_pur)
-          on delete set null,
-    --on delete set null because if the purchase is deleted for any reason, 
-    --the product should not be deleted, removed from the catalog 
-    --and the stock of that product should not be affected
-
-    constraint fk_stock foreign key(id_sto) references stock(id_sto)
-            on delete set null,
-
-
-    constraint fk_return foreign key (id_ret) references return(id_ret)
-        on delete set null
-
+    constraint fk_product_family foreign key (id_fam) references family(id_fam) on delete set null
+    -- Links product to family. Outras FKs serão adicionadas no final.
 
 );
 
@@ -377,3 +362,48 @@ create table employee_return (
 );
 
 
+-- Linhas de compra (junta Product, Purchase, Stock)
+CREATE TABLE PurchaseLine (
+    ID_PURCHASE_LINE SERIAL PRIMARY KEY,
+    ID_PURCHASE INT NOT NULL REFERENCES Purchase(ID_PURCHASE),
+    ID_PRODUCT INT NOT NULL REFERENCES Product(ID_PRODUCT),
+    BATCH VARCHAR(50),
+    QUANTITY INT NOT NULL CHECK (QUANTITY > 0),
+    UNIT_COST NUMERIC(10,2) NOT NULL,
+    ID_STOCK INT REFERENCES Stock(ID_STOCK)
+);
+
+-- Linhas de fatura (venda ao cliente)
+CREATE TABLE InvoiceLine (
+    ID_INVOICE_LINE SERIAL PRIMARY KEY,
+    ID_INVOICE INT NOT NULL REFERENCES Invoice(ID_INVOICE),
+    ID_PRODUCT INT NOT NULL REFERENCES Product(ID_PRODUCT),
+    QUANTITY INT NOT NULL CHECK (QUANTITY > 0),
+    UNIT_PRICE NUMERIC(10,2) NOT NULL,
+    IVA NUMERIC(5,2) NOT NULL
+);
+
+ALTER TABLE "return" ADD COLUMN ID_INVOICE_LINE INT REFERENCES InvoiceLine(ID_INVOICE_LINE);
+ALTER TABLE "return" ADD COLUMN QUANTITY_RETURNED INT NOT NULL DEFAULT 1;
+ALTER TABLE "return" DROP COLUMN reg_dat_ret; -- duplicado
+ALTER TABLE "return" RENAME COLUMN ina_dat_ret TO RETURN_DATE;
+
+-- =========================================================
+-- 8. ADICIONAR CONSTRAINTS ADIADAS
+-- (Resolve as dependências circulares com a tabela 'product')
+-- =========================================================
+
+ALTER TABLE product
+ADD CONSTRAINT fk_purchase_product
+FOREIGN KEY(id_pur) REFERENCES purchase(id_pur)
+ON DELETE SET NULL;
+
+ALTER TABLE product
+ADD CONSTRAINT fk_stock
+FOREIGN KEY(id_sto) REFERENCES stock(id_sto)
+ON DELETE SET NULL;
+
+ALTER TABLE product
+ADD CONSTRAINT fk_return
+FOREIGN KEY (id_ret) REFERENCES "return"(id_ret)
+ON DELETE SET NULL;

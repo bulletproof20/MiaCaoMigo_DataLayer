@@ -16,6 +16,7 @@
 
 -- Associative tables
 drop table if exists occupies cascade;
+drop table if exists have cascade;
 
 -- Dependent entities
 drop table if exists assistant cascade;
@@ -555,7 +556,7 @@ create table absence (
     -- Reason (no_show, justified, etc.)
 
     sta_abs varchar(20) not null default 'pending',
-    -- State (approved, rejected, pending)
+    -- State (approved, rejected, pending, canceled, detected)
 
     res_abs int,
     -- Responsible (NULL = system)
@@ -581,7 +582,7 @@ create table absence (
 
     constraint chk_sta_abs
     check (
-        sta_abs in ('pending','approved','rejected', 'cancelled')
+        sta_abs in ('pending','approved','rejected', 'cancelled', 'detected')
     ),
     -- Restricts valid states
 

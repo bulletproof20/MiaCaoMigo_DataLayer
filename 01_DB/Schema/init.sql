@@ -66,13 +66,13 @@ create extension if not exists pg_cron;
 \i /docker-entrypoint-initdb.d/01_Modules/03_Module3_Commercial_Management/03_Module3_Commercial_Management.sql -- Assumindo que este ficheiro contém as tabelas
 
 --Funções (dependem das tabelas)
-\i /docker-entrypoint-initdb.d/01_Modules/03_Module3_Commercial_Management/03_Module3_Functions.sql
+\i /docker-entrypoint-initdb.d/01_Modules/03_Module3_Commercial_Management/03_Functions.sql
 
 --Triggers (dependem das funções)
-\i /docker-entrypoint-initdb.d/01_Modules/03_Module3_Commercial_Management/03_Module3_Trigger.sql
+\i /docker-entrypoint-initdb.d/01_Modules/03_Module3_Commercial_Management/03_Trigger.sql
 
 -- Procedures (dependem das funções)
-\i /docker-entrypoint-initdb.d/01_Modules/03_Module3_Commercial_Management/03_Module3_Procedures.sql
+\i /docker-entrypoint-initdb.d/01_Modules/03_Module3_Commercial_Management/03_Procedures.sql
 
 
 

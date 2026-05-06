@@ -27,7 +27,7 @@ drop table if exists return_product cascade;
 drop table if exists purchase_product cascade;
 
 -- Dependent entities
-drop table if exists return cascade;
+drop table if exists "return" cascade;
 drop table if exists purchase cascade;
 drop table if exists stock cascade;
 
@@ -145,7 +145,7 @@ create table product (
             on delete set null,
 
 
-    constraint fk_return foreign key (id_ret) references return(id_ret)
+    constraint fk_return foreign key (id_ret) references "return"(id_ret)
         on delete set null
 
 
@@ -252,7 +252,7 @@ create table purchase (
 -- 6. RETURN
 --=========================================================
 -- Represents product return operations
-create table return (
+create table "return" (
     id_ret int generated always as identity,
     -- Return identifier
 
@@ -321,7 +321,7 @@ create table return_product (
 
     constraint fk_ret_pro_return 
         foreign key (id_ret)
-        references return(id_ret)
+        references "return"(id_ret)
         on delete cascade,
 
     constraint fk_ret_pro_product 
@@ -372,7 +372,7 @@ create table employee_return (
 
     constraint fk_emp_ret_return 
         foreign key (id_ret)
-        references return(id_ret)
+        references "return"(id_ret)
         on delete cascade
 );
 
@@ -383,26 +383,26 @@ create table employee_return (
 -- Linhas de compra (junta Product, Purchase, Stock)
 CREATE TABLE PurchaseLine (
     ID_PURCHASE_LINE SERIAL PRIMARY KEY,
-    ID_PURCHASE INT NOT NULL REFERENCES Purchase(ID_PURCHASE),
-    ID_PRODUCT INT NOT NULL REFERENCES Product(ID_PRODUCT),
+    ID_PURCHASE INT NOT NULL REFERENCES Purchase(id_pur),
+    ID_PRODUCT INT NOT NULL REFERENCES Product(id_pro),
     BATCH VARCHAR(50),
     QUANTITY INT NOT NULL CHECK (QUANTITY > 0),
     UNIT_COST NUMERIC(10,2) NOT NULL,
-    ID_STOCK INT REFERENCES Stock(ID_STOCK)
+    ID_STOCK INT REFERENCES Stock(id_sto)
 );
 
 -- Linhas de fatura (venda ao cliente)
 CREATE TABLE InvoiceLine (
     ID_INVOICE_LINE SERIAL PRIMARY KEY,
-    ID_INVOICE INT NOT NULL REFERENCES Invoice(ID_INVOICE),
-    ID_PRODUCT INT NOT NULL REFERENCES Product(ID_PRODUCT),
+    ID_INVOICE INT NOT NULL REFERENCES Invoice(id_inv),
+    ID_PRODUCT INT NOT NULL REFERENCES Product(id_pro),
     QUANTITY INT NOT NULL CHECK (QUANTITY > 0),
     UNIT_PRICE NUMERIC(10,2) NOT NULL,
     IVA NUMERIC(5,2) NOT NULL
 );
 
 -- Melhorar a tabela Return para ligar à linha da fatura
-ALTER TABLE Return ADD COLUMN ID_INVOICE_LINE INT REFERENCES InvoiceLine(ID_INVOICE_LINE);
-ALTER TABLE Return ADD COLUMN QUANTITY_RETURNED INT NOT NULL DEFAULT 1;
-ALTER TABLE Return DROP COLUMN REGISTRATION_DATE; -- duplicado
-ALTER TABLE Return RENAME COLUMN INACTIVATION_DATE TO RETURN_DATE;
+ALTER TABLE "return" ADD COLUMN ID_INVOICE_LINE INT REFERENCES InvoiceLine(ID_INVOICE_LINE);
+ALTER TABLE "return" ADD COLUMN QUANTITY_RETURNED INT NOT NULL DEFAULT 1;
+ALTER TABLE "return" DROP COLUMN reg_dat_ret; -- duplicado
+ALTER TABLE "return" RENAME COLUMN ina_dat_ret TO RETURN_DATE;

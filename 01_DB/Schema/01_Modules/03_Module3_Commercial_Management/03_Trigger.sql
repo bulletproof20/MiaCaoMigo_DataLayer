@@ -27,7 +27,7 @@ EXECUTE FUNCTION trg_update_invoice_total_func();
 -- calls function that restocks products after a return is inserted
 
 CREATE TRIGGER trg_return_restock
-AFTER INSERT ON "Return"
+AFTER INSERT ON "return"
 FOR EACH ROW
 EXECUTE FUNCTION trg_return_restock_func();
 
@@ -45,6 +45,6 @@ EXECUTE FUNCTION trg_prevent_inactive_product_sale_func();
 -- calls function that sets return date after inserting a return
 
 CREATE TRIGGER trg_set_return_return_date
-BEFORE INSERT ON "Return"
+BEFORE INSERT ON "return"
 FOR EACH ROW
 EXECUTE FUNCTION trg_set_return_return_date_func();

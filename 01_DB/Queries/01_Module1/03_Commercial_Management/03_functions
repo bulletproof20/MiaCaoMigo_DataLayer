@@ -145,3 +145,8 @@ RETURNS TABLE(id_usr INT, email VARCHAR, pass_hash VARCHAR, role TEXT) AS $$
 $$ LANGUAGE sql;
 GRANT EXECUTE ON FUNCTION get_user_credentials TO anon;
 
+
+
+
+
+select * from InvoiceLine;

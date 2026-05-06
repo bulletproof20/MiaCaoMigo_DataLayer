@@ -3,7 +3,7 @@ CREATE OR REPLACE FUNCTION fn_get_available_stock(p_product_id INT)
 RETURNS INT AS $$
 BEGIN
     RETURN COALESCE(
-        (SELECT SUM(QUANTITY) FROM Stock WHERE ID_PRODUCT = p_product_id AND QUANTITY > 0),
+        (SELECT SUM(qty_sto) FROM Stock WHERE id_pro = p_product_id AND qty_sto > 0),
         0
     );
 END;
@@ -47,18 +47,18 @@ BEGIN
     
     -- Percorre lotes FIFO (primeiro a expirar primeiro)
     FOR stock_record IN
-        SELECT ID_STOCK, QUANTITY FROM Stock
-        WHERE ID_PRODUCT = NEW.ID_PRODUCT AND QUANTITY > 0
-        ORDER BY VALIDATION_DATE NULLS LAST
+        SELECT id_sto, qty_sto FROM Stock
+        WHERE id_pro = NEW.ID_PRODUCT AND qty_sto > 0
+        ORDER BY val_dat_sto NULLS LAST
     LOOP
-        IF remaining_quantity <= stock_record.quantity THEN
-            UPDATE Stock SET QUANTITY = stock_record.quantity - remaining_quantity
-            WHERE ID_STOCK = stock_record.id_stock;
+        IF remaining_quantity <= stock_record.qty_sto THEN
+            UPDATE Stock SET qty_sto = stock_record.qty_sto - remaining_quantity
+            WHERE id_sto = stock_record.id_sto;
             EXIT;
         ELSE
-            UPDATE Stock SET QUANTITY = 0
-            WHERE ID_STOCK = stock_record.id_stock;
-            remaining_quantity := remaining_quantity - stock_record.quantity;
+            UPDATE Stock SET qty_sto = 0
+            WHERE id_sto = stock_record.id_sto;
+            remaining_quantity := remaining_quantity - stock_record.qty_sto;
         END IF;
     END LOOP;
     
@@ -72,12 +72,12 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION trg_update_invoice_total_func()
 RETURNS TRIGGER AS $$
 BEGIN
-    UPDATE Invoice SET VALUE = (
+    UPDATE Invoice SET val_inv = (
         SELECT COALESCE(SUM(QUANTITY * UNIT_PRICE * (1 + IVA/100)), 0)
         FROM InvoiceLine
         WHERE ID_INVOICE = NEW.ID_INVOICE
     )
-    WHERE ID_INVOICE = NEW.ID_INVOICE;
+    WHERE id_inv = NEW.ID_INVOICE;
     
     RETURN NEW;
 END;
@@ -102,10 +102,10 @@ BEGIN
     END IF;
     
     -- Repor stock (adicionar ao lote mais recente)
-    INSERT INTO Stock (ID_PRODUCT, BATCH, QUANTITY, ENTRY_DATE, VALIDATION_DATE)
+    INSERT INTO Stock (id_pro, bat_sto, qty_sto, ent_dat_sto, val_dat_sto)
     VALUES (
         prod_id,
-        (SELECT BATCH FROM Stock WHERE ID_PRODUCT = prod_id ORDER BY ENTRY_DATE DESC LIMIT 1),
+        (SELECT bat_sto FROM Stock WHERE id_pro = prod_id ORDER BY ent_dat_sto DESC LIMIT 1),
         NEW.QUANTITY_RETURNED,
         NOW(),
         NULL
@@ -125,8 +125,8 @@ RETURNS TRIGGER AS $$
 DECLARE
     is_inactive BOOLEAN;
 BEGIN
-    SELECT INACTIVATION_DATE IS NOT NULL INTO is_inactive
-    FROM Product WHERE ID_PRODUCT = NEW.ID_PRODUCT;
+    SELECT ina_dat_pro IS NOT NULL INTO is_inactive
+    FROM Product WHERE id_pro = NEW.ID_PRODUCT;
     
     IF is_inactive THEN
         RAISE EXCEPTION 'Produto % está inativo e não pode ser vendido', NEW.ID_PRODUCT;

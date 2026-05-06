@@ -113,6 +113,7 @@ create extension if not exists pg_cron;
 -- =========================================================
 
 -- Apply all Foreign Keys
+-- Made so theres no FK issues during the initial data load 
 \i /docker-entrypoint-initdb.d/99_Final/01_ForeignKeys.sql
 
 

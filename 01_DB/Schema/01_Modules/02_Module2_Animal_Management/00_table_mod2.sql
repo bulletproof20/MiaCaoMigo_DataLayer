@@ -170,10 +170,10 @@ create table external_entity (
 );
 
 --=========================================================
--- 5. OWNERSHIP
+-- 5. Titularidade
 --=========================================================
 -- Defines ownership relation between client and animal
-create table ownership (
+create table Titularidade (
     id_own int generated always as identity,
     -- Ownership identifier
 
@@ -195,28 +195,28 @@ create table ownership (
     id_emp int,
     -- Responsible employee
 
-    constraint pk_ownership primary key (id_own),
+    constraint pk_Titularidade primary key (id_own),
     -- Unique identifier
 
-    constraint fk_ownership_client 
+    constraint fk_Titularidade_client 
         foreign key (id_cli)
         references client(id_cli)
         on delete cascade,
     -- Links to client
 
-    constraint fk_ownership_animal 
+    constraint fk_Titularidade_animal 
         foreign key (id_ani)
         references animal(id_ani)
         on delete cascade,
     -- Links to animal
 
-    constraint fk_ownership_employee 
+    constraint fk_Titularidade_employee 
         foreign key (id_emp)
         references employee(id_emp)
         on delete set null,
     -- Tracks responsible employee
 
-    constraint chk_ownership_dates
+    constraint chk_Titularidade_dates
     check (
         end_dat_own is null 
         or sta_dat_own <= end_dat_own

@@ -9,14 +9,15 @@
 -- and validates if the animal is available.
 --=========================================================
 
-drop function if exists fn_register_adoption(int, int, int, varchar);
+-- drop function if exists fn_register_adoption(int, int, int, varchar);
 
 create or replace function fn_register_adoption(
     p_id_cli int,
     p_id_ani int,
     p_id_emp int,
     p_motive varchar
-) returns void as $$
+) returns trigger
+as $$
 begin
     -- 1. Check if the animal is already adopted or deceased
     if exists (
@@ -31,7 +32,7 @@ begin
     end if;
 
     -- 2. Create the ownership record
-    insert into ownership (id_cli, id_ani, id_emp, mot_own, sta_dat_own)
+    insert into Titularidade (id_cli, id_ani, id_emp, mot_own, sta_dat_own)
     values (p_id_cli, p_id_ani, p_id_emp, p_motive, current_date);
 
 end;

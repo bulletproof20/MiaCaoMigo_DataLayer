@@ -9,7 +9,7 @@
 -- a new ownership record to be created.
 --=========================================================
 create or replace trigger trg_register_adoption
-before insert on ownership
+before insert on ownwership
 for each row
 execute function fn_register_adoption();
 
@@ -40,5 +40,7 @@ execute function fn_animal_exit();
 -- trigger after changes to relevant tables.
 --=========================================================
 create or replace trigger trg_get_animal_history
-after insert or update on ownership
+after insert or update on Titularidade
 for each row
+execute function fn_get_animal_history();
+

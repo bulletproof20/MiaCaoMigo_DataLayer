@@ -74,13 +74,13 @@ create table invoice (
     id_app int,
     -- Appointment
 
-    constraint pk_invoice primary key (id_inv),
+    constraint pk_invoice primary key (id_inv)
     -- Unique identifier
 
-    constraint fk_invoice_appointment foreign key (id_app)
-        references appointment(id_app)
-        on delete set null
-    -- Links to appointment
+    -- constraint fk_invoice_appointment foreign key (id_app)
+    --     references appointment(id_app)
+    --     on delete set null
+    -- -- Links to appointment
 );
 
 
@@ -173,11 +173,11 @@ create table stock (
     -- Prevents negative stock
 );
 
-    alter table stock
-    add constraint fk_stock_product
-    foreign key (id_pro)
-    references product(id_pro)
-    on delete cascade;
+    -- alter table stock
+    -- add constraint fk_stock_product
+    -- foreign key (id_pro)
+    -- references product(id_pro)
+    -- on delete cascade;
 
     
 -- this constraint had to be added via alter table after creating the stock table to prevent an error during the creation of the product table.

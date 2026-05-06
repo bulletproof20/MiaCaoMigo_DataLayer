@@ -92,11 +92,11 @@ create table appointment (
     constraint pk_appointment primary key (id_app),
     -- Unique identifier
 
-    -- Foreign Key linkage to animal
-    CONSTRAINT fk_animal 
-        FOREIGN KEY (id_animal)
-        REFERENCES animal(id_ani)
-        on delete cascade,
+    -- -- Foreign Key linkage to animal
+    -- CONSTRAINT fk_animal 
+    --     FOREIGN KEY (id_animal)
+    --     REFERENCES animal(id_ani)
+    --     on delete cascade,
         
     -- Foreign Key linkage to employee (veterinarian)
     CONSTRAINT fk_appointment_employee

@@ -48,7 +48,6 @@ begin
     -- Optionally, you could also check for clock-in status if it's a strict requirement
     -- For example, if an employee *must* be clocked in to have an appointment.
     -- This would depend on business rules. For now, we focus on explicit absences.
-
     return new;
 end;
 $$ language plpgsql;
@@ -166,31 +165,31 @@ $$ language plpgsql;
 --=========================================================
 -- FUNCTION 8: fn_appointment_see_app_clt
 -- Allows clients to see their appointments
+-- Returns a table with key details of all appointments for a given client ID.
 --=========================================================
-CREATE FUNCTION fn_appointment_see_app_clt(clt_id int)
- RETURNS table(
-    id_app int,
-    sch_dat_app timestamp,
-    nam_usr varchar(100)
-)
-LANGUAGE plpgsql
-SECURITY DEFINER
-AS $$
-BEGIN
-  select ap.id_app, ap.sch_dat_app, uac.nam_usr 
-  from appointment ap 
-  inner join animal an on ap.id_app = an.id_app
-  inner join user_account uac on uac. = an.id_app
-  inner join client cl on ap.id_app = an.id_app
-  WHERE ap.id_cli = clt_id
-
-  EXCEPTION NOT FOUND then
-    RAISE EXCEPTION 'Cliente não encontrado'
-EXCEPTION IF OTHERS THEN
-    RAISE 'Erro: %', SQLERRM
-
---=========================================================
--- FUNCTION 8: fn_appointment_see_app_clt
--- Allows clients to see their appointments
---=========================================================
-
+create or replace function fn_appointment_see_app_clt(p_client_id int)
+returns table(
+    appointment_id int,
+    scheduled_date timestamp,
+    start_date timestamp,
+    status appointment_status,
+    vet_name varchar(100),
+    animal_name varchar(100)
+) language plpgsql
+as $$
+begin
+    return query
+    select
+        a.id_app,
+        a.sch_dat_app,
+        a.sta_dat_app,
+        a.status_app,
+        e.nam_emp,
+        an.nam_ani
+    from appointment a
+    join employee e on a.id_emp = e.id_emp
+    join animal an on a.id_animal = an.id_ani
+    where a.id_cli = p_client_id
+    order by a.sta_dat_app desc;
+end;
+$$;

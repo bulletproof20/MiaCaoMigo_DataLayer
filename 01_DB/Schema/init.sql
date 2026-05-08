@@ -291,22 +291,13 @@ create extension if not exists btree_gist;
 -- =========================================================
 -- 10. SANITY CHECK
 -- =========================================================
-<<<<<<< HEAD
 
 \echo '--- Starting Sanity Check...'
-=======
-/*
--- Tabelas
-\i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/00_Table_Mod4.sql
->>>>>>> 9792af4 (teste)
 
 -- final validation query confirming that
 -- the initialization process finished
 -- successfully without fatal errors.
 
-<<<<<<< HEAD
-select 'database initialized successfully' as status;
-=======
 -- Triggers (dependem das funções)
 \i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/02_Trigger_Mod4.sql
 
@@ -324,4 +315,3 @@ select 'database initialized successfully' as status;
 
 -- sanity check (opcional)
 SELECT 'Database initialized successfully' AS status;
->>>>>>> 9792af4 (teste)

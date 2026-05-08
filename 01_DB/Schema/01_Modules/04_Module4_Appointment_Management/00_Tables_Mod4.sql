@@ -229,30 +229,6 @@ create table rel_app_product (
 );
 
 --=========================================================
--- 7. APPOINTMENT NOTIFICATIONS
---=========================================================
--- Stores notifications generated for clients
-create table appointment_notification (
-    id_not int generated always as identity,
-    -- Notification identifier
-
-    id_cli int not null,
-    -- Client associated with the notification
-
-    message text not null,
-    -- The notification message
-
-    created_at timestamp default current_timestamp,
-    -- Timestamp when the notification was created
-
-    is_read boolean default false,
-    -- Flag to indicate if the client has read the notification
-
-    constraint pk_appointment_notification primary key (id_not),
-    constraint fk_appointment_notification_client foreign key (id_cli) references client(id_cli) on delete cascade
-);
-
---=========================================================
 -- 6. ASSOCIATIVE TABLE BETWEEN PRESCRIPTION AND PRODUCTS
 --=========================================================
 create table rel_pre_prod (
@@ -285,3 +261,28 @@ create table rel_pre_prod (
     check (qty_pre_pro > 0)
     -- Ensures valid quantity
 );
+
+--=========================================================
+-- 7. APPOINTMENT NOTIFICATIONS
+--=========================================================
+-- Stores notifications generated for clients
+create table appointment_notification (
+    id_not int generated always as identity,
+    -- Notification identifier
+
+    id_cli int not null,
+    -- Client associated with the notification
+
+    message text not null,
+    -- The notification message
+
+    created_at timestamp default current_timestamp,
+    -- Timestamp when the notification was created
+
+    is_read boolean default false,
+    -- Flag to indicate if the client has read the notification
+
+    constraint pk_appointment_notification primary key (id_not),
+    constraint fk_appointment_notification_client foreign key (id_cli) references client(id_cli) on delete cascade
+);
+

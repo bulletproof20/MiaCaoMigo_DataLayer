@@ -24,5 +24,9 @@ select cron.schedule(
     'daily_appointment_warnings',
     '0-30 9-19 * * 1-5',  -- Executa de meia em meia hora, das 08:00 às 19:30, de segunda a sexta-feira
     --A assumir que a clinica só está aberta das 09:00 às 20:00
-    $$ select fn_appointment_warning_next_day(); $$
+    $$ CALL prc_generate_appointment_warnings(); $$
 );
+
+
+selecr cron.schedule(
+    ''

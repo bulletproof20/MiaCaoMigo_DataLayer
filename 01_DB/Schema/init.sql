@@ -1,317 +1,126 @@
 -- =========================================================
--- INIT: Database Setup (MiaCaoMigo)
--- orchestrates the complete database creation
+-- init: database setup (miacaomigo)
 -- =========================================================
-
-
--- =========================================================
--- 1. EXTENSIONS
--- =========================================================
-
-\echo '--- Starting Extensions Setup...'
-
--- ---------------------------------------------------------
--- pg_cron
--- ---------------------------------------------------------
--- Extensão que permite executar jobs agendados
--- diretamente dentro do PostgreSQL.
+-- central orchestration script responsible for
+-- loading the complete database architecture.
 --
--- O cascade remove dependências associadas caso
--- a extensão já exista.
-
-\echo '--- creating pg_cron extension...'
-drop extension if exists pg_cron cascade;
-
-\echo '--- enabling pg_cron extension...'
-create extension if not exists pg_cron;
 
 
--- ---------------------------------------------------------
--- btree_gist
--- ---------------------------------------------------------
--- Extensão que adiciona suporte a operadores
--- B-Tree (=, <, >, etc.) dentro de índices GiST.
-
-\echo '--- enabling btree_gist extension...'
-create extension if not exists btree_gist;
-
-
--- =========================================================
--- 2. CORE
--- =========================================================
-
-\echo '--- Starting Core Setup...'
-
--- Tipos personalizados globais
-\echo '--- Including Core Types...'
--- \i /docker-entrypoint-initdb.d/00_Core/00_Types.sql
-
--- Enums globais
-\echo '--- Including Core Enums...'
--- \i /docker-entrypoint-initdb.d/00_Core/01_Enums.sql
-
--- Funções base reutilizáveis
-\echo '--- Including Core Base Functions...'
--- \i /docker-entrypoint-initdb.d/00_Core/02_Functions_Base.sql
-/*
-
--- =========================================================
--- 3. TABLE CREATION PHASE
--- =========================================================
--- in this phase all tables are created first.
---
--- this guarantees:
--- - all entities exist beforehand
--- - no dependency issues
--- - easier modularization
--- - cleaner foreign key management
--- =========================================================
+\echo '========================================'
+\echo 'MIACAOMIGO DATABASE INITIALIZATION'
+\echo '========================================'
 
 
 
 -- =========================================================
--- module 1: user management
+-- extensions layer
+-- =========================================================
+-- loads required postgresql extensions used
+-- across the database infrastructure.
 -- =========================================================
 
-\echo '--- Creating Module 1 Tables...'
-\i /docker-entrypoint-initdb.d/01_Modules/01_Module1_User_Management/00_Tables_Mod1.sql
+\echo '>>> loading extensions layer'
 
-
--- =========================================================
--- module 2: animal management
--- =========================================================
-
-\echo '--- Creating Module 2 Tables...'
--- \i /docker-entrypoint-initdb.d/01_Modules/02_Module2_Animal_Management/00_Tables_Mod2.sql
-
-
--- =========================================================
--- module 3: commercial management
--- =========================================================
-
-\echo '--- Creating Module 3 Tables...'
--- \i /docker-entrypoint-initdb.d/01_Modules/03_Module3_Commercial_Management/00_Tables_Mod3.sql
-
-
--- =========================================================
--- module 4: appointment management
--- =========================================================
-
-\echo '--- Creating Module 4 Tables...'
--- \i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/00_Tables_Mod4.sql
+\i /docker-entrypoint-initdb.d/03_Loaders/00_Extensions.sql
 
 
 
 -- =========================================================
--- 4. FOREIGN KEYS PHASE
+-- structure layer
 -- =========================================================
--- foreign keys are applied only after all
--- tables are created.
---
--- this avoids:
--- - circular dependencies
--- - missing table references
--- - module loading order problems
+-- loads physical relational structures such as:
+-- - core entities
+-- - tables
+-- - indexes
+-- - foreign keys
 -- =========================================================
 
-\echo '--- Applying Global Foreign Keys...'
--- \i /docker-entrypoint-initdb.d/01_Modules/00_Core/99_ForeignKeys.sql
+\echo '>>> loading structure layer'
 
-
-
--- =========================================================
--- 5. FUNCTIONS PHASE
--- =========================================================
--- functions are loaded after tables and
--- foreign keys because they may depend on:
--- - constraints
--- - relations
--- - existing entities
--- =========================================================
-
-
--- =========================================================
--- module 1: user management
--- =========================================================
-
-\echo '--- Including Module 1 Functions...'
-\i /docker-entrypoint-initdb.d/01_Modules/01_Module1_User_Management/01_Functions_Mod1.sql
-
-
--- =========================================================
--- module 2: animal management
--- =========================================================
-
-\echo '--- Including Module 2 Functions...'
--- \i /docker-entrypoint-initdb.d/01_Modules/02_Module2_Animal_Management/01_Functions_Mod2.sql
-
-
--- =========================================================
--- module 3: commercial management
--- =========================================================
-
-\echo '--- Including Module 3 Functions...'
--- \i /docker-entrypoint-initdb.d/01_Modules/03_Module3_Commercial_Management/01_Functions_Mod3.sql
-
-
--- =========================================================
--- module 4: appointment management
--- =========================================================
-
-\echo '--- Including Module 4 Functions...'
--- \i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/01_Functions_Mod4.sql
+\i /docker-entrypoint-initdb.d/03_Loaders/01_Structure.sql
 
 
 
 -- =========================================================
--- 6. TRIGGERS PHASE
+-- integrity layer
 -- =========================================================
--- triggers are loaded after functions because
--- triggers depend directly on trigger functions.
--- =========================================================
-
-
--- =========================================================
--- module 1: user management
--- =========================================================
-
-\echo '--- Including Module 1 Triggers...'
-\i /docker-entrypoint-initdb.d/01_Modules/01_Module1_User_Management/02_Triggers_Mod1.sql
-
-
--- =========================================================
--- module 2: animal management
--- =========================================================
-
-\echo '--- Including Module 2 Triggers...'
--- \i /docker-entrypoint-initdb.d/01_Modules/02_Module2_Animal_Management/02_Triggers_Mod2.sql
-
-
--- =========================================================
--- module 3: commercial management
--- =========================================================
-
-\echo '--- Including Module 3 Triggers...'
--- \i /docker-entrypoint-initdb.d/01_Modules/03_Module3_Commercial_Management/02_Triggers_Mod3.sql
-
-
--- =========================================================
--- module 4: appointment management
--- =========================================================
-
-\echo '--- Including Module 4 Triggers...'
--- \i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/02_Triggers_Mod4.sql
-
-
-
--- =========================================================
--- 7. INDEXES PHASE
--- =========================================================
--- indexes are created after tables and
--- constraints for optimization purposes.
--- =========================================================
-
-
--- =========================================================
--- module 1: user management
--- =========================================================
-
-\echo '--- Including Module 1 Indexes...'
-\i /docker-entrypoint-initdb.d/01_Modules/01_Module1_User_Management/03_Indexes_Mod1.sql
-
-
--- =========================================================
--- module 2: animal management
--- =========================================================
-
-\echo '--- Including Module 2 Indexes...'
--- \i /docker-entrypoint-initdb.d/01_Modules/02_Module2_Animal_Management/03_Indexes_Mod2.sql
-
-
--- =========================================================
--- module 3: commercial management
--- =========================================================
-
-\echo '--- Including Module 3 Indexes...'
--- \i /docker-entrypoint-initdb.d/01_Modules/03_Module3_Commercial_Management/03_Indexes_Mod3.sql
-
-
--- =========================================================
--- module 4: appointment management
--- =========================================================
-
-\echo '--- Including Module 4 Indexes...'
--- \i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/03_Indexes_Mod4.sql
-
-
-
--- =========================================================
--- 8. PROCEDURES PHASE
--- =========================================================
-
-\echo '--- Including Module 1 Procedures...'
-\i /docker-entrypoint-initdb.d/01_Modules/01_Module1_User_Management/04_Procedures_Mod1.sql
-
-\echo '--- Including Module 2 Procedures...'
--- \i /docker-entrypoint-initdb.d/01_Modules/02_Module2_Animal_Management/04_Procedures_Mod2.sql
-
-\echo '--- Including Module 3 Procedures...'
--- \i /docker-entrypoint-initdb.d/01_Modules/03_Module3_Commercial_Management/04_Procedures_Mod3.sql
-
-\echo '--- Including Module 4 Procedures...'
--- \i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/04_Procedures_Mod4.sql
-
-
-
--- =========================================================
--- 9. JOBS PHASE
--- =========================================================
--- scheduled jobs are loaded at the end
--- because they may depend on:
--- - procedures
+-- loads executable integrity and behavioral
+-- components such as:
 -- - functions
 -- - triggers
--- - existing data structures
+-- - procedures
+-- - jobs
 -- =========================================================
 
-\echo '--- Including Module 1 Jobs...'
-\i /docker-entrypoint-initdb.d/01_Modules/01_Module1_User_Management/05_Jobs_Mod1.sql
+\echo '>>> loading integrity layer'
 
-\echo '--- Including Module 2 Jobs...'
--- \i /docker-entrypoint-initdb.d/01_Modules/02_Module2_Animal_Management/05_Jobs_Mod2.sql
-
-\echo '--- Including Module 3 Jobs...'
--- \i /docker-entrypoint-initdb.d/01_Modules/03_Module3_Commercial_Management/05_Jobs_Mod3.sql
-
-\echo '--- Including Module 4 Jobs...'
--- \i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/05_Jobs_Mod4.sql
+\i /docker-entrypoint-initdb.d/03_Loaders/02_Integrity.sql
 
 
-*/
+
 -- =========================================================
--- 10. SANITY CHECK
+-- data migration layer
 -- =========================================================
-
-\echo '--- Starting Sanity Check...'
-
--- final validation query confirming that
--- the initialization process finished
--- successfully without fatal errors.
-
--- Triggers (dependem das funções)
-\i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/02_Trigger_Mod4.sql
-
-\i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/03_Jobs_Mod4.sql
-
-*/
--- =========================================================
--- FINAL
+-- loads master and reference data required
+-- for stable system operation.
+--
+-- includes:
+-- - permissions
+-- - profiles
+-- - specialties
+-- - default configurations
+-- - controlled reference entities
 -- =========================================================
 
--- Apply all Foreign Keys
--- Made so theres no FK issues during the initial data load 
-\i /docker-entrypoint-initdb.d/99_Final/01_ForeignKeys.sql
+\echo '>>> loading data migration layer'
+
+\i /docker-entrypoint-initdb.d/03_Loaders/03_Data_Migration.sql
 
 
--- sanity check (opcional)
-SELECT 'Database initialized successfully' AS status;
+
+-- =========================================================
+-- comments layer
+-- =========================================================
+-- loads metadata documentation and descriptive
+-- annotations for:
+-- - schemaspy
+-- - pgadmin
+-- - introspection tooling
+-- - future maintainability
+-- =========================================================
+
+\echo '>>> loading comments layer'
+
+\i /docker-entrypoint-initdb.d/03_Loaders/04_Comments.sql
+
+
+
+-- =========================================================
+-- queries layer
+-- =========================================================
+-- loads reusable query definitions consumed
+-- by the application and reporting layers.
+-- =========================================================
+
+\echo '>>> loading queries layer'
+
+\i /docker-entrypoint-initdb.d/03_Loaders/05_Queries.sql
+
+
+
+-- =========================================================
+-- sanity check layer
+-- =========================================================
+-- performs final validation checks after all
+-- database layers are fully loaded.
+-- =========================================================
+
+\echo '>>> loading sanity check layer'
+
+\i /docker-entrypoint-initdb.d/03_Loaders/06_Sanity_Check.sql
+
+
+
+-- =========================================================
+-- initialization completed
+-- =========================================================

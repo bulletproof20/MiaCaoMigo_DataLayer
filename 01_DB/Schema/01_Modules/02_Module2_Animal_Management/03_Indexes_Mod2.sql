@@ -4,8 +4,12 @@
 -- and exclusion constraints.
 --=========================================================
 
-
-
+--=========================================================
+-- EXTENSIONS
+--=========================================================
+-- Required for GIST indexes on standard data types
+create extension if not exists btree_gist;
+ 
 --=========================================================
 -- INDEX 1: uq_animal_single_delivery
 -- Ensures that each animal has only one delivery record,
@@ -13,6 +17,7 @@
 -- rescue/delivery is a unique event.
 --=========================================================
 
+drop index if exists uq_animal_single_delivery;
 create unique index uq_animal_single_delivery
 on delivery(id_ani);
 
@@ -25,6 +30,7 @@ on delivery(id_ani);
 -- efficient than using a trigger.
 --=========================================================
 
+drop index if exists uq_ownership_active_per_animal;
 create unique index uq_ownership_active_per_animal
 on ownership(id_ani)
 where end_dat_own is null;
@@ -37,6 +43,7 @@ where end_dat_own is null;
 -- for the same animal, ensuring data integrity over time.
 --=========================================================
 
+alter table ownership drop constraint if exists ex_ownership_overlap;
 alter table ownership
 add constraint ex_ownership_overlap
 exclude using gist (

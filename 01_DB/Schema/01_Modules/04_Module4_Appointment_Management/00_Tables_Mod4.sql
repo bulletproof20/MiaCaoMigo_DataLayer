@@ -27,7 +27,7 @@ drop table if exists overall_assessment cascade;
 drop table if exists anamnesis cascade;
 drop table if exists prescription cascade;
 drop table if exists rel_app_product cascade;
-drop table if exists client_notification cascade;
+drop table if exists appointment_notification cascade;
 drop table if exists rel_pre_prod cascade;
 
 -- Custom types
@@ -229,10 +229,10 @@ create table rel_app_product (
 );
 
 --=========================================================
--- 7. CLIENT_NOTIFICATION
+-- 7. APPOINTMENT NOTIFICATIONS
 --=========================================================
 -- Stores notifications generated for clients
-create table client_notification (
+create table appointment_notification (
     id_not int generated always as identity,
     -- Notification identifier
 
@@ -248,8 +248,8 @@ create table client_notification (
     is_read boolean default false,
     -- Flag to indicate if the client has read the notification
 
-    constraint pk_client_notification primary key (id_not),
-    constraint fk_client_notification_client foreign key (id_cli) references client(id_cli) on delete cascade
+    constraint pk_appointment_notification primary key (id_not),
+    constraint fk_appointment_notification_client foreign key (id_cli) references client(id_cli) on delete cascade
 );
 
 --=========================================================

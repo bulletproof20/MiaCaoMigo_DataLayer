@@ -157,7 +157,7 @@ begin
     ) loop
         v_aviso := format('Bom dia %s, amanhã tem consulta com o veterinário %s para o seu animal %s.',
                          consulta.nome_cliente, consulta.nome_veterinario, consulta.nome_animal);
-        insert into client_notification (id_cli, message) values (consulta.id_cli, v_aviso);
+        insert into appointment_notification (id_cli, message) values (consulta.id_cli, v_aviso);
     end loop;
 end;
 $$ language plpgsql;
@@ -189,5 +189,8 @@ BEGIN
 EXCEPTION IF OTHERS THEN
     RAISE 'Erro: %', SQLERRM
 
-
+--=========================================================
+-- FUNCTION 8: fn_appointment_see_app_clt
+-- Allows clients to see their appointments
+--=========================================================
 

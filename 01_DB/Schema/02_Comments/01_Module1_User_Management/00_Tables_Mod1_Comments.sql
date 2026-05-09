@@ -286,7 +286,7 @@ comment on column client.id_cli is
 'unique client identifier';
 
 comment on column client.id_usr is
-'reference to associated user account';
+'reference to associated user account; unique per row (one client per user_account)';
 
 comment on column client.pas_cli is
 'hashed client authentication password';
@@ -299,6 +299,9 @@ comment on column client.ina_dat_cli is
 
 comment on constraint pk_client on client is
 'ensures unique identification of each client';
+
+comment on constraint uq_client_user on client is
+'enforces one-to-one association: at most one client row per user_account (id_usr)';
 
 comment on constraint fk_client_user on client is
 'links client to base user account';

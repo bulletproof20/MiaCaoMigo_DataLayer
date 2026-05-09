@@ -387,7 +387,9 @@ create table expert (
 --=========================================================
 -- 9. CLIENT
 --=========================================================
--- Represents system clients
+-- Represents system clients.
+-- Identity: surrogate PK id_cli (referenced by other modules).
+-- Cardinality: exactly one client row per user_account via UNIQUE(id_usr) + FK to user_account.
 create table client (
     id_cli int generated always as identity,
     -- Client identifier
@@ -406,6 +408,10 @@ create table client (
 
     constraint pk_client primary key (id_cli),
     -- Unique identifier
+
+    constraint uq_client_user
+        unique (id_usr),
+    -- Unique identifier for user association (one-to-one)
 
     constraint fk_client_user 
         foreign key (id_usr)

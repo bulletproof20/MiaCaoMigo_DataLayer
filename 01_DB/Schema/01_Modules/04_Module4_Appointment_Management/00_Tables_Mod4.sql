@@ -106,7 +106,7 @@ create table appointment (
 );
 
 --=========================================================
--- 2. Overall Assessment
+-- 3. Overall Assessment
 --=========================================================
 -- Stores clinical history collected during appointment
 CREATE TABLE overall_assessment (
@@ -126,7 +126,7 @@ CREATE TABLE overall_assessment (
 );
 
 --=========================================================
--- 3. ANAMNESIS
+-- 4. ANAMNESIS
 --=========================================================
 -- Stores patient history collected during appointment
 create table anamnesis (
@@ -147,7 +147,7 @@ create table anamnesis (
 );
 
 --=========================================================
--- 4. PRESCRIPTION
+-- 5. PRESCRIPTION
 --=========================================================
 -- Stores prescriptions issued during appointment
 create table prescription (
@@ -168,7 +168,7 @@ create table prescription (
 );
 
 --=========================================================
--- 5. ASSOCIATIVE TABLE BETWEEN APPOINTMENT AND PRODUCTS
+-- 6. ASSOCIATIVE TABLE BETWEEN APPOINTMENT AND PRODUCTS
 --=========================================================
 create table rel_app_product (
     id_app int not null,
@@ -191,7 +191,7 @@ create table rel_app_product (
 );
 
 --=========================================================
--- 6. ASSOCIATIVE TABLE BETWEEN PRESCRIPTION AND PRODUCTS
+-- 7. ASSOCIATIVE TABLE BETWEEN PRESCRIPTION AND PRODUCTS
 --=========================================================
 create table rel_pre_prod (
     id_pre int not null,
@@ -214,7 +214,7 @@ create table rel_pre_prod (
 );
 
 --=========================================================
--- 7. APPOINTMENT NOTIFICATIONS
+-- 8. APPOINTMENT NOTIFICATIONS
 --=========================================================
 -- Stores notifications generated for clients
 create table appointment_notification (

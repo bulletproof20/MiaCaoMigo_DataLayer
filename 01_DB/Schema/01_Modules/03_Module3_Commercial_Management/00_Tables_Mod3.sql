@@ -20,20 +20,16 @@
 --=========================================================
 -- Drops only tables related to this module in reverse dependency order
 
--- Associative tables
-drop table if exists employee_return cascade;
-drop table if exists employee_purchase cascade;
-drop table if exists return_product cascade;
---drop table if exists purchase_product cascade;
+
 
 -- Dependent entities
-drop table if exists return cascade;
+drop table if exists "return" cascade;
 drop table if exists purchase cascade;
 drop table if exists stock cascade;
 
 -- Core entities
 drop table if exists product cascade;
-drop table if exists family cascade;
+drop table if exists "family" cascade;
 
 --=========================================================
 -- 1. FAMILY

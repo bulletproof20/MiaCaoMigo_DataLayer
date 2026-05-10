@@ -170,9 +170,10 @@ create table prescription (
 --=========================================================
 -- 6. ASSOCIATIVE TABLE BETWEEN APPOINTMENT AND PRODUCTS
 --=========================================================
+-- This table links products used directly during an appointment.
 create table rel_app_product (
     id_app int not null,
-    -- Prescription
+    -- Appointment
 
     id_pro int not null,
     -- Product

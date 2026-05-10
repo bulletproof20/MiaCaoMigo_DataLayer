@@ -234,8 +234,8 @@ create table return (
     id_ret int generated always as identity,
     -- Return identifier
 
-    dat_ret date,
-    -- Return date
+    --dat_ret date,
+    -- Return date, this column was "deleted" because of the trigger that sets the return date to the current timestamp if not provided.
 
     mot_ret varchar(100),
     -- Reason
@@ -287,33 +287,6 @@ create table purchase_product (
 
 */
 
--- RETURN ↔ PRODUCT
-create table return_product (
-    id_ret int not null,
-    -- Return
-
-    id_pro int not null,
-    -- Product
-
-    qty_ret_pro int not null,
-    -- Quantity
-
-    constraint pk_return_product primary key (id_ret, id_pro),
-
-    constraint fk_ret_pro_return 
-        foreign key (id_ret)
-        references return(id_ret)
-        on delete cascade,
-
-    constraint fk_ret_pro_product 
-        foreign key (id_pro)
-        references product(id_pro)
-        on delete restrict,
-
-    constraint chk_qty_return
-    check (qty_ret_pro > 0)
-    -- Ensures valid quantity
-);
 
 
 -- Linhas de compra (junta Product, Purchase, Stock)

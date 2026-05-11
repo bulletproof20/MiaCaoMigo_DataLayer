@@ -40,11 +40,9 @@ begin
         join user_account c on a.id_cli = c.id_usr -- Assuming client name is in user_account
         join animal an on a.id_animal = an.id_ani
         join employee e on a.id_emp = e.id_emp
-        where a.sta_dat_app::date = current_date + interval '1 day' and a.status_app = 'Scheduled'
         where a.sch_dat_app::date = current_date + interval '1 day' and a.status_app = 'Scheduled'
     ) loop
         v_aviso := format('Lembrete: Bom dia %s! A sua consulta para o animal %s com o/a Dr(a). %s está marcada para amanhã.', consulta.nome_cliente, consulta.nome_animal, consulta.nome_veterinario);
-        insert into appointment_notification (id_cli, message) values (consulta.id_cli, v_aviso);
         insert into appointment_notification (id_cli, id_app, message) values (consulta.id_cli, consulta.id_app, v_aviso);
     end loop;
 end;
@@ -191,3 +189,24 @@ begin
     end if;
 end;
 $$;
+
+
+--=========================================================
+-- PROCEDURE: prc_prescription_for_appointment
+-- Creates a prescription record linked to a specific appointment.
+-- This procedure is intended to be called after the appointment is completed.
+--=========================================================
+create or replace procedure prc_prescription_for_appointment(
+    idd_app int,
+    description text
+)
+language plpgsql
+as $$
+begin
+    insert into prescription (id_app, reg_dat_pre, des_pre)
+    values (idd_app, now(), description);
+end; 
+$$;
+
+
+select * from appointment;

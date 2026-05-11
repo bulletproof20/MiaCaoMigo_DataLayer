@@ -76,7 +76,6 @@ LEFT JOIN anamnesis anam ON a.id_app = anam.id_app
 LEFT JOIN prescription p ON a.id_app = p.id_app
 WHERE a.id_app = 1; -- << Substituir pelo ID da consulta
 
-
 --=========================================================
 -- QUERY 4: Products Used in an Appointment
 -- Description: Lists all products (e.g., medication, supplies) used

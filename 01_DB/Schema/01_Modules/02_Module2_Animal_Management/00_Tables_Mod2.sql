@@ -87,6 +87,9 @@ create table animal (
     id_ani int generated always as identity,
     -- Animal identifier
 
+    id_cli int,
+    -- Owner (client) identifier
+
     reg_id_ani varchar(50) not null,
     -- Unique registration code
 
@@ -116,6 +119,11 @@ create table animal (
 
     constraint uq_reg_id_ani unique (reg_id_ani),
     -- Prevents duplicate registrations
+
+    constraint fk_animal_client 
+        foreign key (id_cli)
+        references client(id_cli)
+        on delete set null,
 
     constraint fk_animal_species 
         foreign key (id_spc)

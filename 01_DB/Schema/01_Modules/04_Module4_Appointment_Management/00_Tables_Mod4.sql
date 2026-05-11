@@ -30,6 +30,7 @@ drop table if exists rel_app_product cascade;
 drop table if exists appointment_notification cascade;
 drop table if exists rel_pre_prod cascade;
 
+
 -- Custom types
 drop type if exists appointment_status cascade;
 drop type if exists invoice_status cascade;
@@ -39,7 +40,7 @@ drop type if exists invoice_status cascade;
 --=========================================================
 -- Defines custom ENUM types for status fields to ensure data consistency.
 
-create type appointment_status as enum (
+create type appointment_status as enum   (
     'Scheduled',
     'In Progress', 
     'Completed', 

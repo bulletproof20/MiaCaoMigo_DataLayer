@@ -8,22 +8,21 @@
 -- Impede que um animal seja adotado/possuído se ele
 -- estiver marcado como inativo (ex: falecido ou removido).
 --=========================================================
-
--- create or replace function fn_block_ownership_if_animal_inactive()
--- returns trigger as $$
--- begin
---     -- Verifica se o animal está inativo na tabela Animal
---     if exists (
---         select 1 
---         from animal a
---         where a.id_ani = new.id_ani
---           --and a.inactivation_date is not null
---     ) then
---         raise exception 'Cannot assign ownership: Animal is inactive/deceased.';
---     end if;
---     return new;
--- end;
--- $$ language plpgsql;
+ create or replace function fn_block_ownership_if_animal_inactive()
+ returns trigger as $$
+  begin
+     
+     if exists (
+         select 1 
+         from animal a
+         where a.id_ani = new.id_ani
+           --and a.inactivation_date is not null
+     ) then
+         raise exception 'Cannot assign ownership: Animal is inactive/deceased.';
+     end if;
+     return new;
+ end;
+ $$ language plpgsql;
 
 
 --=========================================================

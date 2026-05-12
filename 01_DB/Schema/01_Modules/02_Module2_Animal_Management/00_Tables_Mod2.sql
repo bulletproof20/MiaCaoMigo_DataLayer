@@ -114,6 +114,9 @@ create table animal (
     id_bre int,
     -- Breed
 
+    registration_date date default current_date, -- Data de registo
+    inactivation_date date,                      -- Data de inativação
+
     constraint pk_animal primary key (id_ani),
     -- Unique identifier
 

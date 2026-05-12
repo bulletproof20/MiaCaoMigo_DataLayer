@@ -5,6 +5,7 @@
 
 --=========================================================
 -- FUNCTION 1: fn_block_overlapping_appointments
+<<<<<<< HEAD:01_DB/Schema/01_Modules/04_Module4_Appointment_Management/02_Functions_Mod4.sql
 -- Prevents scheduling of overlapping appointments for the same veterinarian.
 --=========================================================
 create or replace function fn_block_overlapping_appointments()
@@ -27,6 +28,9 @@ begin
     return new;
 end;
 $$ language plpgsql;
+=======
+-- (This function was removed and replaced by an EXCLUDE constraint)
+>>>>>>> main:01_DB/Schema/01_Modules/04_Module4_Appointment_Management/01_Functions_Mod4.sql
 
 --=========================================================
 -- FUNCTION 2: fn_block_appointment_if_vet_unavailable
@@ -67,9 +71,18 @@ begin
     from appointment
     where id_app = new.id_app;
 
+<<<<<<< HEAD:01_DB/Schema/01_Modules/04_Module4_Appointment_Management/02_Functions_Mod4.sql
     if v_appointment_start_time is not null and new.reg_dat_pre < v_appointment_start_time then
+=======
+    if v_appointment_start_time is null then
+        raise exception 'Inicie a consulta primeiro.';
+    end if;
+
+    if new.reg_dat_pre < v_appointment_start_time then
+>>>>>>> main:01_DB/Schema/01_Modules/04_Module4_Appointment_Management/01_Functions_Mod4.sql
         raise exception 'A data de emissão da prescrição não pode ser anterior à data de início da consulta.';
     end if;
+
 
     return new;
 end;
@@ -229,6 +242,21 @@ returns trigger as $$
 begin
     if old.status_app in ('Completed', 'Cancelled', 'No-Show') then
         raise exception 'Não é possível alterar uma consulta que já foi concluída, cancelada ou marcada como não comparência.';
+    end if;
+    return new;
+end;
+$$ language plpgsql;
+
+--=========================================================
+-- FUNCTION 12: fn_prevent_completed_appointment_modification
+-- Prevents any modification to an appointment that is already
+-- in a terminal state (Completed, Cancelled).
+--=========================================================
+create or replace function fn_prevent_completed_appointment_modification()
+returns trigger as $$
+begin
+    if old.status_app IN ('Completed', 'Cancelled') then
+        raise exception 'Não é possível modificar uma consulta finalizada';
     end if;
     return new;
 end;

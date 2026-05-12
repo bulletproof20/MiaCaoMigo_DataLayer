@@ -32,6 +32,7 @@ drop table if exists overall_assessment cascade;
 drop table if exists appointment_notification cascade;
 drop table if exists appointment cascade;
 
+
 -- Custom types
 drop type if exists appointment_status cascade;
 drop type if exists invoice_status cascade;
@@ -41,7 +42,7 @@ drop type if exists invoice_status cascade;
 --=========================================================
 -- Defines custom ENUM types for status fields to ensure data consistency.
 
-create type appointment_status as enum (
+create type appointment_status as enum   (
     'Scheduled',
     'In Progress', 
     'Completed', 
@@ -100,9 +101,31 @@ create table appointment (
     -- General comments or observations about the appointment
 
     constraint pk_appointment primary key (id_app),
+<<<<<<< HEAD
     -- Unique identifier. FKs are defined in 01_ForeignKeys_Mod4.sql
+=======
+    -- Unique identifier
 
-    constraint chk_app_time
+    -- Foreign Key linkage to animal
+    CONSTRAINT fk_appointment_animal
+        FOREIGN KEY (id_animal)
+        REFERENCES animal(id_ani)
+        on delete cascade,
+        
+    -- Foreign Key linkage to employee (veterinarian)
+    CONSTRAINT fk_appointment_employee
+        FOREIGN KEY (id_emp)
+        REFERENCES employee(id_emp)
+        on delete restrict, -- Prevent deleting employee with active appointments
+
+    -- Foreign Key linkage to client
+    CONSTRAINT fk_appointment_client
+        FOREIGN KEY (id_cli)
+        REFERENCES client(id_cli)
+        on delete cascade,
+>>>>>>> main
+
+    constraint chk_appointment_flow
     check (sta_dat_app < end_dat_app)
     -- Ensures the end time is after the start time
 );
@@ -121,7 +144,17 @@ CREATE TABLE overall_assessment (
 
     -- Defining the Primary Key
     CONSTRAINT pk_overall_assessment PRIMARY KEY (id_app),
+<<<<<<< HEAD
 
+=======
+    
+    -- Foreign Key linkage
+    CONSTRAINT fk_assessment_appointment
+        FOREIGN KEY (id_app)
+        REFERENCES appointment(id_app)
+        on delete cascade,
+        
+>>>>>>> main
     -- Safety checks to prevent impossible medical data
     CONSTRAINT chk_body_temp CHECK (body_temp > 20 AND body_temp < 50), -- Realistic temperature range
     CONSTRAINT chk_weight CHECK (weight > 0),
@@ -143,7 +176,21 @@ create table anamnesis (
     des_ana text,
     -- Detailed description of the patient's history and symptoms (reason for visit, etc.)
 
+<<<<<<< HEAD
     constraint pk_anamnesis primary key (id_app)
+=======
+    constraint pk_anamnesis primary key (id_ana),
+    -- Unique identifier
+
+    constraint uq_anamnesis_per_appointment unique (id_app),
+    -- Ensures only one anamnesis can be registered per appointment.
+
+    constraint fk_anamnesis_appointment 
+        foreign key (id_app)
+        references appointment(id_app)
+        on delete cascade
+    -- Links to appointment. If appointment is deleted, this record is also deleted.
+>>>>>>> main
 );
 
 --=========================================================
@@ -165,6 +212,18 @@ create table prescription (
 
     constraint pk_prescription primary key (id_pre)
     -- Unique identifier
+<<<<<<< HEAD
+=======
+
+    constraint uq_prescription_per_appointment unique (id_app),
+    -- Ensures only one prescription can be registered per appointment.
+
+    constraint fk_prescription_appointment 
+        foreign key (id_app)
+        references appointment(id_app)
+        on delete cascade
+    -- Links to appointment. If appointment is deleted, this record is also deleted.
+>>>>>>> main
 );
 
 --=========================================================
@@ -225,6 +284,9 @@ create table appointment_notification (
     id_cli int not null,
     -- Client associated with the notification
 
+    id_app int not null,
+    -- Appointment associated with the notification
+
     message text not null,
     -- The notification message
 
@@ -234,5 +296,11 @@ create table appointment_notification (
     is_read boolean default false,
     -- Flag to indicate if the client has read the notification
 
+<<<<<<< HEAD
     constraint pk_appointment_notification primary key (id_not)
+=======
+    constraint pk_appointment_notification primary key (id_not),
+    constraint fk_notification_client foreign key (id_cli) references client(id_cli) on delete cascade,
+    constraint fk_notification_appointment foreign key (id_app) references appointment(id_app) on delete cascade
+>>>>>>> main
 );

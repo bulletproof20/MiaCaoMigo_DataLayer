@@ -35,12 +35,8 @@ drop table if exists stock cascade;
 
 -- Core entities
 drop table if exists product cascade;
-<<<<<<< HEAD
 drop table if exists invoice cascade;
-drop table if exists family cascade;
-=======
 drop table if exists "family" cascade;
->>>>>>> main
 
 
 --=========================================================
@@ -119,7 +115,6 @@ create table product (
     ina_dat_pro timestamp,
     -- Inactivation date
 
-<<<<<<< HEAD
     id_pur int,
     -- Last purchase
 
@@ -127,23 +122,16 @@ create table product (
     -- Current stock
 
     id_fam int not null,
-=======
-    id_fam int NOT NULL,
->>>>>>> main
     -- Family
 
     id_ret int,
     -- Last return
 
-<<<<<<< HEAD
-    constraint pk_product primary key (id_pro)
-=======
     min_sto INT NOT NULL DEFAULT 5,
     -- Minimum stock level,
 
 
     constraint pk_product primary key (id_pro),
->>>>>>> main
     -- Unique identifier
 );
 
@@ -202,12 +190,9 @@ create table purchase (
     sta_pur varchar(50),
     -- Status
 
-<<<<<<< HEAD
     id_inv int,
     -- Linked invoice (see FK phase)
 
-=======
->>>>>>> main
     id_cli int,
     -- client
 
@@ -217,8 +202,6 @@ create table purchase (
     constraint pk_purchase primary key (id_pur),
     -- Unique identifier
 
-<<<<<<< HEAD
-=======
 
     constraint fk_client foreign key (id_cli) references client(id_cli)
         on DELETE set null,
@@ -227,7 +210,6 @@ create table purchase (
         on DELETE set null,
 
 
->>>>>>> main
     constraint chk_sta_pur
     check (sta_pur in ('pending','received','cancelled') or sta_pur is null)
     -- Validates status

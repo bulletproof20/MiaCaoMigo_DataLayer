@@ -1,9 +1,0 @@
--- =========================================================
--- COMMENTS: FUNCTIONS - MODULE 4
--- =========================================================
--- Metadata documentation for trigger-support and
--- business enforcement functions related to:
--- - Appointment scheduling integrity
--- - Status transition validation
--- - Automated notifications
--- =========================================================

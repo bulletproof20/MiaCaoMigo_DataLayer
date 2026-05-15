@@ -14,25 +14,10 @@
 -- - Ownership tracking
 -- - Interaction with external entities
 -- - Operational processes such as delivery and concession
+--
+-- Foreign keys: 01_ForeignKeys_Mod2.sql (after all module tables exist).
 
---=========================================================
--- 0. CLEANUP
---=========================================================
--- Drops only tables related to this module in reverse dependency order
 
--- Associative tables
-drop table if exists delivery_employee cascade;
-
--- Dependent entities
-drop table if exists concession cascade;
-drop table if exists delivery cascade;
-drop table if exists ownership cascade;
-
--- Core entities
-drop table if exists animal cascade;
-drop table if exists breed cascade;
-drop table if exists species cascade;
-drop table if exists external_entity cascade;
 
 --=========================================================
 -- 1. SPECIES
@@ -69,14 +54,8 @@ create table breed (
     id_spc int not null,
     -- Associated species
 
-    constraint pk_breed primary key (id_bre),
+    constraint pk_breed primary key (id_bre)
     -- Unique identifier
-
-    constraint fk_breed_species 
-        foreign key (id_spc)
-        references species(id_spc)
-        on delete cascade
-    -- Links breed to species
 );
 
 --=========================================================
@@ -128,17 +107,17 @@ create table animal (
         references client(id_cli)
         on delete set null,
 
-    constraint fk_animal_species 
-        foreign key (id_spc)
-        references species(id_spc)
-        on delete restrict,
-    -- Links to species
+    -- constraint fk_animal_species 
+    --     foreign key (id_spc)
+    --     references species(id_spc)
+    --     on delete restrict,
+    -- -- Links to species, declares on external file
 
-    constraint fk_animal_breed 
-        foreign key (id_bre)
-        references breed(id_bre)
-        on delete set null,
-    -- Links to breed
+    -- constraint fk_animal_breed 
+    --     foreign key (id_bre)
+    --     references breed(id_bre)
+    --     on delete set null,
+    -- -- Links to breed, declared on external file
 
     constraint chk_gen_ani
     check (gen_ani in ('M','F') or gen_ani is null)
@@ -209,24 +188,6 @@ create table ownership (
     constraint pk_ownership primary key (id_own),
     -- Unique identifier
 
-    constraint fk_ownership_client 
-        foreign key (id_cli)
-        references client(id_cli)
-        on delete cascade,
-    -- Links to client
-
-    constraint fk_ownership_animal 
-        foreign key (id_ani)
-        references animal(id_ani)
-        on delete cascade,
-    -- Links to animal
-
-    constraint fk_ownership_employee 
-        foreign key (id_emp)
-        references employee(id_emp)
-        on delete set null,
-    -- Tracks responsible employee
-
     constraint chk_ownership_dates
     check (
         end_dat_own is null 
@@ -261,26 +222,8 @@ create table concession (
     id_ani int not null,
     -- Animal
 
-    constraint pk_concession primary key (id_con),
+    constraint pk_concession primary key (id_con)
     -- Unique identifier
-
-    constraint fk_concession_entity 
-        foreign key (id_ext_ent)
-        references external_entity(id_ext_ent)
-        on delete restrict,
-    -- Links to entity
-
-    constraint fk_concession_employee 
-        foreign key (id_emp)
-        references employee(id_emp)
-        on delete restrict,
-    -- Links to employee
-
-    constraint fk_concession_animal 
-        foreign key (id_ani)
-        references animal(id_ani)
-        on delete cascade
-    -- Links to animal
 );
 
 --=========================================================
@@ -315,18 +258,6 @@ create table delivery (
     constraint pk_delivery primary key (id_del),
     -- Unique identifier
 
-    constraint fk_delivery_entity 
-        foreign key (id_ext_ent)
-        references external_entity(id_ext_ent)
-        on delete set null,
-    -- Links to entity
-
-    constraint fk_delivery_animal 
-        foreign key (id_ani)
-        references animal(id_ani)
-        on delete cascade,
-    -- Links to animal
-
     constraint chk_delivery_dates
     check (
         del_dat_del is null 
@@ -347,16 +278,6 @@ create table delivery_employee (
     id_emp int not null,
     -- Employee
 
-    constraint pk_delivery_employee primary key (id_del, id_emp),
+    constraint pk_delivery_employee primary key (id_del, id_emp)
     -- Composite identifier
-
-    constraint fk_del_emp_delivery 
-        foreign key (id_del)
-        references delivery(id_del)
-        on delete cascade,
-
-    constraint fk_del_emp_employee 
-        foreign key (id_emp)
-        references employee(id_emp)
-        on delete cascade
 );

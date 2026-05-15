@@ -25,7 +25,6 @@ comment on column appointment.id_cli is
 
 comment on column appointment.id_spe is
 'clinical specialty requested for this consultation; FK to module 1 specialty catalog; must match an expert(id_emp,id_spe) assignment for the veterinarian';
-'scheduled start timestamp';
 
 comment on column appointment.sta_dat_app is
 'actual consultation start timestamp';

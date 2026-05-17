@@ -49,6 +49,12 @@ create type purchase_status as enum (
     'cancelled'
 );
 
+create type invoice_status as enum (
+    'pending',
+    'paid',
+    'overdue',
+    'cancelled'
+);
 
 
 --=========================================================
@@ -65,9 +71,3 @@ create type appointment_status as enum (
     'late'
 );
 
-create type invoice_status as enum (
-    'pending',
-    'paid',
-    'overdue',
-    'cancelled'
-);

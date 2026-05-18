@@ -203,16 +203,3 @@ drop table if exists appointment cascade;
 
 
 
---=========================================================
--- CUSTOM TYPES
---=========================================================
---
--- DESCRIPTION
--- --------------------------------------------------------
--- Removes all custom ENUM types used by the system.
---=========================================================
-
-drop type if exists appointment_status cascade;
-drop type if exists invoice_status cascade;
-drop type if exists absence_status cascade;
-drop type if exists purchase_status cascade;

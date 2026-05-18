@@ -1,4 +1,57 @@
 --=========================================================
+-- DATABASE TYPE CLEANUP
+-- Veterinary Clinic Management System
+--=========================================================
+--
+-- DESCRIPTION
+-- --------------------------------------------------------
+-- Removes all PostgreSQL ENUM types used across the system.
+--
+-- Types are removed after dependent tables to prevent
+-- dependency conflicts during database cleanup.
+--
+-- CASCADE automatically removes any remaining dependent
+-- objects and constraints.
+--
+-- RECOMMENDED EXECUTION ORDER
+-- --------------------------------------------------------
+-- 1. Drop foreign keys and dependent tables
+-- 2. Run this script
+-- 3. Recreate custom types
+-- 4. Recreate tables and relationships
+--
+-- DBMS: PostgreSQL
+--=========================================================
+
+
+
+--=========================================================
+-- MODULE 1 — EMPLOYEE MANAGEMENT
+--=========================================================
+-- Absence approval and detection workflow states.
+
+drop type if exists absence_status cascade;
+
+
+
+--=========================================================
+-- MODULE 3 — COMMERCIAL MANAGEMENT
+--=========================================================
+-- Purchase and invoice lifecycle workflow states.
+
+drop type if exists purchase_status cascade;
+drop type if exists invoice_status cascade;
+
+
+
+--=========================================================
+-- MODULE 4 — APPOINTMENT MANAGEMENT
+--=========================================================
+-- Consultation scheduling lifecycle states.
+
+drop type if exists appointment_status cascade;
+
+--=========================================================
 -- DATABASE CUSTOM TYPES
 --=========================================================
 --

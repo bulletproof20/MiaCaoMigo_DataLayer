@@ -224,7 +224,7 @@ create table invoice_line (
 
     id_pro int not null,
     -- Product
-
+ 
     qty_inv_lin int not null,
     -- Quantity sold
 

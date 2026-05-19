@@ -14,8 +14,8 @@
 --                           appointment_status, invoice_status
 --   01_Structure.sql      — 00_Tables_Mod*.sql + per-module indexes
 --   02_ForeignKeys.sql    — 01_ForeignKeys_Mod*.sql
---   03_Integrity.sql      — functions, triggers, procedures, jobs
---                           (see also indexes inside 01_Structure)
+--   03_Integrity.sql      — functions, triggers, indexes, views,
+--                           procedures, jobs
 --   04_Data_Migration.sql — reserved (ETL / reference data)
 --   05_Comments.sql       — COMMENT ON (mirrors 01_Modules order)
 --   07_Sanity_Check.sql   — extensions, ENUMs, catalog smoke checks
@@ -84,7 +84,7 @@ SET timezone TO 'Europe/Lisbon';
 -- =========================================================
 -- integrity layer
 -- =========================================================
--- functions, triggers, indexes, procedures, jobs
+-- functions, triggers, indexes, views, procedures, jobs
 -- =========================================================
 
 \echo '>>> loading integrity layer'

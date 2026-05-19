@@ -28,64 +28,81 @@
 -- Validates sellable quantity against on-hand stock
 -- =========================================================
 
-CREATE TRIGGER trg_check_stock_before_sale
-BEFORE INSERT ON invoice_line
-FOR EACH ROW
-EXECUTE FUNCTION fn_check_stock_before_sale();
+drop trigger if exists trg_check_stock_before_sale on invoice_line;
+
+create trigger trg_check_stock_before_sale
+before insert on invoice_line
+for each row
+execute function fn_check_stock_before_sale();
 
 
 -- =========================================================
 -- Applies FIFO stock withdrawal after each sale line
 -- =========================================================
 
-CREATE TRIGGER trg_stock_after_sale
-AFTER INSERT ON invoice_line
-FOR EACH ROW
-EXECUTE FUNCTION fn_stock_after_sale();
+drop trigger if exists trg_stock_after_sale on invoice_line;
+
+create trigger trg_stock_after_sale
+after insert on invoice_line
+for each row
+execute function fn_stock_after_sale();
 
 
 -- =========================================================
 -- Keeps invoice totals in sync with line changes
 -- =========================================================
 
-CREATE TRIGGER trg_update_invoice_total
-AFTER INSERT OR UPDATE OR DELETE ON invoice_line
-FOR EACH ROW
-EXECUTE FUNCTION fn_update_invoice_total();
+drop trigger if exists trg_update_invoice_total on invoice_line;
+
+create trigger trg_update_invoice_total
+after insert or update or delete on invoice_line
+for each row
+execute function fn_update_invoice_total();
+
 
 -- =========================================================
 -- Replenishes stock when a customer return is posted
 -- =========================================================
 
-CREATE TRIGGER trg_return_restock
-AFTER INSERT ON "return"
-FOR EACH ROW
-EXECUTE FUNCTION fn_return_restock();
+drop trigger if exists trg_return_restock on "return";
+
+create trigger trg_return_restock
+after insert on "return"
+for each row
+execute function fn_return_restock();
 
 
 -- =========================================================
 -- Blocks invoice lines for inactive catalog items
 -- =========================================================
 
-CREATE TRIGGER trg_prevent_inactive_product_sale
-BEFORE INSERT ON invoice_line
-FOR EACH ROW
-EXECUTE FUNCTION fn_prevent_inactive_product_sale();
+drop trigger if exists trg_prevent_inactive_product_sale on invoice_line;
+
+create trigger trg_prevent_inactive_product_sale
+before insert on invoice_line
+for each row
+execute function fn_prevent_inactive_product_sale();
 
 
 -- =========================================================
 -- Defaults return closure metadata when omitted
 -- =========================================================
 
-CREATE TRIGGER trg_set_return_return_date
-BEFORE INSERT ON "return"
-FOR EACH ROW
-EXECUTE FUNCTION fn_set_return_inactivation_date();
+drop trigger if exists trg_set_return_return_date on "return";
+
+create trigger trg_set_return_return_date
+before insert on "return"
+for each row
+execute function fn_set_return_inactivation_date();
 
 
+-- =========================================================
+-- Raises notice for low stock thresholds after entry
+-- =========================================================
 
+drop trigger if exists trg_warn_low_stock on invoice_line;
 
-CREATE TRIGGER trg_warn_low_stock
-AFTER INSERT ON invoice_line
-FOR EACH ROW
-EXECUTE FUNCTION fn_warn_low_stock();
+create trigger trg_warn_low_stock
+after insert on invoice_line
+for each row
+execute function fn_warn_low_stock();

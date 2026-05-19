@@ -1,307 +1,371 @@
---=========================================================
--- MODULE 3: COMMERCIAL MANAGEMENT (Por retificar)
---=========================================================
-
---=========================================================
--- DESCRIPTION
---=========================================================
--- This module defines the structure responsible for commercial management.
--- It includes product catalog, stock control, purchases and returns,
--- as well as relationships between employees and commercial operations.
+-- =========================================================
+-- MODULE 3 — COMMERCIAL MANAGEMENT
+-- File: 00_Tables_Mod3.sql (tables only)
+-- =========================================================
 --
--- The module supports:
--- - product and family classification
--- - Stock management and tracking
--- - Purchase and return processes
--- - Employee participation in commercial activities
+-- DESCRIPTION
+-- Product catalog, stock, purchases, invoicing, returns, and
+-- employee linkage for commercial operations. Workflow status
+-- fields use purchase_status from 00_Core/01_Types.sql.
+--
+-- FOREIGN KEYS
+-- Applied in 01_ForeignKeys_Mod3.sql after all module tables exist.
+-- =========================================================
+
 
 --=========================================================
 -- 0. CLEANUP
 --=========================================================
 -- Drops only tables related to this module in reverse dependency order
 
-
-
--- Dependent entities
+drop table if exists purchase_line cascade;
+drop table if exists invoice_line cascade;
+drop table if exists employee_purchase cascade;
+drop table if exists employee_return cascade;
+drop table if exists purchase_product cascade;
+drop table if exists return_product cascade;
 drop table if exists "return" cascade;
 drop table if exists purchase cascade;
 drop table if exists stock cascade;
-
--- Core entities
 drop table if exists product cascade;
-drop table if exists "family" cascade;
 drop table if exists invoice cascade;
-drop table if exists purchase_line cascade;
-drop table if exists invoice_line cascade;
-
+drop table if exists family cascade;
 
 
 --=========================================================
 -- 1. FAMILY
 --=========================================================
 -- Defines product categories
-create table family (
 
+create table family (
     id_fam int generated always as identity,
     -- Family identifier
 
-    nam_fam varchar (70) not null,
-    -- Name
+    nam_fam varchar(70) not null,
+    -- Display name
 
     des_fam text,
     -- Description
 
     constraint pk_family primary key (id_fam)
-    -- Unique identifier
 );
 
 
 --=========================================================
 -- 2. INVOICE
 --=========================================================
--- Stores billing information related to appointments
+-- Billing header optionally linked to an appointment
+
 create table invoice (
     id_inv int generated always as identity,
     -- Invoice identifier
 
-    val_inv numeric(10,2),
-    -- Total value
+    val_inv numeric(10, 2),
+    -- Monetary total (maintained by triggers)
 
     dat_inv timestamp,
-    -- Issue date
+    -- Issue timestamp
 
     bod_inv text,
-    -- Description/content
+    -- Free-text body or notes
+    
+    sta_inv invoice_status default 'pending',
+    -- Invoice workflow state (centralized enum)
 
     id_app int,
-    -- Appointment
+    -- Optional appointment (FK in 01_ForeignKeys_Mod3.sql)
 
     constraint pk_invoice primary key (id_inv)
-    -- Unique identifier
-
-    -- constraint fk_invoice_appointment foreign key (id_app)
-    --     references appointment(id_app)
-    --     on delete set null
-    -- -- Links to appointment
 );
-
 
 
 --=========================================================
 -- 3. PRODUCT
 --=========================================================
--- Stores product information
+-- Catalog item with pricing, tax, and lifecycle metadata
+
 create table product (
     id_pro int generated always as identity,
-    -- product identifier
+    -- Product identifier
 
     ref_pro varchar(50),
-    -- Reference code
+    -- Internal reference code
 
     bar_pro varchar(50),
     -- Barcode
 
     nam_pro varchar(100) not null,
-    -- Name
+    -- Product name
 
     des_pro text,
     -- Description
 
-    pri_pro numeric(10,2),
-    -- Unit price
+    pri_pro numeric(10, 2),
+    -- Unit list price
 
-    iva_pro numeric(5,2),
-    -- VAT
+    iva_pro numeric(5, 2),
+    -- VAT percentage
 
-    reg_dat_pro timestamp default current_timestamp,
-    -- Registration date
+    reg_dat_pro timestamp default current_timestamp not null,
+    -- Registration timestamp
 
     ina_dat_pro timestamp,
-    -- Inactivation date
+    -- Inactivation timestamp
 
-    id_fam int NOT NULL,
-    -- Family
+    id_fam int not null,
+    -- Required catalog family (FK in 01_ForeignKeys_Mod3.sql)
 
-    
-    min_sto INT NOT NULL DEFAULT 5,
-    -- Minimum stock level,
+    min_sto int not null default 5,
+    -- Minimum stock threshold
 
+    id_pur int,
+    -- Optional pointer to latest purchase (FK phase)
 
-    constraint pk_product primary key (id_pro)
-    -- Unique identifier
+    id_sto int,
+    -- Optional pointer to primary stock row (FK phase)
 
+    id_ret int,
+    -- Optional pointer to latest return (FK phase)
 
-    --
-    --constraint fk_product_family foreign key (id_fam) references family(id_fam) on delete restrict
-    -- Links product to family. Outras FKs serão adicionadas no final.
+    constraint pk_product primary key (id_pro),
 
+    constraint ck_min_sto_positive
+    check (min_sto >= 0)
 );
 
 
 --=========================================================
 -- 4. STOCK
 --=========================================================
--- Tracks product stock and batches
+-- Quantity ledger per product with batch and expiry metadata
+
 create table stock (
     id_sto int generated always as identity,
-    -- Stock identifier
+    -- Stock row identifier
 
     id_pro int not null,
-    -- product
+    -- Product being stocked (FK in 01_ForeignKeys_Mod3.sql)
 
     bat_sto varchar(50),
-    -- Batch
+    -- Batch or lot identifier
 
     qty_sto int not null,
-    -- Quantity
+    -- Available quantity in this batch
 
     val_dat_sto date,
     -- Expiration date
 
     ent_dat_sto date,
-    -- Entry date
+    -- Warehouse entry date
 
     constraint pk_stock primary key (id_sto),
-    -- Unique identifier
 
-    constraint fk_stock_product 
-        foreign key (id_pro)
-        references product(id_pro)
-        on delete cascade,
-    -- Links stock to product
-
-    constraint chk_qty_sto
+    constraint ck_qty_sto
     check (qty_sto >= 0)
-    -- Prevents negative stock
 );
 
-    -- alter table stock
-    -- add constraint fk_stock_product
-    -- foreign key (id_pro)
-    -- references product(id_pro)
-    -- on delete cascade;
-
-    
--- this constraint had to be added via alter table after creating the stock table to prevent an error during the creation of the product table.
 
 --=========================================================
 -- 5. PURCHASE
 --=========================================================
--- Represents product purchase operations
+-- Purchase order header with totals and workflow status
+
 create table purchase (
     id_pur int generated always as identity,
     -- Purchase identifier
 
-    pur_dat_pur timestamp default current_timestamp,
-    -- Purchase date
+    pur_dat_pur timestamp default current_timestamp not null,
+    -- Purchase timestamp
 
-    tot_val_pur numeric(10,2),
-    -- Total value
+    tot_val_pur numeric(10, 2),
+    -- Order total
 
     ord_num_pur varchar(50),
-    -- Order number
+    -- External order reference
 
     pay_met_pur varchar(50),
-    -- Payment method
+    -- Payment method label
 
-    sta_pur varchar(50) default 'pending',
-    -- Status
+    sta_pur purchase_status default 'pending',
+    -- Workflow state (centralized enum)
+
+    id_inv int,
+    -- Linked invoice when billed (FK in 01_ForeignKeys_Mod3.sql)
 
     id_cli int,
-    -- client
+    -- Optional client (FK in 01_ForeignKeys_Mod3.sql)
 
     id_emp int,
-    -- Employee responsible
+    -- Employee responsible (FK in 01_ForeignKeys_Mod3.sql)
 
-    constraint pk_purchase primary key (id_pur),
-    -- Unique identifier
-
-
-    constraint fk_client foreign key (id_cli) references client(id_cli)
-        on DELETE set null,
-
-    constraint fk_employee foreign key (id_emp) references employee(id_emp)
-        on DELETE set null,
-
-
-    constraint chk_sta_pur
-    check (sta_pur in ('pending','received','cancelled') or sta_pur is null)
-    -- Validates status
+    constraint pk_purchase primary key (id_pur)
 );
 
 
 --=========================================================
--- 6. PURCHASE LINE (Criada após Purchase, product e Stock existirem)
+-- 6. PURCHASE_LINE
 --=========================================================
+-- Line-level detail for incoming stock tied to a purchase
 
--- Linhas de compra (junta product, Purchase, Stock)
-CREATE TABLE purchase_line (
+create table purchase_line (
+    id_pur_lin int generated always as identity,
+    -- Line identifier
 
-    id_purchase_line SERIAL PRIMARY KEY,
+    id_pur int not null,
+    -- Parent purchase (FK in 01_ForeignKeys_Mod3.sql)
 
-    id_purchase INT NOT NULL REFERENCES Purchase(id_pur),
+    id_pro int not null,
+    -- Product being procured (FK in 01_ForeignKeys_Mod3.sql)
 
-    id_product INT NOT NULL REFERENCES product(id_pro),
+    bat_pln varchar(50),
+    -- Batch label captured at receipt
 
-    batch VARCHAR(50),
+    qty_pln int not null,
+    -- Ordered quantity
 
-    quantity INT NOT NULL CHECK (quantity > 0),
+    uni_cos_pln numeric(10, 2) not null,
+    -- Unit cost
 
-    unit_cost NUMERIC(10,2) NOT NULL,
+    id_sto int,
+    -- Optional stock row created from this line (FK phase)
 
-    id_stock INT REFERENCES Stock(id_sto)
+    constraint pk_purchase_line primary key (id_pur_lin),
+
+    constraint ck_qty_pln
+    check (qty_pln > 0)
 );
 
+
 --=========================================================
--- 7. INVOICE LINE (Criada após Invoice e product existirem)
+-- 7. INVOICE_LINE
 --=========================================================
+-- Sales line items contributing to invoice totals
 
--- Linhas de fatura (venda ao cliente)
-CREATE TABLE invoice_line (
+create table invoice_line (
+    id_inv_lin int generated always as identity,
+    -- Invoice line identifier
 
-    id_invoice_line SERIAL PRIMARY KEY,
+    id_inv int not null,
+    -- Parent invoice (FK in 01_ForeignKeys_Mod3.sql)
 
-    id_invoice INT NOT NULL REFERENCES Invoice(id_inv),
+    id_pro int not null,
+    -- Product sold (FK in 01_ForeignKeys_Mod3.sql)
 
-    id_product INT NOT NULL REFERENCES product(id_pro),
+    qty_inv_lin int not null,
+    -- Quantity sold
 
-    quantity INT NOT NULL CHECK (quantity > 0),
+    uni_pri_inv_lin numeric(10, 2) not null,
+    -- Unit selling price
 
-    unit_price NUMERIC(10,2) NOT NULL,
+    iva_inv_lin numeric(5, 2) not null,
+    -- VAT rate applied to the line
 
-    iva NUMERIC(5,2) NOT NULL
+    constraint pk_invoice_line primary key (id_inv_lin),
 
+    constraint ck_qty_inv_lin
+    check (qty_inv_lin > 0)
 );
+
 
 --=========================================================
 -- 8. RETURN
 --=========================================================
--- Represents product return operations
-create table return (
+-- Commercial return header with optional invoice line linkage
+
+create table "return" (
     id_ret int generated always as identity,
     -- Return identifier
 
     mot_ret varchar(100),
-    -- Reason
+    -- Reason narrative
 
-    reg_dat_ret timestamp default current_timestamp,
-    -- Registration date
+    ina_dat_ret timestamp,
+    -- Closure or inactivation timestamp
 
-    return_date timestamp,
-    -- Return date
+    id_inv_lin int,
+    -- Optional originating invoice line (FK in 01_ForeignKeys_Mod3.sql)
 
-    id_invLine int,
-    -- Invoice line (if return is related to a sale)
-
-    quant_ret int NOT NULL DEFAULT 1,
-    -- Quantity returned
+    qty_ret int not null default 1,
+    -- Quantity being returned
 
     constraint pk_return primary key (id_ret),
-    -- Unique identifier
 
-    constraint fk_return_invoice_line foreign key (id_invLine) references invoice_line(id_invoice_line)
-        on DELETE set null
+    constraint ck_qty_ret
+    check (qty_ret > 0)
 );
 
 
+--=========================================================
+-- 9. PURCHASE_PRODUCT
+--=========================================================
+-- Associative detail between purchases and products with quantities
 
+create table purchase_product (
+    id_pur int not null,
+    -- Purchase reference (FK in 01_ForeignKeys_Mod3.sql)
+
+    id_pro int not null,
+    -- Product reference (FK in 01_ForeignKeys_Mod3.sql)
+
+    qty_pur_pro int not null,
+    -- Quantity associated with the pair
+
+    constraint pk_purchase_product primary key (id_pur, id_pro),
+
+    constraint ck_qty_purchase
+    check (qty_pur_pro > 0)
+);
+
+
+--=========================================================
+-- 10. RETURN_PRODUCT
+--=========================================================
+-- Associative detail between returns and products
+
+create table return_product (
+    id_ret int not null,
+    -- Return reference (FK in 01_ForeignKeys_Mod3.sql)
+
+    id_pro int not null,
+    -- Product reference (FK in 01_ForeignKeys_Mod3.sql)
+
+    qty_ret_pro int not null,
+    -- Returned quantity
+
+    constraint pk_return_product primary key (id_ret, id_pro),
+
+    constraint ck_qty_return
+    check (qty_ret_pro > 0)
+);
+
+
+--=========================================================
+-- 11. EMPLOYEE_PURCHASE
+--=========================================================
+-- Links employees to purchases they processed
+
+create table employee_purchase (
+    id_emp int not null,
+    -- Employee identifier (FK in 01_ForeignKeys_Mod3.sql)
+
+    id_pur int not null,
+    -- Purchase identifier (FK in 01_ForeignKeys_Mod3.sql)
+
+    constraint pk_employee_purchase primary key (id_emp, id_pur)
+);
+
+
+--=========================================================
+-- 12. EMPLOYEE_RETURN
+--=========================================================
+-- Links employees to returns they supervised
+
+create table employee_return (
+    id_emp int not null,
+    -- Employee identifier (FK in 01_ForeignKeys_Mod3.sql)
+
+    id_ret int not null,
+    -- Return identifier (FK in 01_ForeignKeys_Mod3.sql)
+
+    constraint pk_employee_return primary key (id_emp, id_ret)
+);

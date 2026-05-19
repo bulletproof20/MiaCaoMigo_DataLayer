@@ -83,7 +83,7 @@ alter table invoice_line
         on delete restrict;
 
 -- return → invoice_line (optional)
-alter table return
+alter table "return"
     add constraint fk_return_invoice_line
         foreign key (id_inv_lin)
         references invoice_line(id_inv_lin)
@@ -106,7 +106,7 @@ alter table purchase_product
 alter table return_product
     add constraint fk_ret_pro_return
         foreign key (id_ret)
-        references return(id_ret)
+        references "return"(id_ret)
         on delete cascade;
 
 alter table return_product
@@ -138,7 +138,7 @@ alter table employee_return
 alter table employee_return
     add constraint fk_emp_ret_return
         foreign key (id_ret)
-        references return(id_ret)
+        references "return"(id_ret)
         on delete cascade;
 
 -- product circular references (after purchase, stock, return rows can be targeted)

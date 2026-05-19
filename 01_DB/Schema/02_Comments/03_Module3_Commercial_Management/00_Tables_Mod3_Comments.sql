@@ -37,6 +37,9 @@ comment on column invoice.dat_inv is
 comment on column invoice.bod_inv is
 'free-text body or notes';
 
+comment on column invoice.sta_inv is
+'invoice workflow state using centralized invoice_status enum';
+
 comment on column invoice.id_app is
 'optional appointment linkage (FK in 01_ForeignKeys_Mod3.sql)';
 

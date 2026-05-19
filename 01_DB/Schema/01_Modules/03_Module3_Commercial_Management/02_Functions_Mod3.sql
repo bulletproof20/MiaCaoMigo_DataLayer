@@ -198,7 +198,7 @@ begin
             limit 1
         ),
         new.qty_ret,
-        now(),
+        current_date,
         null
     );
 

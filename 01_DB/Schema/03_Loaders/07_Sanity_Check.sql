@@ -164,6 +164,17 @@ where trigger_schema = 'public'
 order by event_object_table;
 
 
+-- validates views existence
+\echo '--- validating views'
+
+select
+    table_name as view_name
+from information_schema.views
+where table_schema = 'public'
+  and table_name like 'vw\_%'
+order by table_name;
+
+
 -- validates functions existence
 \echo '--- validating functions'
 

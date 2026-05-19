@@ -8,7 +8,7 @@
 --
 -- ORDER (mirrors 01_Modules)
 -- Core types → per module: tables, FKs, functions, triggers,
--- indexes, procedures, jobs.
+-- indexes, views, procedures, jobs.
 --
 -- PURPOSE
 -- Documentation for operators, SchemaSpy, and tooling reading
@@ -70,6 +70,11 @@
 \i /docker-entrypoint-initdb.d/02_Comments/01_Module1_User_Management/04_Indexes_Mod1_Comments.sql
 
 
+\echo '--- module 1 | view comments'
+
+\i /docker-entrypoint-initdb.d/02_Comments/01_Module1_User_Management/07_Views_Mod1_Comments.sql
+
+
 \echo '--- module 1 | procedure comments'
 
 \i /docker-entrypoint-initdb.d/02_Comments/01_Module1_User_Management/05_Procedures_Mod1_Comments.sql
@@ -111,6 +116,11 @@
 \echo '--- module 2 | index comments'
 
 \i /docker-entrypoint-initdb.d/02_Comments/02_Module2_Animal_Management/04_Indexes_Mod2_Comments.sql
+
+
+\echo '--- module 2 | view comments'
+
+\i /docker-entrypoint-initdb.d/02_Comments/02_Module2_Animal_Management/07_Views_Mod2_Comments.sql
 
 
 \echo '--- module 2 | procedure comments'
@@ -156,6 +166,11 @@
 \i /docker-entrypoint-initdb.d/02_Comments/03_Module3_Commercial_Management/04_Indexes_Mod3_Comments.sql
 
 
+\echo '--- module 3 | view comments'
+
+\i /docker-entrypoint-initdb.d/02_Comments/03_Module3_Commercial_Management/07_Views_Mod3_Comments.sql
+
+
 \echo '--- module 3 | procedure comments'
 
 \i /docker-entrypoint-initdb.d/02_Comments/03_Module3_Commercial_Management/05_Procedures_Mod3_Comments.sql
@@ -197,6 +212,11 @@
 \echo '--- module 4 | index comments'
 
 \i /docker-entrypoint-initdb.d/02_Comments/04_Module4_Appointment_Management/04_Indexes_Mod4_Comments.sql
+
+
+\echo '--- module 4 | view comments'
+
+\i /docker-entrypoint-initdb.d/02_Comments/04_Module4_Appointment_Management/07_Views_Mod4_Comments.sql
 
 
 \echo '--- module 4 | procedure comments'

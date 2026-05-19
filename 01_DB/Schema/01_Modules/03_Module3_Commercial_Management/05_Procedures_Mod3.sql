@@ -45,7 +45,7 @@ begin
         where id_pur = p_id_pur
     loop
         insert into stock (id_pro, bat_sto, qty_sto, ent_dat_sto, val_dat_sto)
-        values (v_line.id_pro, v_line.bat_pln, v_line.qty_pln, now(), null)
+        values (v_line.id_pro, v_line.bat_pln, v_line.qty_pln, current_date, null)
         returning id_sto into v_id_sto;
 
         update purchase_line

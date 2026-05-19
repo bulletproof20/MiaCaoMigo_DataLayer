@@ -41,7 +41,7 @@ drop table if exists invoice_line cascade;
 --=========================================================
 -- Defines product categories
 create table family (
-    
+
     id_fam int generated always as identity,
     -- Family identifier
 
@@ -260,22 +260,36 @@ create table return (
 
 -- Linhas de compra (junta Product, Purchase, Stock)
 CREATE TABLE purchase_line (
-    ID_PURCHASE_LINE SERIAL PRIMARY KEY,
-    ID_PURCHASE INT NOT NULL REFERENCES Purchase(id_pur),
-    ID_PRODUCT INT NOT NULL REFERENCES Product(id_pro),
-    BATCH VARCHAR(50),
-    QUANTITY INT NOT NULL CHECK (QUANTITY > 0),
-    UNIT_COST NUMERIC(10,2) NOT NULL,
-    ID_STOCK INT REFERENCES Stock(id_sto)
+    
+    id_purchase_line SERIAL PRIMARY KEY,
+
+    id_purchase INT NOT NULL REFERENCES Purchase(id_pur),
+
+    id_product INT NOT NULL REFERENCES Product(id_pro),
+
+    batch VARCHAR(50),
+
+    quantity INT NOT NULL CHECK (quantity > 0),
+
+    unit_cost NUMERIC(10,2) NOT NULL,
+
+    id_stock INT REFERENCES Stock(id_sto)
 );
 
 -- Linhas de fatura (venda ao cliente)
 CREATE TABLE invoice_line (
-    ID_INVOICE_LINE SERIAL PRIMARY KEY,
-    ID_INVOICE INT NOT NULL REFERENCES Invoice(id_inv),
-    ID_PRODUCT INT NOT NULL REFERENCES Product(id_pro),
-    QUANTITY INT NOT NULL CHECK (QUANTITY > 0),
-    UNIT_PRICE NUMERIC(10,2) NOT NULL,
-    IVA NUMERIC(5,2) NOT NULL
+
+    id_invoice_line SERIAL PRIMARY KEY,
+
+    id_invoice INT NOT NULL REFERENCES Invoice(id_inv),
+
+    id_product INT NOT NULL REFERENCES Product(id_pro),
+
+    quantity INT NOT NULL CHECK (quantity > 0),
+
+    unit_price NUMERIC(10,2) NOT NULL,
+
+    iva NUMERIC(5,2) NOT NULL
+
 );
 

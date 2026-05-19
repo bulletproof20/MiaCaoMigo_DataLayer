@@ -41,6 +41,7 @@ drop table if exists invoice_line cascade;
 --=========================================================
 -- Defines product categories
 create table family (
+    
     id_fam int generated always as identity,
     -- Family identifier
 

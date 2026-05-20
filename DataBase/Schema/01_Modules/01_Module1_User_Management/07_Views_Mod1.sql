@@ -87,4 +87,4 @@ select
 from absence a
 inner join employee e on e.id_emp = a.id_emp
 inner join user_account u on u.id_usr = e.id_usr
-where a.sta_abs in ('pending', 'approved', 'detected');
+where a.sta_abs in ('pending', 'approved', 'detected'); 

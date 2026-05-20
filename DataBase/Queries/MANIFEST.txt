@@ -3,8 +3,8 @@ MiaCaoMigo — SQL Queries folder (reference only)
 
 ROLE
 ----
-Ad-hoc SELECT examples and API integration snippets.
-NOT loaded by Docker init (see Schema/init.sql).
+Ad-hoc SELECT examples, service call catalogs, and API integration snippets.
+NOT loaded by Docker init (see Bootstrap/init.sql).
 
 SOURCE OF TRUTH
 ---------------
@@ -12,18 +12,27 @@ Operational logic lives in:
   - Schema/01_Modules/     DDL, views, procedures, jobs
   - Services/              Application PL/pgSQL (loaded via 06_Services.sql)
 
+LAYOUT
+------
+00_Core/           Normalization and utility references
+01_Module1/
+  Authentication/  login_user / logout_user scenarios
+  User_Creation/   fn_create_* validation matrix (00_RUN_ORDER.txt)
+02_Module2/        Animal exploration SELECTs
+03_Module3/        Commercial / inventory reference
+04_Module4/        Appointment API-oriented SELECTs
+
 DEDUPLICATION
 -------------
-00_Core/ duplicates were removed. Do not re-add normalize_email or
-utility functions here — use Services/00_Core and Services/01_Module1.
+Do not duplicate Services/00_Core helpers here.
 
 USAGE
 -----
-Run scripts manually against a database that already applied the full
-Schema + Services pipeline. Prefer calling service functions (fn_*)
-over copying inline SQL.
+Run manually against a database with Schema + Services applied.
+Prefer fn_* / sp_* from Services over inline copies.
 
 TESTS
 -----
-Executable validation: 01_DB/Tests/ (Integrity, Manual, runners).
-Fixtures only: DataSeed/01_TestData/ + 04_Loaders/03_TestData.sql
+Functional workflows:  DataBase/Tests/03_Manual/
+Automated rules:      DataBase/Tests/01_Integrity/
+Load metrics:         DataBase/Tests/02_Stress/

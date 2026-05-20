@@ -10,9 +10,9 @@
 --   TestData or DevelopmentData (separate manual loaders)
 --
 -- OFFICIAL BOOTSTRAP
---   Schema/init.sql → 10_Official_Bootstrap.sql (step 1 of 2)
+--   Bootstrap/Loaders/11_MasterData.sql or 10_Official_Bootstrap.sql
 --
--- MANUAL (from 01_DB/DataSeed):
+-- MANUAL (from DataBase/DataSeed):
 --   psql -v ON_ERROR_STOP=1 -f 04_Loaders/00_MasterData.sql
 -- =========================================================
 

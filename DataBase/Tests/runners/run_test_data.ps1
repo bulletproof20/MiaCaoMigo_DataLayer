@@ -6,9 +6,6 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$Root = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
-$DataSeed = Join-Path $Root "DataSeed"
 
-docker cp $DataSeed "${Container}:/tmp/DataSeed"
-docker exec $Container bash -c "cd /tmp/DataSeed && psql -U $User -d $Db -v ON_ERROR_STOP=1 -f 04_Loaders/03_TestData.sql"
+docker exec $Container bash -c "cd /docker-entrypoint-initdb.d/DataSeed && psql -U $User -d $Db -v ON_ERROR_STOP=1 -f 04_Loaders/03_TestData.sql"
 Write-Host "TestData loaded."

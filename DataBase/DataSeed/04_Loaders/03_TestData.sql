@@ -15,11 +15,11 @@
 -- DEFAULT CHAIN
 --   CreationStress → Module2 fixtures → Module4 fixtures
 --
--- RUN (from 01_DB/DataSeed):
+-- RUN (from DataBase/DataSeed):
 --   psql -U postgres -d miacaomigo -v ON_ERROR_STOP=1 -f 04_Loaders/03_TestData.sql
 --
--- THEN (from 01_DB/Tests):
---   See Tests/runners/run_full_qa.ps1
+-- OR: Bootstrap/Profiles/init_test.sql
+-- THEN: DataBase/Tests/runners/run_full_qa.ps1
 -- =========================================================
 
 \echo '========================================'
@@ -46,4 +46,4 @@ set timezone to 'Europe/Lisbon';
 \echo '========================================'
 \echo 'Optional: 01_TestData/03_Module3/01_Module3_VolumeStress.sql (isolated)'
 \echo 'Optional: 01_TestData/01_Module1/01_AuthenticationStress.sql (replaces Mod1 chain)'
-\echo 'Next: 01_DB/Tests/runners/run_integrity_all.ps1'
+\echo 'Next: DataBase/Tests/runners/run_integrity_all.ps1'

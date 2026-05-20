@@ -33,14 +33,17 @@ services:
       # Persistent volume (DB data is not lost when stopping the container)
       - postgres_data:/var/lib/postgresql/data
 
-      # Schema DDL pipeline (init.sql orchestrates loaders)
-      - ./01_DB/Schema:/docker-entrypoint-initdb.d
-      
-      # Application service functions (loaded via 03_Loaders/06_Services.sql)
-      - ./01_DB/Services:/docker-entrypoint-initdb.d/Services
+      # Bootstrap entry (init.sql) + loaders + profiles
+      - ./DataBase/Bootstrap:/docker-entrypoint-initdb.d
 
-      # DataSeed tiers (official bootstrap via 03_Loaders/10_Official_Bootstrap.sql)
-      - ./01_DB/DataSeed:/docker-entrypoint-initdb.d/DataSeed
+      # Structural DDL (referenced by Bootstrap/Loaders)
+      - ./DataBase/Schema:/docker-entrypoint-initdb.d/Schema
+
+      # Application service functions (Bootstrap/Loaders/06_Services.sql)
+      - ./DataBase/Services:/docker-entrypoint-initdb.d/Services
+
+      # DataSeed tiers (Bootstrap/Loaders/10_Official_Bootstrap.sql, etc.)
+      - ./DataBase/DataSeed:/docker-entrypoint-initdb.d/DataSeed
 
     # Additional configuration passed directly to PostgreSQL
     command: >

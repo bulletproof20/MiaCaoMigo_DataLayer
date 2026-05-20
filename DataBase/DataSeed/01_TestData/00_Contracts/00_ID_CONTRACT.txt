@@ -12,6 +12,7 @@ CREATION STRESS (01_TestData/01_Module1/02_CreationStress.sql)
   id_emp 8, 10 — veterinarians with expert rows for Module 4 fixtures
 
 Do not renumber CreationStress IDs without updating:
-  - 01_DB/Tests/03_Manual/Services/01_Module1/User_Creation/*
+  - DataBase/Queries/01_Module1/User_Creation/*
+  - DataBase/Tests/03_Manual/**
   - 01_TestData/02_Module2/01_Module2_Fixtures.sql
-  - 01_DB/Tests/01_Integrity/**
+  - DataBase/Tests/01_Integrity/**

@@ -17,11 +17,11 @@
 --   DemoData (03_DemoData) — presentation / staging narratives
 --   TestData (01_TestData) — stress, edge cases, integrity probes
 --
--- RUN (from 01_DB/DataSeed):
+-- RUN (from DataBase/DataSeed):
 --   psql -U postgres -d miacaomigo -v ON_ERROR_STOP=1 \
 --     -f 04_Loaders/02_DevelopmentData.sql
 --
--- Docker dev profile: see Schema/dev-init/zzz_dev_bootstrap.sql
+-- Bootstrap profile: Profiles/init_dev.sql
 -- =========================================================
 
 \echo '========================================'

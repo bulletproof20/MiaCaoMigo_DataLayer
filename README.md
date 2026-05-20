@@ -44,36 +44,36 @@ docker compose version
 ## Project Structure (Relevant to Docker)
 
 ```
-01_DB/
- ├── Schema/
- │    ├── init.sql              # Entry point for DB initialization
- │    ├── 03_Loaders/          # Ordered phases (extensions → tables → FKs → integrity → …)
- │    ├── 01_Modules/          # Modular domain: 00_Tables … 06_Jobs per module
- │    ├── 02_Comments/        # COMMENT ON metadata mirroring 01_Modules (…_Comments.sql)
- │    └── 03_Loaders/10_Official_Bootstrap.sql  # MasterData + DemoData on first init
- ├── DataSeed/                # Seed tiers (mounted into container)
- │
-docker-compose.yml             # Container orchestration
-Dockerfile                     # Custom PostgreSQL image (with pg_cron)
+DataBase/
+ ├── Bootstrap/               # init.sql + Loaders + Profiles (Docker entry)
+ ├── Schema/                  # DDL only (00_Core, 01_Modules, 02_Comments)
+ ├── Services/                # Application PL/pgSQL
+ ├── DataSeed/                # Seed tiers (datasets)
+ ├── Tests/                   # QA scripts (not in default init)
+ └── Queries/                 # Reference SQL
+docker-compose.yml
+Dockerfile
 ```
 
 ### Key Concepts
 
-* **init.sql**
-  Central script responsible for orchestrating the entire database creation.
-  It loads `03_Loaders` in order: extensions → tables → FKs → integrity → comments → services → **official bootstrap** (MasterData + DemoData) → sanity checks.
+* **Bootstrap/init.sql**
+  Docker entry point. Default profile `init_demo`: DDL + services + MasterData + DemoData + sanity.
 
-* **02_Comments/**
-  Houses `COMMENT ON` scripts grouped like `01_Modules` (including `00_Core` for shared documentation notes). Cross-module foreign keys remain defined only under each module’s `01_ForeignKeys_ModX.sql`; their descriptions live in the matching `01_ForeignKeys_ModX_Comments.sql` files.
+* **Schema/**
+  Structural definitions only. Loaded via `Bootstrap/Loaders/` (paths under `/docker-entrypoint-initdb.d/Schema/`).
 
-* **01_Modules/**
-  Each module uses a fixed layout: `00_Tables`, `01_ForeignKeys`, `02_Functions`, `03_Triggers`, `04_Indexes`, `05_Procedures`, `06_Jobs`, `07_Views`.
+* **Bootstrap/Loaders/**
+  Orchestration phases (`00_Extensions` … `13_TestData`). Data tiers `11`–`13` delegate to `DataSeed/04_Loaders/`.
 
-* **01_DB/Tests/**
-  Central QA layer (integrity, manual, runners). Not loaded by `init.sql`.
+* **Bootstrap/Profiles/**
+  Reusable compositions: `init_minimal`, `init_master`, `init_demo`, `init_dev`, `init_test`, `init_full_qa`.
 
-* **01_DB/DataSeed/**
-  Official bootstrap on first init: MasterData + DemoData via `10_Official_Bootstrap.sql`. TestData and DevelopmentData are manual only.
+* **DataSeed/**
+  Datasets only. Official init uses Master + Demo; TestData and DevelopmentData are manual or via profiles.
+
+* **Tests/**
+  Executable validation. Use `Tests/runners/` after `init_test` or `03_TestData.sql`.
 
 ---
 
@@ -175,7 +175,7 @@ Configuration is handled automatically via:
 
 * Only `.sql` files in `/docker-entrypoint-initdb.d` root are executed automatically
 * Subfolders are ignored by PostgreSQL
-* Therefore, **init.sql must be in the root of Schema/**
+* Therefore, **init.sql must be in the root of Bootstrap/** (see `docker-compose.yml` mounts)
 
 ---
 

@@ -13,4 +13,4 @@ ISOLATED (not in default loader)
   03_Module3/01_Module3_VolumeStress.sql — commercial volume; empty or isolated DB
 
 EXECUTABLE TESTS
-  See 01_DB/Tests/README.md and Tests/runners/
+  See DataBase/Tests/README.md and Tests/runners/

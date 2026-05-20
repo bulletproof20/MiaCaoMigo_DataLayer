@@ -9,12 +9,12 @@
 --   04_Loaders/00_MasterData.sql (same init run)
 --
 -- OFFICIAL BOOTSTRAP
---   Schema/init.sql → 10_Official_Bootstrap.sql (step 2 of 2)
+--   Bootstrap/Loaders/12_DemoData.sql or 10_Official_Bootstrap.sql
 --
 -- NOT FOR
 --   TestData (03_TestData.sql) or DevelopmentData (02_DevelopmentData.sql)
 --
--- MANUAL (from 01_DB/DataSeed):
+-- MANUAL (from DataBase/DataSeed):
 --   psql -v ON_ERROR_STOP=1 -f 04_Loaders/01_DemoData.sql
 -- =========================================================
 

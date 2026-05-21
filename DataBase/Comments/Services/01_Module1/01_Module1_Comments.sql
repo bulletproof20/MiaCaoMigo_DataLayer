@@ -62,9 +62,6 @@ comment on function login_user(character varying, character varying, inet) is
 comment on function logout_user(character varying) is
 'Closes the active successful session for the email; returns false when none exists.';
 
-comment on function get_user_credentials(integer) is
-'Read-only: email and stored password hash for employee or client channel (integration helper).';
-
 -- user creation
 comment on function fn_create_user_account(character varying, text, character varying, character varying, character varying, character varying) is
 'Inserts user_account; setup row is created by trigger. Shared base for all creation flows.';

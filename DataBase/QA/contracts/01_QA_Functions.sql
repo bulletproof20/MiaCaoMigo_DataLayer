@@ -1,7 +1,7 @@
 -- =========================================================
 -- QA CONTRACT — semantic lookup functions (Tests only)
 -- =========================================================
--- Loaded by runners/run_fixtures.ps1 (Tests layer only).
+-- Loaded by runners/run_fixtures.ps1 (QA layer only).
 -- Resolves stable fixture / contract keys to current surrogate IDs.
 -- Does not alter application Services or Bootstrap init.
 -- =========================================================
@@ -50,7 +50,7 @@ stable
 as $$
     select v.id_emp
     from veterinarian v
-    where v.num_omv_vet = 'OMV-PT-2024-CR-00841'
+    where v.num_omv_vet = 'OMV-QA-PRIMARY'
     limit 1;
 $$;
 
@@ -83,7 +83,7 @@ returns integer
 language sql
 stable
 as $$
-    select id_ani from animal where reg_id_ani = 'ANI-2026-001' limit 1;
+    select id_ani from animal where reg_id_ani = 'QA-ANI-001' limit 1;
 $$;
 
 create or replace function qa_animal_adopted_id()
@@ -91,7 +91,7 @@ returns integer
 language sql
 stable
 as $$
-    select id_ani from animal where reg_id_ani = 'ANI-2026-003' limit 1;
+    select id_ani from animal where reg_id_ani = 'QA-ANI-003' limit 1;
 $$;
 
 create or replace function qa_animal_stress_internal_id()
@@ -99,7 +99,7 @@ returns integer
 language sql
 stable
 as $$
-    select id_ani from animal where reg_id_ani = 'ANI-2026-005' limit 1;
+    select id_ani from animal where reg_id_ani = 'QA-ANI-005' limit 1;
 $$;
 
 create or replace function qa_specialty_general_id()
@@ -132,7 +132,7 @@ returns integer
 language sql
 stable
 as $$
-    select id_pro from product where ref_pro = 'INT-P001' limit 1;
+    select id_pro from product where ref_pro = 'QA-PRO-001' limit 1;
 $$;
 
 create or replace function qa_appt_overlap_slot()

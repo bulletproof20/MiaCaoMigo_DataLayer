@@ -2,7 +2,7 @@
 -- INTEGRITY — MODULE 3 — STOCK BEFORE SALE
 -- =========================================================
 -- TYPE:     01_Integrity
--- REQUIRES: fixtures/03_Module3_Commercial.sql (INT-P001)
+-- REQUIRES: init_qa + fixtures/03_Module3/01_Commercial_Product.sql
 -- RULE:     trg_check_stock_before_sale / fn_check_stock_before_sale
 -- CONTRACT: qa_product_int_p001_id
 -- =========================================================

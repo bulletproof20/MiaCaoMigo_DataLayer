@@ -5,9 +5,6 @@
 -- and inventory hooks supporting appointment workflows.
 -- =========================================================
 
-comment on function fn_block_overlapping_appointments() is
-'prevents double booking the same veterinarian for overlapping slots';
-
 comment on function fn_block_appointment_if_vet_unavailable() is
 'blocks scheduling when absence records intersect the proposed slot';
 

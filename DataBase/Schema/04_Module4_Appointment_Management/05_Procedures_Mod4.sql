@@ -134,8 +134,7 @@ begin
         raise exception 'A consulta só pode ser reagendada com mais de 24 horas de antecedência.';
     end if;
 
-    -- Perform the update. This will fire the trigger for past dates, ensuring the new slot is valid.
-    -- Note: The overlap trigger should also be based on sch_dat_app if appointments have a fixed duration.
+    -- Fires triggers and ex_appointment_vet_overlap (30-minute GiST exclusion for scheduled rows).
     update appointment set sch_dat_app = p_sch_dat_app where id_app = p_id_app;
 end;
 $$;
@@ -156,7 +155,7 @@ as $$
 begin
     -- Creates an appointment with a 'scheduled' status.
     -- The sta_dat_app and end_dat_app fields are left NULL, to be filled in by the vet later.
-    -- Triggers enforce: past dates, overlaps, absences, ownership, vet × specialty (expert).
+    -- Triggers and ex_appointment_vet_overlap enforce: past dates, slot overlap, absences, ownership, vet × specialty.
     insert into appointment (id_cli, id_ani, id_emp, id_spe, sch_dat_app, status_app)
     values (p_id_cli, p_id_ani, p_id_emp, p_id_spe, p_sch_dat_app, 'scheduled');
 end;

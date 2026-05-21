@@ -2,7 +2,7 @@
 -- INTEGRITY — MODULE 3 — INACTIVE PRODUCT SALE
 -- =========================================================
 -- TYPE:     01_Integrity
--- REQUIRES: Bootstrap init_demo (DemoData Mod3)
+-- REQUIRES: init_qa + fixtures/03_Module3/01_Commercial_Product.sql
 -- RULE:     trg_prevent_inactive_product_sale
 -- FIXTURES: Demo product id_pro 1
 -- =========================================================
@@ -12,14 +12,14 @@
 
 insert into stock (id_pro, bat_sto, qty_sto, ent_dat_sto, val_dat_sto)
 select id_pro, 'INT-STOCK-02', 20, current_date, current_date + interval '1 year'
-  from product where ref_pro = 'INT-P001';
+  from product where ref_pro = 'QA-PRO-001';
 
 do $$
 declare
     v_id_inv int;
     v_id_pro int;
 begin
-    select id_pro into v_id_pro from product where ref_pro = 'INT-P001';
+    select id_pro into v_id_pro from product where ref_pro = 'QA-PRO-001';
     update product set ina_dat_pro = current_timestamp where id_pro = v_id_pro;
 
     insert into invoice (dat_inv, bod_inv, sta_inv)

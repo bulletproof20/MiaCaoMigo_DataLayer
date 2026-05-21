@@ -11,7 +11,7 @@
 --   - Services/00_Core/00_Normalization.sql (normalize_email)
 --   - Services/01_Module1/00_Core_Mod1/01_Identity.sql (fn_is_employee_email semantics)
 --   - Schema/01_Module1_User_Management/00_Tables_Mod1.sql (employee, client, user_account)
---   - DataBase/PASSWORD_AUTH.md (hash contract)
+--   - password hash contract documented in 00_MiaCaoMigo_Engineering
 --
 -- LOADED BY
 --   - Bootstrap/Loaders/06_Services.sql (before 01_Authentication)

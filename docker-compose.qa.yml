@@ -1,0 +1,8 @@
+# QA / CI overlay: Master-only bootstrap (no DemoData).
+# Usage: docker compose -f docker-compose.yml -f docker-compose.qa.yml up -d --build
+# Fresh volume required when switching from init_demo to init_qa.
+
+services:
+  db:
+    volumes:
+      - ./DataBase/Bootstrap/entrypoints/init_qa_entry.sql:/docker-entrypoint-initdb.d/init.sql

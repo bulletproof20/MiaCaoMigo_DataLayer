@@ -1,5 +1,4 @@
-# Run manual workflow scripts (human-reviewed output)
-# Prerequisites: Bootstrap init_demo; recommended run_fixtures.ps1
+# Manual workflows (defense demos; not CI).
 param(
     [string]$Container = "miacaomigo-db",
     [string]$Db = "miacaomigo",
@@ -11,7 +10,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 $Tests = Split-Path $PSScriptRoot -Parent
-$Manual = Join-Path $Tests "03_Manual"
+$Manual = Join-Path $Tests "05_Manual"
 
 $workflows = [ordered]@{
     "1" = @(
@@ -49,7 +48,7 @@ function Invoke-ManualSql {
 
 function Show-Menu {
     Write-Host ""
-    Write-Host "Manual workflows (03_Manual)"
+    Write-Host "Manual workflows (05_Manual)"
     Write-Host "----------------------------"
     foreach ($m in $workflows.Keys) {
         Write-Host "  Module $m :"
@@ -69,7 +68,7 @@ if (-not $Module) {
 
 if (-not $Workflow) {
     Show-Menu
-    $pick = Read-Host "Workflow file name or index (e.g. 1.2 or 02_User_Onboarding_Workflow.sql)"
+    $pick = Read-Host "Workflow file name or index (e.g. 1.2)"
     if ($pick -match '^\d+\.\d+$') {
         $parts = $pick.Split('.')
         $Workflow = $workflows[$parts[0]][[int]$parts[1] - 1]
@@ -84,6 +83,7 @@ $rel = Join-Path "0$Module`_Module$Module" $Workflow
 Write-Host "========================================"
 Write-Host "MANUAL WORKFLOW"
 Write-Host "  $rel"
+Write-Host "Prerequisite: init_qa + run_fixtures.ps1"
 Write-Host "Container: $Container  Database: $Db"
 Write-Host "========================================"
 
@@ -94,5 +94,5 @@ if ($code -ne 0) {
 }
 
 Write-Host ""
-Write-Host "Workflow finished. Review NOTICE lines and SELECT result sets above."
+Write-Host "Workflow finished. Review NOTICE lines and SELECT output above."
 exit 0

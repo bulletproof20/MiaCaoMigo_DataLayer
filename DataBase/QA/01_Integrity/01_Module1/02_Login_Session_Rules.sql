@@ -2,7 +2,7 @@
 -- INTEGRITY — MODULE 1 — LOGIN / SESSION RULES
 -- =========================================================
 -- TYPE:     01_Integrity
--- REQUIRES: fixtures/01_Module1/01_Core_Context.sql
+-- REQUIRES: init_qa + fixtures/01_Module1/01_Core_Context.sql
 -- RULE:     login_user — single active session; logout_user semantics
 -- FIXTURES: 12@miacaomigo.pt (open session), 20@miacaomigo.pt (no open session)
 -- =========================================================

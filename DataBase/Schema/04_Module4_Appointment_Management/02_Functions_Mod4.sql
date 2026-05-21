@@ -10,7 +10,7 @@
 -- prescriptions, stock usage, and client visibility helpers.
 --
 -- This file contains:
--- - Overlap, absence, and ownership guards
+-- - Absence and ownership guards (scheduled slot overlap: ex_appointment_vet_overlap in 04_Indexes_Mod4.sql)
 -- - Prescription timing and duration checks
 -- - Stock deduction for appointment products
 -- - Read-side helpers for client appointment lists
@@ -26,30 +26,8 @@
 -- - 03_Triggers_Mod4.sql
 -- =========================================================
 
--- =========================================================
--- Blocks overlapping scheduled slots for the same veterinarian
--- =========================================================
-
-create or replace function fn_block_overlapping_appointments()
-returns trigger as $$
-begin
-    -- Check for existing appointments that overlap with the new/updated one.
-    -- Assumes a fixed duration of 30 minutes for each appointment for scheduling purposes.
-    if exists (
-        select 1
-        from appointment a
-        where a.id_emp = new.id_emp -- Same veterinarian
-          and a.status_app = 'scheduled' -- Only check against other scheduled appointments
-          and (tg_op = 'INSERT' or a.id_app <> new.id_app) -- Exclude self on updates only
-          and (new.sch_dat_app, new.sch_dat_app + interval '30 minutes') OVERLAPS 
-              (a.sch_dat_app, a.sch_dat_app + interval '30 minutes')
-    ) then
-        raise exception 'O veterinário já tem uma consulta sobreposta agendada.';
-    end if;
-
-    return new;
-end;
-$$ language plpgsql;
+-- Legacy cleanup: overlap enforcement moved to ex_appointment_vet_overlap (GiST).
+drop function if exists fn_block_overlapping_appointments();
 
 -- =========================================================
 -- Blocks scheduling when the veterinarian is absent in the appointment window

@@ -31,10 +31,7 @@ alter table appointment drop constraint if exists ex_appointment_vet_overlap;
 -- =========================================================
 -- INTEGRITY — veterinarian slot overlap prevention
 -- =========================================================
--- Optimizes:
---   - double-booking prevention for scheduled visits
---   - fn_block_overlapping_appointments validation
---
+-- Enforces double-booking prevention for scheduled visits (authoritative rule).
 -- GiST exclusion on 30-minute slots per id_emp (scheduled only).
 -- =========================================================
 

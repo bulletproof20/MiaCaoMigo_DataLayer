@@ -1,0 +1,45 @@
+name: QA CI
+
+on:
+  push:
+    paths:
+      - 'DataBase/**'
+      - 'docker-compose.yml'
+      - 'docker-compose.qa.yml'
+      - 'Dockerfile'
+      - '.github/workflows/qa-regression.yml'
+  pull_request:
+    paths:
+      - 'DataBase/**'
+      - 'docker-compose.yml'
+      - 'docker-compose.qa.yml'
+      - 'Dockerfile'
+      - '.github/workflows/qa-regression.yml'
+
+jobs:
+  integrity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Start database (init_qa)
+        run: |
+          docker compose -f docker-compose.yml -f docker-compose.qa.yml up -d --build
+
+      - name: Wait for PostgreSQL
+        run: |
+          for i in $(seq 1 90); do
+            if docker exec miacaomigo-db pg_isready -U postgres -d miacaomigo; then
+              exit 0
+            fi
+            sleep 2
+          done
+          docker logs miacaomigo-db | tail -n 80
+          exit 1
+
+      - name: Bootstrap + integrity
+        run: |
+          chmod +x DataBase/QA/runners/run_qa.sh
+          DataBase/QA/runners/run_qa.sh

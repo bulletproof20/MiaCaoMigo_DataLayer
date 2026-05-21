@@ -3,10 +3,26 @@
 -- FILE: 04_Module4_MasterData.sql
 -- =========================================================
 --
+-- TIER
+--   MasterData — intentionally empty.
+--
 -- PURPOSE
--- No standalone rows required at bootstrap.
--- Appointments depend on Module 1 (client, employee, specialty)
--- and Module 2 (animal) — see 03_DemoData/04_Module4_DemoData.sql.
+--   Placeholder loader for module symmetry. Appointments are operational
+--   data created at runtime via Services once clients, animals, veterinarians,
+--   and specialty id_spe exist (specialty seeded in Module 1 MasterData).
+--
+-- LOADED BY
+--   Bootstrap/Loaders/11_MasterData.sql (after 03_Module3_MasterData.sql).
+--
+-- RUNTIME DEPENDENCIES (not seeded here)
+--   appointment.id_ani  → animal (Module 2, operational)
+--   appointment.id_emp  → employee + veterinarian (Module 1, operational)
+--   appointment.id_cli  → client (Module 1, operational)
+--   appointment.id_spe  → specialty (Module 1 MasterData, id_spe = 1)
+--   appointment.id_inv  → invoice (Module 3, optional, operational)
+--
+-- STABLE IDENTIFIERS
+--   none
 -- =========================================================
 
--- Intentionally empty.
+-- No rows required for bootstrap.

@@ -3,7 +3,7 @@
 -- =========================================================
 -- TYPE:     Queries/ (reusable SELECTs — not a manual workflow)
 -- REQUIRES: 04_Loaders/03_TestData.sql
--- WORKFLOWS: Tests/03_Manual/02_Module2/
+-- WORKFLOWS: QA/05_Manual/02_Module2/
 -- =========================================================
 
 -- Animals with species and breed

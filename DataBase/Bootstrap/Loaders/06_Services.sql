@@ -13,7 +13,7 @@
 -- LOAD ORDER
 --   00_Core → Module 1 (core → auth → creation → roles → attendance)
 --            → Module 2 → Module 3 → Module 4
--- Executable tests live in DataBase/Tests/ (not loaded here).
+-- Executable tests live in DataBase/QA/ (not loaded here).
 -- =========================================================
 
 \echo '>>> loading services layer (00_Core)'
@@ -28,8 +28,6 @@
 \i /docker-entrypoint-initdb.d/Services/01_Module1/01_Authentication/00_Common_Auth.sql
 \i /docker-entrypoint-initdb.d/Services/01_Module1/01_Authentication/01_Login.sql
 \i /docker-entrypoint-initdb.d/Services/01_Module1/01_Authentication/02_Logout.sql
-\i /docker-entrypoint-initdb.d/Services/01_Module1/01_Authentication/03_Credentials_Read.sql
-\i /docker-entrypoint-initdb.d/Services/01_Module1/01_Authentication/04_Session_Read.sql
 
 \i /docker-entrypoint-initdb.d/Services/01_Module1/02_User_Creation/00_UserCreation.sql
 \i /docker-entrypoint-initdb.d/Services/01_Module1/02_User_Creation/01_NewClient.sql

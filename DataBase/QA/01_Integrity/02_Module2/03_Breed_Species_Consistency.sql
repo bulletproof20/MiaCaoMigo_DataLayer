@@ -2,18 +2,23 @@
 -- INTEGRITY — MODULE 2 — BREED / SPECIES CONSISTENCY
 -- =========================================================
 -- TYPE:     01_Integrity
--- REQUIRES: 04_Loaders/03_TestData.sql
+-- REQUIRES: init_qa + fixtures/02_Module2/01_Animals_Ownership.sql
 -- RULE:     trg_validate_animal_breed_species
--- CONTRACT: qa_animal_stress_internal_id; breed 3 (cat) vs species 1 (dog)
--- =========================================================
--- expected:
--- - breed not belonging to species blocked on update
+-- CONTRACT: qa_animal_stress_internal_id (dog); mismatched cat breed by name
 -- =========================================================
 
 do $$
+declare
+    v_mismatch_bre int;
 begin
+    select b.id_bre into v_mismatch_bre
+      from breed b
+      join species s on s.id_spc = b.id_spc
+     where s.nam_spc = 'Cat'
+     limit 1;
+
     update animal
-       set id_bre = 3
+       set id_bre = v_mismatch_bre
      where id_ani = qa_animal_stress_internal_id();
 
     raise notice 'FAIL: breed/species mismatch should be blocked';

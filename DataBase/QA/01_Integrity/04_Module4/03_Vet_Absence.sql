@@ -2,7 +2,7 @@
 -- INTEGRITY — MODULE 4 — VET ABSENCE BLOCK
 -- =========================================================
 -- TYPE:     01_Integrity
--- REQUIRES: 04_Loaders/03_TestData.sql
+-- REQUIRES: init_qa + fixtures (M1–M4)
 -- RULE:     trg_block_appointment_if_vet_unavailable
 -- CONTRACT: qa_vet_primary_id, qa_client_active_id, qa_animal_adopted_id, qa_specialty_general_id
 -- =========================================================

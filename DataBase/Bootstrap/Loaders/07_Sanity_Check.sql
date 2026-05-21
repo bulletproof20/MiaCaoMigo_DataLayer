@@ -136,7 +136,7 @@ order by table_name;
 -- object catalog validation (post-integrity layer)
 -- =========================================================
 -- Lists triggers, views, and functions created by 03_Integrity.sql.
--- Not business-rule QA — see DataBase/Tests/01_Integrity/.
+-- Not business-rule QA — see DataBase/QA/01_Integrity/.
 -- =========================================================
 
 \echo '=== Object Catalog Validation ==='

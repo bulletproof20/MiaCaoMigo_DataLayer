@@ -2,7 +2,7 @@
 -- INTEGRITY — MODULE 4 — PRESCRIPTION TIMING
 -- =========================================================
 -- TYPE:     01_Integrity
--- REQUIRES: 04_Loaders/03_TestData.sql
+-- REQUIRES: init_qa + fixtures (M1–M4)
 -- RULE:     trg_validate_prescription_timing
 -- =========================================================
 -- expected:

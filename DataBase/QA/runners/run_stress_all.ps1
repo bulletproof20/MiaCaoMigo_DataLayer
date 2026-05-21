@@ -1,9 +1,9 @@
-# Run stress suite (metrics via STRESS NOTICE — SQL errors fail the run)
+# Optional stress suite (non-CI by default). Metrics via STRESS NOTICE; SQL errors fail.
 param(
     [string]$Container = "miacaomigo-db",
     [string]$Db = "miacaomigo",
     [string]$User = "postgres",
-    [ValidateSet("0", "1", "2", "3", "4", "all")]
+    [ValidateSet("1", "2", "3", "4", "all")]
     [string]$Module = "all"
 )
 
@@ -11,21 +11,22 @@ $ErrorActionPreference = "Stop"
 . (Join-Path $PSScriptRoot "lib/Invoke-QaSqlRunner.ps1")
 
 $Tests = Split-Path $PSScriptRoot -Parent
-$Stress = Join-Path $Tests "02_Stress"
+$Stress = Join-Path $Tests "04_Stress"
+
 $allScripts = [ordered]@{
     "1" = @(
-        "01_Module1/01_Login_Concurrency.sql",
+        "01_Module1/01_Login_Concurrency.sql"
         "01_Module1/02_Clocking_Concurrency.sql"
     )
     "2" = @("02_Module2/01_Concurrent_Adoption.sql")
     "3" = @(
-        "03_Module3/01_Concurrent_Sales.sql",
-        "03_Module3/02_High_Volume_Invoice_Lines.sql",
-        "03_Module3/03_FIFO_Consumption.sql",
+        "03_Module3/01_Concurrent_Sales.sql"
+        "03_Module3/02_High_Volume_Invoice_Lines.sql"
+        "03_Module3/03_FIFO_Consumption.sql"
         "03_Module3/04_Return_Storm.sql"
     )
     "4" = @(
-        "04_Module4/01_Concurrent_Appointment_Booking.sql",
+        "04_Module4/01_Concurrent_Appointment_Booking.sql"
         "04_Module4/02_Appointment_Lifecycle_Load.sql"
     )
 }
@@ -41,6 +42,7 @@ if ($Module -eq "all") {
 
 Write-Host "========================================"
 Write-Host "STRESS SUITE - $($scripts.Count) script(s)  Module: $Module"
+Write-Host "Prerequisite: init_qa + run_fixtures.ps1"
 Write-Host "Container: $Container  Database: $Db"
 Write-Host "========================================"
 

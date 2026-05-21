@@ -1,7 +1,4 @@
 # Run full integrity suite (Module1 -> Module4) with FAIL: parsing.
-# Prerequisites:
-#   - Bootstrap pipeline applied (init_demo: Master + Demo)
-#   - run_fixtures.ps1 (included below unless -SkipFixtures)
 param(
     [string]$Container = "miacaomigo-db",
     [string]$Db = "miacaomigo",
@@ -42,6 +39,7 @@ $scripts = @(
 
 Write-Host "========================================"
 Write-Host "INTEGRITY SUITE - $($scripts.Count) scripts"
+Write-Host "Prerequisite: init_qa (Master only)"
 Write-Host "Container: $Container  Database: $Db"
 Write-Host "========================================"
 

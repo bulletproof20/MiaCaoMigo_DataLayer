@@ -3,7 +3,7 @@
 -- =========================================================
 -- Orchestration only: appends demo narrative (03_DemoData/*).
 -- PREREQUISITE: 11_MasterData.sql in the same profile run.
--- INVOKED BY: init_demo, init_test.
+-- INVOKED BY: init_demo only (not init_qa / init_test).
 -- =========================================================
 
 \echo '========================================'

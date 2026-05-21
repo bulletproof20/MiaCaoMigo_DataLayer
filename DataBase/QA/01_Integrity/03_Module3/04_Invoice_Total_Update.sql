@@ -2,7 +2,7 @@
 -- INTEGRITY — MODULE 3 — INVOICE TOTAL UPDATE
 -- =========================================================
 -- TYPE:     01_Integrity
--- REQUIRES: Bootstrap init_demo (DemoData Mod3)
+-- REQUIRES: init_qa + fixtures/03_Module3/01_Commercial_Product.sql
 -- RULE:     trg_update_invoice_total / fn_update_invoice_total
 -- FIXTURES: Demo product id_pro 2 (unit price 14.50, iva 6%)
 -- =========================================================
@@ -12,7 +12,7 @@
 
 insert into stock (id_pro, bat_sto, qty_sto, ent_dat_sto, val_dat_sto)
 select id_pro, 'INT-STOCK-04', 20, current_date, current_date + interval '1 year'
-  from product where ref_pro = 'INT-P001';
+  from product where ref_pro = 'QA-PRO-001';
 
 do $$
 declare
@@ -25,7 +25,7 @@ begin
     returning id_inv into v_id_inv;
 
     insert into invoice_line (id_inv, id_pro, qty_inv_lin, uni_pri_inv_lin, iva_inv_lin)
-    select v_id_inv, id_pro, 2, 14.50, 6.00 from product where ref_pro = 'INT-P001';
+    select v_id_inv, id_pro, 2, 14.50, 6.00 from product where ref_pro = 'QA-PRO-001';
 
     select val_inv into v_total from invoice where id_inv = v_id_inv;
 

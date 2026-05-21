@@ -1,4 +1,4 @@
-# Full QA: fixtures + integrity (FAIL: gate).
+# Alias for CI gate (bootstrap + integrity).
 param(
     [string]$Container = "miacaomigo-db",
     [string]$Db = "miacaomigo",
@@ -6,5 +6,5 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-& (Join-Path $PSScriptRoot "run_regression.ps1") -Container $Container -Db $Db -User $User
+& (Join-Path $PSScriptRoot "run_ci.ps1") -Container $Container -Db $Db -User $User
 exit $LASTEXITCODE

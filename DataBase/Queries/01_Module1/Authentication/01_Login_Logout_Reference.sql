@@ -3,7 +3,7 @@
 -- =========================================================
 -- TYPE:     Queries/ (exploratory — not a manual workflow)
 -- REQUIRES: Demo seed or 01_AuthenticationStress.sql for miguel/sofia cases
--- WORKFLOW: Tests/03_Manual/01_Module1/01_Authentication_Session_Workflow.sql
+-- WORKFLOW: QA/05_Manual/01_Module1/01_Authentication_Session_Workflow.sql
 -- =========================================================
 
 

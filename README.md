@@ -50,7 +50,7 @@ DataBase/
  ├── Comments/                # COMMENT ON layer (Schema + Services metadata)
  ├── Services/                # Application PL/pgSQL
  ├── DataSeed/                # Seed tiers (datasets)
- ├── Tests/                   # QA scripts (not in default init)
+ ├── QA/                      # QA scripts (not in default init)
  └── Queries/                 # Reference SQL
 docker-compose.yml
 Dockerfile
@@ -71,13 +71,10 @@ Dockerfile
   Reusable compositions: `init_minimal`, `init_master`, `init_demo`, `init_test`, `init_full_qa`.
 
 * **DataSeed/**
-  INSERT tiers only. Contracts: `DataSeed/contracts/00_ENTITIES.md`.
+  INSERT tiers only (MasterData and DemoData).
 
-* **Docs (DataBase/)**
-  `DOC_STYLE.md`, `PASSWORD_AUTH.md`, per-layer `README.md`.
-
-* **Tests/** (optional)
-  QA runners and fixtures — not loaded by default Docker init.
+* **QA/** (optional)
+  Runners, fixtures, and SQL checks — not loaded by default Docker init.
 
 ---
 

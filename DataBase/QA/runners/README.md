@@ -1,24 +1,20 @@
-# Runners
+# QA runners
 
-Pipe SQL from host into `docker exec … psql`.
+Shared parser: `lib/Invoke-QaSqlRunner.ps1` (PASS/FAIL/ERROR/FATAL from NOTICE).
 
-## Scripts
+## CI
 
-| Script | Role |
-|--------|------|
-| `run_fixtures.ps1` | contracts + fixtures (`-Module`, `-IncludeStress`) |
-| `run_integrity_all.ps1` | 21 integrity scripts + summary |
-| `run_regression.ps1` | fixtures + integrity (CI) |
-| `run_full_qa.ps1` | alias of regression |
-| `run_stress_all.ps1` | fixtures (incl. stress) + stress |
-| `run_manual_module.ps1` | human workflows |
+```
+run_ci.ps1  ->  run_bootstrap_check.ps1
+            ->  run_fixtures.ps1
+            ->  run_integrity_all.ps1 -SkipFixtures
+```
 
-Removed: `run_test_data.ps1` (TestData tier deleted).
+Linux/GitHub Actions: `run_qa.sh` (same scope).
 
-## FAIL parser
+## Optional
 
-`lib/Invoke-QaSqlRunner.ps1` — exit **1** on `FAIL:`, `ERROR:`, `FATAL:`.
+- `run_stress_all.ps1` — `04_Stress`
+- `run_manual_module.ps1` — `05_Manual` (interactive menu if `-Module` omitted)
 
-## Params
-
-`-Container`, `-Db`, `-User` (defaults: `miacaomigo-db`, `miacaomigo`, `postgres`).
+Exit code `1` when any script fails or emits `FAIL:` / `FATAL:`.

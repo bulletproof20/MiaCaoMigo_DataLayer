@@ -2,7 +2,7 @@
 -- INTEGRITY — MODULE 4 — APPOINTMENT SCHEDULING
 -- =========================================================
 -- TYPE:     01_Integrity
--- REQUIRES: 04_Loaders/03_TestData.sql + fixtures/04_Module4_Appointment_Slots.sql
+-- REQUIRES: init_qa + fixtures (M1–M4) + fixtures/04_Module4/01_Appointment_Slots.sql
 -- RULE:     trg_block_past_appointments; trg_validate_appointment_vet_specialty;
 --           trg_validate_animal_client_relationship; sp_create_appointment
 -- CONTRACT: qa_client_active_id, qa_animal_adopted_id, qa_vet_primary_id,

@@ -2,22 +2,6 @@
 -- comments: services — module 3 (commercial management)
 -- =========================================================
 
--- session reads
-comment on function is_user_logged_in(integer) is
-'True when login_record has an open successful session for id_usr (no performs bridge).';
-
-comment on function get_active_sessions() is
-'Lists open successful sessions with user name and login metadata.';
-
-comment on function get_last_login(integer) is
-'Most recent login_record row for the user regardless of outcome.';
-
-comment on function get_last_successful_login(integer) is
-'Most recent successful login_record for the user.';
-
-comment on function get_last_failed_login(integer) is
-'Most recent failed login_record for the user.';
-
 -- inventory reads
 comment on function fn_list_product_stock_levels() is
 'Full catalog read from vw_product_stock_levels ordered by product name.';

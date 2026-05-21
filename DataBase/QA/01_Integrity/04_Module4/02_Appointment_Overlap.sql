@@ -2,7 +2,7 @@
 -- INTEGRITY — MODULE 4 — APPOINTMENT OVERLAP (GiST)
 -- =========================================================
 -- TYPE:     01_Integrity
--- REQUIRES: fixtures/04_Module4_Appointment_Slots.sql (qa_appt_overlap_slot)
+-- REQUIRES: init_qa + fixtures/04_Module4/01_Appointment_Slots.sql
 -- RULE:     ex_appointment_vet_overlap
 -- CONTRACT: qa_client_active_id, qa_animal_adopted_id, qa_vet_primary_id, qa_specialty_general_id
 -- =========================================================

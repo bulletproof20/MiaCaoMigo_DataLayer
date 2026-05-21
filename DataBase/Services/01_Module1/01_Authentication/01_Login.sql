@@ -13,7 +13,7 @@
 --   - Services/01_Module1/00_Core_Mod1/02_Validations.sql (validate_password, fn_is_account_active)
 --   - Services/01_Module1/01_Authentication/00_Common_Auth.sql (has_active_sessions)
 --   - Schema/01_Module1_User_Management/00_Tables_Mod1.sql (login_record)
---   - DataBase/PASSWORD_AUTH.md (p_password is API hash)
+--   - p_password is the API-layer hash (see 00_MiaCaoMigo_Engineering)
 --
 -- LOADED BY
 --   - Bootstrap/Loaders/06_Services.sql

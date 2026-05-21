@@ -12,8 +12,9 @@
 -- OTHER PROFILES (manual, from container or psql)
 --   Profiles/init_minimal.sql
 --   Profiles/init_master.sql
---   Profiles/init_test.sql
---   Profiles/init_full_qa.sql
+--   Profiles/init_qa.sql      — Master only (CI: docker-compose.qa.yml)
+--   Profiles/init_test.sql    — alias init_qa
+--   Profiles/init_full_qa.sql — init_qa + run QA/runners/run_ci.ps1
 --
 -- MOUNTS (docker-compose.yml)
 --   DataBase/Bootstrap  → /docker-entrypoint-initdb.d

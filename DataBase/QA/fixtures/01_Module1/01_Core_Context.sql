@@ -2,7 +2,7 @@
 -- QA FIXTURE — MODULE 1 — CORE CONTEXT
 -- =========================================================
 -- TYPE:     fixture (data only)
--- REQUIRES: Bootstrap init_demo (Master + Demo)
+-- REQUIRES: Bootstrap init_qa (Master only)
 -- PROVIDES: QA_CLIENT_ACTIVE, QA_CLIENT_SECONDARY, QA_REGISTRAR,
 --            QA_VET_PRIMARY, QA_EMP_CLOCKABLE, QA_ABSENCE_OVERLAP,
 --            login session (12@), schedule seed (registrar)
@@ -100,7 +100,7 @@ begin
     select id_spe into v_spe1 from specialty where nam_spe = 'medicina interna' limit 1;
     select id_spe into v_spe7 from specialty where nam_spe = 'medicina felina' limit 1;
 
-    if not exists (select 1 from veterinarian where num_omv_vet = 'OMV-PT-2024-CR-00841') then
+    if not exists (select 1 from veterinarian where num_omv_vet = 'OMV-QA-PRIMARY') then
         insert into user_account (nam_usr, add_usr, pos_usr, nif_usr, pho_usr, ema_usr)
         values (
             'Bruno Filipe Matos QA Vet',
@@ -125,9 +125,9 @@ begin
         returning id_emp into v_emp;
 
         insert into occupies (id_emp, id_pro) values (v_emp, 2);
-        insert into veterinarian (id_emp, num_omv_vet) values (v_emp, 'OMV-PT-2024-CR-00841');
+        insert into veterinarian (id_emp, num_omv_vet) values (v_emp, 'OMV-QA-PRIMARY');
     else
-        select id_emp into v_emp from veterinarian where num_omv_vet = 'OMV-PT-2024-CR-00841';
+        select id_emp into v_emp from veterinarian where num_omv_vet = 'OMV-QA-PRIMARY';
     end if;
 
     if v_spe1 is not null and not exists (

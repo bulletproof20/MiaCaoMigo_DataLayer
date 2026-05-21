@@ -2,7 +2,7 @@
 -- INTEGRITY — MODULE 4 — APPOINTMENT LIFECYCLE
 -- =========================================================
 -- TYPE:     01_Integrity
--- REQUIRES: 04_Loaders/03_TestData.sql
+-- REQUIRES: init_qa + fixtures (M1–M4)
 -- RULE:     sp_cancel_appointment, sp_start_appointment, sp_end_appointment,
 --           trg_prevent_completed_appointment_modification
 -- CONTRACT: qa_client_active_id, qa_animal_adopted_id, qa_vet_primary_id, qa_specialty_general_id

@@ -36,14 +36,13 @@ init_core
 | `init_core` | DDL + services only |
 | `init_minimal` | core + sanity |
 | `init_master` | core + Master + sanity |
-| `init_demo` | core + Master + Demo + sanity (**default**) |
-| `init_test` | alias → `init_demo` (QA uses `Tests/fixtures/`) |
-| `init_full_qa` | alias → `init_demo` + hint to run `Tests/runners/` |
+| `init_demo` | core + Master + Demo + sanity (**default** in `init.sql`) |
+| `init_qa` | core + Master + sanity (**CI / automated QA**) |
+| `init_test` | alias → `init_qa` |
+| `init_full_qa` | alias → `init_qa` + hint to run `QA/runners/` |
 
 ## Reset
 
 ```bash
 docker compose down -v && docker compose up --build -d
 ```
-
-Docs: `../DOC_STYLE.md`, `../DataSeed/contracts/00_ENTITIES.md`, `../PASSWORD_AUTH.md`.

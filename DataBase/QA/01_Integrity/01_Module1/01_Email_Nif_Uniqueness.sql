@@ -2,7 +2,7 @@
 -- INTEGRITY — MODULE 1 — EMAIL / NIF UNIQUENESS
 -- =========================================================
 -- TYPE:     01_Integrity
--- REQUIRES: 04_Loaders/03_TestData.sql (CreationStress)
+-- REQUIRES: init_qa + fixtures/01_Module1/01_Core_Context.sql
 -- RULE:     uq_ema_usr, uq_nif_usr on user_account
 -- =========================================================
 -- expected:

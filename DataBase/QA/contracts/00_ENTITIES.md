@@ -31,7 +31,7 @@ Guaranteed entities after `run_fixtures.ps1` (not bulk datasets).
 
 | | |
 |--|--|
-| Key | `OMV-PT-2024-CR-00841` |
+| Key | `OMV-QA-PRIMARY` |
 | Lookup | `qa_vet_primary_id()` |
 | Expert | medicina interna + medicina felina |
 
@@ -53,9 +53,9 @@ Guaranteed entities after `run_fixtures.ps1` (not bulk datasets).
 
 | Entity | `reg_id_ani` | State |
 |--------|--------------|-------|
-| Internal | ANI-2026-001 | Interno |
-| Adopted | ANI-2026-003 | Adotado |
-| Stress internal | ANI-2026-005 | Interno |
+| Internal | QA-ANI-001 | Interno |
+| Adopted | QA-ANI-003 | Adotado |
+| Stress internal | QA-ANI-005 | Interno |
 
 Fixture: `02_Module2/01_Animals_Ownership.sql`
 
@@ -63,7 +63,7 @@ Fixture: `02_Module2/01_Animals_Ownership.sql`
 
 | | |
 |--|--|
-| Key | `ref_pro = INT-P001` |
+| Key | `ref_pro = QA-PRO-001` |
 | Fixture | `03_Module3/01_Commercial_Product.sql` |
 
 ## Time slots (Mod4)

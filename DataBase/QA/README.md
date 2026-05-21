@@ -1,42 +1,52 @@
-# Database Tests
+# Database QA
 
-SQL-centric QA for the Data Layer. **Not** in Docker `init.sql`.
+SQL validation for schema integrity, consistency and robustness. Not loaded by Docker `init.sql`.
 
-## Structure
+## Layout
 
 ```
-Tests/
-├── contracts/     # qa_*() lookups
-├── fixtures/      # official QA data (replaces DataSeed TestData)
-├── 01_Integrity/  # PASS/FAIL rules
-├── 02_Stress/     # metrics
-├── 03_Manual/     # workflows
-├── 05_Regression/ # CI alias
+QA/
+├── 00_Bootstrap/   # Master contract (CI)
+├── 01_Integrity/   # constraints, triggers, rules (CI)
+├── 04_Stress/      # optional concurrency (non-CI)
+├── 05_Manual/      # defense demos (non-CI)
+├── contracts/
+├── fixtures/
 └── runners/
 ```
 
-## Quick start
+## CI (init_qa, Master only)
 
 ```powershell
-# 1. Stack (init_demo = Master + Demo)
-docker compose up -d --build
-
-# 2. Regression gate
-cd DataBase/Tests/runners
-.\run_regression.ps1
+docker compose -f docker-compose.yml -f docker-compose.qa.yml up -d --build
+cd DataBase/QA/runners
+.\run_ci.ps1
 ```
 
-## Prerequisites
+```bash
+chmod +x DataBase/QA/runners/run_qa.sh
+DataBase/QA/runners/run_qa.sh
+```
 
-| Item | Source |
-|------|--------|
-| Schema + services | Bootstrap `init_demo` |
-| QA entities | `run_fixtures.ps1` |
-| Demo products (Mod3) | DemoData tier |
+Optional stress in CI: `.\run_ci.ps1 -IncludeStress`
 
-## Docs
+## Runners
 
-- `MATRIX.md` — layers and flows
-- `fixtures/README.md` — module fixtures
-- `contracts/README.md` — entity contracts
-- `runners/README.md` — FAIL parser, exit codes
+| Script | CI | Purpose |
+|--------|-----|---------|
+| `run_bootstrap_check.ps1` | yes | `00_Bootstrap` |
+| `run_fixtures.ps1` | yes | contracts + fixtures |
+| `run_integrity_all.ps1` | yes | 21 integrity scripts |
+| `run_ci.ps1` | yes | bootstrap + fixtures + integrity |
+| `run_stress_all.ps1` | no | `04_Stress` |
+| `run_manual_module.ps1` | no | `05_Manual` |
+
+## Tiers
+
+| Tier | Role |
+|------|------|
+| **MasterData** | platform invariants (`init_qa`) |
+| **DemoData** | demos only (`init_demo`) |
+| **QA fixtures** | isolated `QA-*` scenarios |
+
+See `MIGRATION.txt` for profile switching.

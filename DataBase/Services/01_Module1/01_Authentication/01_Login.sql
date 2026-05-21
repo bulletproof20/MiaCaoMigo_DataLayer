@@ -2,14 +2,40 @@
 -- LOGIN (MODULE 1 — AUTHENTICATION)
 -- FILE: Services/01_Module1/01_Authentication/01_Login.sql
 -- =========================================================
--- PURPOSE:   Authenticate user, enforce single session, audit login_record
--- DOMAIN:    Module 1 — User Management
--- LOADED BY: Bootstrap/Loaders/06_Services.sql
--- PASSWORD:  p_password must be API-supplied bcrypt hash (see PASSWORD_AUTH.md)
+--
+-- PURPOSE
+-- Authenticate a user by email and hash, enforce single-session policy,
+-- and audit every attempt in login_record.
+--
+-- DEPENDENCIES
+--   - Services/00_Core/00_Normalization.sql (normalize_email)
+--   - Services/01_Module1/00_Core_Mod1/01_Identity.sql (fn_user_exists_by_email, fn_get_user_by_email)
+--   - Services/01_Module1/00_Core_Mod1/02_Validations.sql (validate_password, fn_is_account_active)
+--   - Services/01_Module1/01_Authentication/00_Common_Auth.sql (has_active_sessions)
+--   - Schema/01_Module1_User_Management/00_Tables_Mod1.sql (login_record)
+--   - DataBase/PASSWORD_AUTH.md (p_password is API hash)
+--
+-- LOADED BY
+--   - Bootstrap/Loaders/06_Services.sql
 -- =========================================================
 
--- --- login_user ---
--- BEHAVIOUR: registers every attempt; success only when hash, active account, no open session
+drop function if exists login_user(varchar, varchar, inet);
+
+-- ---------------------------------------------------------
+-- FUNCTION: login_user
+-- ---------------------------------------------------------
+-- INTENT:
+--   Validate credentials and open a session only when policy allows.
+-- FLOW:
+--   1. Normalize email; fail fast when user does not exist.
+--   2. Validate password hash; record failed attempts when invalid.
+--   3. Check account activity and resolve id_usr.
+--   4. Block login when another session is already open.
+--   5. Insert login_record and return outcome flags to the API.
+-- EXPECTED RESULT:
+--   One result row with email, password_ok, account_active,
+--   has_active_session, user_id, and login_success booleans.
+-- ---------------------------------------------------------
 
 create or replace function login_user(
     p_email varchar,
@@ -23,10 +49,11 @@ returns table (
     has_active_session boolean,
     user_id integer,
     login_success boolean
-) as $$
+)
+language plpgsql
+as $$
 
 declare
-
     v_user_id integer;
     v_password_ok boolean;
     v_account_active boolean;
@@ -35,27 +62,13 @@ declare
 
 begin
 
-    --=====================================================
-    -- 1. NORMALIZE EMAIL
-    --=====================================================
-
     p_email := normalize_email(p_email);
-
-    --=====================================================
-    -- 2. VALIDATE USER EXISTENCE
-    --=====================================================
 
     if not fn_user_exists_by_email(p_email) then
 
-        -- register failed attempt
-        insert into login_record (
-            sig_tim_log, suc_log, ip_add_log, ema_log
-        )
-        values (
-            now(), false, p_ip, p_email
-        );
+        insert into login_record (sig_tim_log, suc_log, ip_add_log, ema_log)
+        values (now(), false, p_ip, p_email);
 
-        -- return failed result
         return query
         select
             null::varchar,
@@ -69,23 +82,13 @@ begin
 
     end if;
 
-    -- delegates hash equality to validate_password (stored vs API hash)
-    v_password_ok := validate_password(
-        p_email,
-        p_password
-    );
+    v_password_ok := validate_password(p_email, p_password);
 
     if not v_password_ok then
 
-        -- register failed password attempt
-        insert into login_record (
-            sig_tim_log, suc_log, ip_add_log, ema_log
-        )
-        values (
-            now(), false, p_ip, p_email
-        );
+        insert into login_record (sig_tim_log, suc_log, ip_add_log, ema_log)
+        values (now(), false, p_ip, p_email);
 
-        -- return failed result
         return query
         select
             p_email::varchar,
@@ -99,38 +102,16 @@ begin
 
     end if;
 
-    --=====================================================
-    -- 4. VALIDATE ACCOUNT STATUS
-    --=====================================================
-
-    v_account_active := fn_is_account_active(
-        p_email
-    );
-
-    -- retrieve associated user
-    v_user_id := fn_get_user_by_email(
-        p_email
-    );
+    v_account_active := fn_is_account_active(p_email);
+    v_user_id := fn_get_user_by_email(p_email);
 
     if not v_account_active then
 
-        -- register inactive account attempt
         insert into login_record (
-            sig_tim_log,
-            suc_log,
-            ip_add_log,
-            ema_log,
-            id_usr
+            sig_tim_log, suc_log, ip_add_log, ema_log, id_usr
         )
-        values (
-            now(),
-            false,
-            p_ip,
-            p_email,
-            v_user_id
-        );
+        values (now(), false, p_ip, p_email, v_user_id);
 
-        -- return inactive account result
         return query
         select
             p_email::varchar,
@@ -144,27 +125,11 @@ begin
 
     end if;
 
-    --=====================================================
-    -- 5. VALIDATE ACTIVE SESSION
-    --=====================================================
-
-    v_has_session := has_active_sessions(
-        p_email
-    );
-
-    -- login only succeeds without active session
+    v_has_session := has_active_sessions(p_email);
     v_login_success := not v_has_session;
 
-    --=====================================================
-    -- 6. REGISTER LOGIN ATTEMPT
-    --=====================================================
-
     insert into login_record (
-        sig_tim_log,
-        suc_log,
-        ip_add_log,
-        ema_log,
-        id_usr
+        sig_tim_log, suc_log, ip_add_log, ema_log, id_usr
     )
     values (
         now(),
@@ -173,10 +138,6 @@ begin
         p_email,
         v_user_id
     );
-
-    --=====================================================
-    -- 7. RETURN RESULT
-    --=====================================================
 
     return query
     select
@@ -189,4 +150,4 @@ begin
 
 end;
 
-$$ language plpgsql;
+$$;

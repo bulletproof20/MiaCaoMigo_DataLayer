@@ -1,11 +1,18 @@
 -- =========================================================
--- MODULE 1 — USER CREATION
--- FILE: 04_NewVeterinarian.sql
+-- NEW VETERINARIAN (MODULE 1 — USER CREATION)
+-- FILE: Services/01_Module1/02_User_Creation/04_NewVeterinarian.sql
 -- =========================================================
 --
--- FUNCTION: fn_create_veterinarian
--- Creates employee identity and veterinarian role (OMV).
--- Depends on: fn_create_employee, assistant/veterinarian tables.
+-- PURPOSE
+-- Create an employee identity and attach the veterinarian role (OMV).
+--
+-- DEPENDENCIES
+--   - Services/01_Module1/02_User_Creation/02_NewEmployee.sql (fn_create_employee)
+--   - Schema/01_Module1_User_Management/00_Tables_Mod1.sql (veterinarian, assistant)
+--   - Schema/01_Module1_User_Management/02_Functions_Mod1.sql (role exclusion triggers)
+--
+-- LOADED BY
+--   - Bootstrap/Loaders/06_Services.sql
 -- =========================================================
 
 drop function if exists fn_create_veterinarian(
@@ -14,6 +21,19 @@ drop function if exists fn_create_veterinarian(
     int,
     varchar
 );
+
+-- ---------------------------------------------------------
+-- FUNCTION: fn_create_veterinarian
+-- ---------------------------------------------------------
+-- INTENT:
+--   Onboard a new veterinarian (employee + veterinarian role).
+-- FLOW:
+--   1. Trim OMV number and delegate employee creation.
+--   2. Reject when assistant role already exists on the same id_emp.
+--   3. INSERT veterinarian row with num_omv_vet.
+-- EXPECTED RESULT:
+--   id_emp of the employee that now holds the veterinarian role.
+-- ---------------------------------------------------------
 
 create or replace function fn_create_veterinarian(
     p_nam_usr varchar,
@@ -28,7 +48,9 @@ create or replace function fn_create_veterinarian(
     p_id_emp_reg int,
     p_num_omv_vet varchar
 )
-returns int as $$
+returns int
+language plpgsql
+as $$
 
 declare
     v_id_emp int;
@@ -85,7 +107,6 @@ exception
             message = 'Unexpected error while creating veterinarian account.',
             detail = sqlerrm,
             errcode = sqlstate;
-
 end;
 
-$$ language plpgsql;
+$$;

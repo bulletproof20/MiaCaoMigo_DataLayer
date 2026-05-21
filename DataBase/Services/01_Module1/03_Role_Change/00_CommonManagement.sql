@@ -2,18 +2,35 @@
 -- EMPLOYEE RENEWAL (MODULE 1 — ROLE CHANGE)
 -- FILE: Services/01_Module1/03_Role_Change/00_CommonManagement.sql
 -- =========================================================
--- PURPOSE:   Replace the most recent employment row for a user
--- DOMAIN:    Module 1 — employee history
--- LOADED BY: Bootstrap/Loaders/06_Services.sql
--- CLEANUP:   drop function if exists before create
+--
+-- PURPOSE
+-- Renew employment by inactivating the latest employee row and
+-- inserting a successor record with duplicated contact data.
+--
+-- DEPENDENCIES
+--   - Schema/01_Module1_User_Management/08_Query_Helpers_Mod1.sql (fn_pick_most_recent_employee)
+--   - Schema/01_Module1_User_Management/00_Tables_Mod1.sql (employee)
+--   - Services/01_Module1/03_Role_Change/*.sql (callers)
+--
+-- LOADED BY
+--   - Bootstrap/Loaders/06_Services.sql (before role-change workflows)
 -- =========================================================
 
 drop function if exists fn_renew_employee_record(int, int);
 
--- --- fn_renew_employee_record ---
--- PURPOSE: inactivate latest employment row and create a successor record
--- BEHAVIOUR: validates rank via fn_pick_most_recent_employee (ROW_NUMBER)
--- SIDE-EFFECTS: UPDATE employee, INSERT employee (transactional in caller)
+-- ---------------------------------------------------------
+-- FUNCTION: fn_renew_employee_record
+-- ---------------------------------------------------------
+-- INTENT:
+--   Replace the most recent employment row while preserving user linkage.
+-- FLOW:
+--   1. Validate registering employee is active.
+--   2. Lock target row and read user id + active flag.
+--   3. Confirm target is the ranked most recent row for that user.
+--   4. Inactivate when still active, then INSERT successor employee row.
+-- EXPECTED RESULT:
+--   id_emp of the newly created active employment record.
+-- ---------------------------------------------------------
 
 create or replace function fn_renew_employee_record(
     p_id_emp int,
@@ -29,7 +46,6 @@ declare
     v_id_emp_new int;
 begin
 
-    -- validates registering employee is active
     if not exists (
         select 1
         from employee e
@@ -40,7 +56,6 @@ begin
             message = 'Registering employee is invalid or inactive.';
     end if;
 
-    -- locks target row and reads linked user + active flag
     select
         e.id_usr,
         e.dea_dat_emp is null
@@ -56,7 +71,6 @@ begin
             message = 'Employee record not found for id ' || p_id_emp;
     end if;
 
-    -- ranks employment history deterministically for the user
     v_id_emp_most_recent := fn_pick_most_recent_employee(v_id_usr);
 
     if v_id_emp_most_recent is distinct from p_id_emp then

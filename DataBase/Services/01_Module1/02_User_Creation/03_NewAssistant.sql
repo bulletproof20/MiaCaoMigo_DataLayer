@@ -1,21 +1,19 @@
---=========================================================
--- FUNCTION: FN_CREATE_ASSISTANT
---=========================================================
--- Purpose:
--- Creates a complete assistant account by:
--- - creating the employee identity
--- - assigning the assistant role
+-- =========================================================
+-- NEW ASSISTANT (MODULE 1 — USER CREATION)
+-- FILE: Services/01_Module1/02_User_Creation/03_NewAssistant.sql
+-- =========================================================
 --
--- Flow:
--- 1. Create employee account through fn_create_employee
--- 2. Prevent veterinarian role conflicts
--- 3. Create assistant role
+-- PURPOSE
+-- Create an employee identity and attach the assistant role in one flow.
 --
--- Notes:
--- - Assistant and veterinarian roles are mutually exclusive
--- - Employee creation and role assignment occur in one flow
--- - Corporate email is generated automatically
---=========================================================
+-- DEPENDENCIES
+--   - Services/01_Module1/02_User_Creation/02_NewEmployee.sql (fn_create_employee)
+--   - Schema/01_Module1_User_Management/00_Tables_Mod1.sql (assistant, veterinarian)
+--   - Schema/01_Module1_User_Management/02_Functions_Mod1.sql (role exclusion triggers)
+--
+-- LOADED BY
+--   - Bootstrap/Loaders/06_Services.sql
+-- =========================================================
 
 drop function if exists fn_create_assistant(
     varchar, text, varchar, varchar, varchar, varchar,
@@ -24,115 +22,89 @@ drop function if exists fn_create_assistant(
     varchar
 );
 
-create or replace function fn_create_assistant(
+-- ---------------------------------------------------------
+-- FUNCTION: fn_create_assistant
+-- ---------------------------------------------------------
+-- INTENT:
+--   Onboard a new assistant (employee + assistant role).
+-- FLOW:
+--   1. Delegate employee creation to fn_create_employee.
+--   2. Reject when veterinarian role already exists on the same id_emp.
+--   3. INSERT assistant row with job function text.
+-- EXPECTED RESULT:
+--   id_emp of the employee that now holds the assistant role.
+-- ---------------------------------------------------------
 
+create or replace function fn_create_assistant(
     p_nam_usr varchar,
     p_add_usr text,
-    p_pos_usr varchar, 
+    p_pos_usr varchar,
     p_nif_usr varchar,
     p_pho_usr varchar,
     p_ema_usr varchar,
-
     p_pho_emp varchar,
     p_pho_emg varchar,
     p_pas_emp varchar,
-
     p_id_emp_reg int,
-
     p_fun_ass varchar
-
 )
-returns int as $$
+returns int
+language plpgsql
+as $$
 
 declare
-
     v_id_emp int;
 
 begin
 
-    -- create employee account
     v_id_emp := fn_create_employee(
-
         p_nam_usr,
         p_add_usr,
         p_pos_usr,
         p_nif_usr,
         p_pho_usr,
         p_ema_usr,
-
         p_pho_emp,
         p_pho_emg,
         p_pas_emp,
-
         p_id_emp_reg
-
     );
 
-    -- prevent veterinarian role conflict
     if exists (
-
         select 1
-        from veterinarian as v
+        from veterinarian v
         where v.id_emp = v_id_emp
-
     ) then
-
         raise exception using
             message = 'Employee already has a veterinarian role.';
-
     end if;
 
-    -- create assistant role
-    insert into assistant (
+    insert into assistant (id_emp, fun_ass)
+    values (v_id_emp, trim(p_fun_ass));
 
-        id_emp,
-        fun_ass
-
-    )
-    values (
-
-        v_id_emp,
-        trim(p_fun_ass)
-
-    );
-
-    -- return assistant employee id
     return v_id_emp;
 
 exception
-
     when check_violation then
-
         raise exception using
-
             message = 'Assistant data validation failed.',
             detail = sqlerrm,
             errcode = sqlstate;
-
     when foreign_key_violation then
-
         raise exception using
-
             message = 'Invalid employee association.',
             detail = sqlerrm,
             errcode = sqlstate;
-
     when unique_violation then
-
         raise exception using
-
             message = 'Assistant role already exists.',
             detail = sqlerrm,
             errcode = sqlstate;
-
     when others then
-
         raise exception using
-
             message = 'Unexpected error while creating assistant account.',
             detail = sqlerrm,
             errcode = sqlstate;
-
 end;
 
-$$ language plpgsql;
+$$;

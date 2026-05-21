@@ -10,45 +10,53 @@
 
 -- --- fn_is_account_active ---
 -- PURPOSE: true when email maps to an active employee or client row
+-- BEHAVIOUR: CTE resolves channel once, then checks activity flag
 
-create or replace function fn_is_account_active(
-    p_email varchar
-)
-returns boolean as $$
-
-begin
-
-    p_email := normalize_email(p_email);
-
-    -- active employee
-    if fn_is_employee_email(p_email) then
-
-        return exists (
-
+create or replace function fn_is_account_active(p_email varchar)
+returns boolean
+language sql
+stable
+as $$
+    with normalized_identity as (
+        select normalize_email(p_email) as email_norm
+    ),
+    identity_channel as (
+        select
+            case
+                when ni.email_norm ~ '^[^@\s]+@miacaomigo\.pt$' then 'employee'
+                else 'client'
+            end as channel
+        from normalized_identity ni
+    ),
+    active_employee as (
+        select exists (
             select 1
             from employee e
-            where e.ema_emp = p_email
+            cross join normalized_identity ni
+            where e.ema_emp = ni.email_norm
               and e.dea_dat_emp is null
-
-        );
-
-    end if;
-
-    -- active client
-    return exists (
-
-        select 1
-        from client c
-        join user_account u
-            on u.id_usr = c.id_usr
-        where u.ema_usr = p_email
-          and c.ina_dat_cli is null
-
+        ) as is_active
+        from identity_channel ic
+        where ic.channel = 'employee'
+    ),
+    active_client as (
+        select exists (
+            select 1
+            from client c
+            inner join user_account u on u.id_usr = c.id_usr
+            cross join normalized_identity ni
+            where u.ema_usr = ni.email_norm
+              and c.ina_dat_cli is null
+        ) as is_active
+        from identity_channel ic
+        where ic.channel = 'client'
+    )
+    select coalesce(
+        (select ae.is_active from active_employee ae),
+        (select ac.is_active from active_client ac),
+        false
     );
-
-end;
-
-$$ language plpgsql;
+$$;
 
 
 -- --- validate_password ---
@@ -57,38 +65,36 @@ $$ language plpgsql;
 
 drop function if exists validate_password(varchar, varchar);
 
-create function validate_password(p_email varchar, p_password varchar)
-returns boolean as $$
-declare
-    v_password_db varchar;
-begin
-
-    p_email := normalize_email(p_email);
-    --=====================================================
-    -- 1. RETRIEVE STORED PASSWORD
-    --=====================================================
-
-    if fn_is_employee_email(p_email) then
-
-        -- employee password
-        select e.pas_emp
-        into v_password_db
+create or replace function validate_password(p_email varchar, p_password varchar)
+returns boolean
+language sql
+stable
+as $$
+    with normalized_identity as (
+        select normalize_email(p_email) as email_norm
+    ),
+    stored_hash as (
+        -- corporate channel: employee email domain only
+        select e.pas_emp as pass_hash
         from employee e
-        where e.ema_emp = p_email;
-
-    else
-
-        -- client password
+        cross join normalized_identity ni
+        where e.ema_emp = ni.email_norm
+          and ni.email_norm ~ '^[^@\s]+@miacaomigo\.pt$'
+        union all
+        -- personal channel: client accounts outside corporate domain
         select c.pas_cli
-        into v_password_db
         from client c
-        join user_account u on u.id_usr = c.id_usr
-        where u.ema_usr = p_email;
-
-    end if;
-
-    -- compares stored hash with API-supplied hash (equality; no hashing in DB)
-    return v_password_db = p_password;
-
-end;
-$$ language plpgsql;
+        inner join user_account u on u.id_usr = c.id_usr
+        cross join normalized_identity ni
+        where u.ema_usr = ni.email_norm
+          and ni.email_norm !~ '^[^@\s]+@miacaomigo\.pt$'
+    )
+    select coalesce(
+        (
+            select sh.pass_hash = p_password
+            from stored_hash sh
+            limit 1
+        ),
+        false
+    );
+$$;

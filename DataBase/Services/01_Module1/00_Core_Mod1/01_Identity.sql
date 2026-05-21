@@ -266,36 +266,31 @@ $$ language plpgsql;
 -- - null if no active employment exists
 --=========================================================
 
-create or replace function fn_get_active_employee_by_user(
-    p_id_usr int
-)
-returns int as $$
+drop function if exists fn_get_active_employee_by_user(int);
 
-declare
-    v_id_emp int;
+-- --- fn_get_active_employee_by_user ---
+-- PURPOSE: resolve active employment id for a shared user identity
+-- BEHAVIOUR: ROW_NUMBER ranks active rows by reg_dat_emp (defensive tie-break)
 
-begin
-
-    --=====================================================
-    -- 1. RETRIEVE ACTIVE EMPLOYEE
-    --=====================================================
-
-    select e.id_emp
-    into v_id_emp
-    from employee e
-    where e.id_usr = p_id_usr
-      and e.dea_dat_emp is null
-    limit 1;
-
-    --=====================================================
-    -- 2. RETURN RESULT
-    --=====================================================
-
-    return v_id_emp;
-
-end;
-
-$$ language plpgsql;
+create or replace function fn_get_active_employee_by_user(p_id_usr int)
+returns int
+language sql
+stable
+as $$
+    with active_employment as (
+        select
+            e.id_emp,
+            row_number() over (
+                order by e.reg_dat_emp desc, e.id_emp desc
+            ) as emp_rank
+        from employee e
+        where e.id_usr = p_id_usr
+          and e.dea_dat_emp is null
+    )
+    select ae.id_emp
+    from active_employment ae
+    where ae.emp_rank = 1;
+$$;
 
 
 
@@ -356,20 +351,17 @@ begin
     -- - active employee accounts
 
     return exists (
-
         select 1
-        from user_account u
-        where u.ema_usr = p_email
-
-    )
-
-    or exists (
-
-        select 1
-        from employee e
-        where e.ema_emp = p_email
-          and e.dea_dat_emp is null
-
+        from (
+            select 1 as found
+            from user_account u
+            where u.ema_usr = p_email
+            union all
+            select 1
+            from employee e
+            where e.ema_emp = p_email
+              and e.dea_dat_emp is null
+        ) email_matches
     );
 
 end;

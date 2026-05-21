@@ -1,20 +1,22 @@
 -- =========================================================
--- MODULE 1 — ATTENDANCE MANAGEMENT
--- FILE: 02_ScheduleAssignment.sql
+-- SCHEDULE ASSIGNMENT (MODULE 1 — ATTENDANCE)
+-- FILE: Services/01_Module1/04_Attendance_Management/02_ScheduleAssignment.sql
 -- =========================================================
---
--- FUNCTION: fn_replicate_previous_schedule
--- Copies schedule rows from the latest inactive employee record
--- that had schedules, onto the target active employee.
+-- PURPOSE:   Copy schedule rows from a historical employment record
+-- DOMAIN:    Module 1 — schedule / employee history
+-- LOADED BY: Bootstrap/Loaders/06_Services.sql
+-- CLEANUP:   none (create or replace)
 -- =========================================================
 
-create or replace function fn_replicate_previous_schedule ( 
-    p_id_emp int
-)
+-- --- fn_replicate_previous_schedule ---
+-- PURPOSE: bootstrap weekly schedule for a new active employee row
+-- BEHAVIOUR: source picked via fn_pick_schedule_source_employee (ROW_NUMBER)
+-- SIDE-EFFECTS: INSERT schedule rows
+
+create or replace function fn_replicate_previous_schedule(p_id_emp int)
 returns void
 language plpgsql
-as
-$$
+as $$
 declare
     v_source_emp int;
 begin
@@ -39,17 +41,8 @@ begin
             p_id_emp;
     end if;
 
-    select e.id_emp
-    into v_source_emp
-    from employee e
-    where e.dea_dat_emp is not null
-      and exists (
-            select 1
-            from schedule s
-            where s.id_emp = e.id_emp
-      )
-    order by e.dea_dat_emp desc
-    limit 1;
+    -- ranks inactive employees that already own schedules (legacy global scope)
+    v_source_emp := fn_pick_schedule_source_employee();
 
     if v_source_emp is null then
         raise exception

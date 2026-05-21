@@ -27,6 +27,8 @@ drop index if exists uq_clock_in_active_per_employee;
 drop index if exists ix_absence_id_emp;
 drop index if exists ix_absence_pending_expiry;
 drop index if exists ix_clock_in_open_by_start;
+drop index if exists ix_login_record_user_history;
+drop index if exists ix_employee_user_history;
 alter table schedule drop constraint if exists ex_schedule_overlap;
 
 
@@ -143,3 +145,32 @@ where sta_abs = 'pending';
 create index ix_clock_in_open_by_start
 on clock_in (sta_dat_clk)
 where end_dat_clk is null;
+
+
+-- =========================================================
+-- OPERATIONAL — login history by user (latest pick)
+-- =========================================================
+-- Optimizes:
+--   - fn_pick_latest_login_record (ROW_NUMBER over sig_tim_log)
+--   - get_last_login / get_last_successful_login / get_last_failed_login
+--
+-- Supports descending time scans per id_usr without full table sort.
+-- =========================================================
+
+create index ix_login_record_user_history
+on login_record (id_usr, sig_tim_log desc, id_log desc)
+where id_usr is not null;
+
+
+-- =========================================================
+-- OPERATIONAL — employment history by user
+-- =========================================================
+-- Optimizes:
+--   - fn_pick_most_recent_employee
+--   - fn_get_active_employee_by_user defensive ranking
+--
+-- Complements uq_employee_active_per_user for historical rows.
+-- =========================================================
+
+create index ix_employee_user_history
+on employee (id_usr, reg_dat_emp desc, id_emp desc);

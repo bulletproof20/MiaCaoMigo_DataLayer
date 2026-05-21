@@ -29,6 +29,7 @@
 \i /docker-entrypoint-initdb.d/Services/01_Module1/01_Authentication/01_Login.sql
 \i /docker-entrypoint-initdb.d/Services/01_Module1/01_Authentication/02_Logout.sql
 \i /docker-entrypoint-initdb.d/Services/01_Module1/01_Authentication/03_Credentials_Read.sql
+\i /docker-entrypoint-initdb.d/Services/01_Module1/01_Authentication/04_Session_Read.sql
 
 \i /docker-entrypoint-initdb.d/Services/01_Module1/02_User_Creation/00_Common_UserCreation.sql
 \i /docker-entrypoint-initdb.d/Services/01_Module1/02_User_Creation/01_NewClient.sql
@@ -51,7 +52,6 @@
 
 \echo '>>> loading services layer (03_Module3)'
 
-\i /docker-entrypoint-initdb.d/Services/03_Module3/01_Session_Read.sql
 \i /docker-entrypoint-initdb.d/Services/03_Module3/02_Inventory_Read.sql
 \i /docker-entrypoint-initdb.d/Services/03_Module3/03_Commercial_Write.sql
 

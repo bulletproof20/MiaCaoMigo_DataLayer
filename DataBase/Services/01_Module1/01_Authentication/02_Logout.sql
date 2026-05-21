@@ -1,80 +1,47 @@
 -- =========================================================
--- Module: Authentication - Logout
--- Function: logout_user
+-- LOGOUT (MODULE 1 — AUTHENTICATION)
+-- FILE: Services/01_Module1/01_Authentication/02_Logout.sql
 -- =========================================================
--- Description:
--- Terminates the active session associated with a given user
--- email address.
---
--- Responsibilities:
--- - Verifies existence of an active session
--- - Closes the active session by setting logout timestamp
--- - Preserves session history in login_record
---
--- Behavior:
--- - Returns false if no active session exists
--- - Returns true after successfully closing a session
---
--- Returns:
--- - boolean (true if logout performed, false otherwise)
---
--- Dependencies:
--- - has_active_sessions(varchar)
---
--- Notes:
--- - Only active and successful sessions are terminated
--- - Supports API-level logout operations
---
--- Authors: Ivo Sá, João Ramalho, João Navarro, Tiago Mendes
--- Version: 1.2 (Logout Module)
--- Date: 2026-04-15
+-- PURPOSE:   Terminate the active session for an email
+-- DOMAIN:    Module 1 — login_record
+-- LOADED BY: Bootstrap/Loaders/06_Services.sql
+-- CLEANUP:   drop function if exists before create
 -- =========================================================
 
---=========================================================
--- function: logout_user
---=========================================================
--- description:
--- terminates the active session of a user based on email.
---
--- purpose:
--- - closes current active session
--- - supports API logout operation
--- - maintains session history
---=========================================================
 drop function if exists logout_user(varchar);
 
-create function logout_user(p_email varchar)
-returns boolean as $$
+-- --- logout_user ---
+-- PURPOSE: API logout — closes open successful sessions
+-- BEHAVIOUR: reuses has_active_sessions + targets vw_active_login_sessions rows
+-- SIDE-EFFECTS: sets sou_tim_log on matching login_record rows
+
+create or replace function logout_user(p_email varchar)
+returns boolean
+language plpgsql
+as $$
 declare
     v_has_session boolean;
+    v_closed int;
 begin
 
     p_email := normalize_email(p_email);
-    --=====================================================
-    -- 1. CHECK IF ACTIVE SESSION EXISTS
-    --=====================================================
 
     v_has_session := has_active_sessions(p_email);
 
     if not v_has_session then
-        return false; -- nothing to logout
+        return false;
     end if;
 
-    --=====================================================
-    -- 2. CLOSE ACTIVE SESSION
-    --=====================================================
-	--raise notice '%', p_email;
-    update login_record
-    set sou_tim_log = now() -- set logout timestamp
-    where ema_log = p_email
-      and sou_tim_log is null
-      and suc_log = true;
+    -- closes active sessions linked to the email snapshot
+    update login_record lr
+    set sou_tim_log = now()
+    from vw_active_login_sessions als
+    where lr.id_log = als.id_log
+      and als.ema_log = p_email;
 
-    --=====================================================
-    -- 3. RETURN SUCCESS
-    --=====================================================
+    get diagnostics v_closed = row_count;
 
-    return true;
+    return v_closed > 0;
 
 end;
-$$ language plpgsql;
+$$;

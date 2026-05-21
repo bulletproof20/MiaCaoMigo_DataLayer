@@ -85,4 +85,28 @@ select
 from absence a
 inner join employee e on e.id_emp = a.id_emp
 inner join user_account u on u.id_usr = e.id_usr
-where a.sta_abs in ('pending', 'approved', 'detected'); 
+where a.sta_abs in ('pending', 'approved', 'detected');
+
+
+-- =========================================================
+-- Active successful login sessions (open rows)
+-- =========================================================
+-- Entities: login_record
+-- Purpose: single semantic filter for session services and auth guards
+-- Side-effects: none (read-only view)
+
+drop view if exists vw_active_login_sessions;
+
+create view vw_active_login_sessions as
+select
+    lr.id_log,
+    lr.id_usr,
+    lr.ema_log,
+    lr.sig_tim_log,
+    lr.sou_tim_log,
+    lr.suc_log,
+    lr.ip_add_log
+from login_record lr
+where lr.sou_tim_log is null
+  and lr.suc_log = true;
+

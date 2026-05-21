@@ -1,38 +1,36 @@
 -- =========================================================
--- MODULE 1 — ATTENDANCE MANAGEMENT
--- FILE: 01_TimeTracking.sql
+-- TIME TRACKING (MODULE 1 — ATTENDANCE)
+-- FILE: Services/01_Module1/04_Attendance_Management/01_TimeTracking.sql
 -- =========================================================
---
--- FUNCTION: fn_clock_employee
--- Toggles clock-in / clock-out for an active employee.
--- Uses vw_open_clock_in_sessions for open session lookup.
+-- PURPOSE:   Toggle clock-in / clock-out for active employees
+-- DOMAIN:    Module 1 — clock_in
+-- LOADED BY: Bootstrap/Loaders/06_Services.sql
+-- CLEANUP:   none (create or replace)
 -- =========================================================
 
-create or replace function fn_clock_employee (
-    p_id_emp int
-)
+-- --- fn_clock_employee ---
+-- PURPOSE: open or close the current attendance session
+-- BEHAVIOUR: fn_pick_open_clock_session selects deterministic open row
+-- SIDE-EFFECTS: INSERT or UPDATE on clock_in
+
+create or replace function fn_clock_employee(p_id_emp int)
 returns varchar(50)
 language plpgsql
-as
-$$
+as $$
 declare
     v_id_clk int;
 begin
 
     if not exists (
         select 1
-        from vw_active_employee_directory d 
+        from vw_active_employee_directory d
         where d.id_emp = p_id_emp
     ) then
         raise exception 'Employee % does not exist or is inactive.', p_id_emp;
     end if;
 
-    select s.id_clk
-    into v_id_clk
-    from vw_open_clock_in_sessions s
-    where s.id_emp = p_id_emp
-    order by s.sta_dat_clk desc
-    limit 1;
+    -- resolves open session with ROW_NUMBER (newest sta_dat_clk wins)
+    v_id_clk := fn_pick_open_clock_session(p_id_emp);
 
     if v_id_clk is not null then
 
@@ -41,7 +39,6 @@ begin
         where id_clk = v_id_clk;
 
         return 'CLOCK_OUT';
-
     end if;
 
     insert into clock_in (id_emp, sta_dat_clk)

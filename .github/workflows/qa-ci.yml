@@ -115,7 +115,7 @@ jobs:
             up -d --build
 
       # ===================================================
-      # STEP 3 — WAIT FOR POSTGRESQL READINESS
+      # STEP 3 — WAIT FOR POSTGRESQL READINESS 
       # ===================================================
       # Prevents race conditions by ensuring PostgreSQL is
       # fully initialized before executing QA scripts.

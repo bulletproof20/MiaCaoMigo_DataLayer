@@ -1,0 +1,53 @@
+# =========================================================
+# SHELL EXECUTION SCRIPTS
+# =========================================================
+# Enforce LF endings for:
+#   • Bash runners
+#   • Linux/macOS compatibility
+#   • Docker execution environments
+#   • CI pipelines and entrypoints
+# =========================================================
+*.sh text eol=lf
+
+# =========================================================
+# SQL VALIDATION / BOOTSTRAP SCRIPTS
+# =========================================================
+# Enforce LF endings for:
+#   • PostgreSQL scripts
+#   • Docker-mounted SQL files
+#   • QA validation suites
+#   • Cross-platform SQL execution
+# =========================================================
+*.sql text eol=lf
+
+# =========================================================
+# DOCKER / CONTAINER CONFIGURATION
+# =========================================================
+# Enforce LF endings for:
+#   • Docker build definitions
+#   • Compose orchestration files
+#   • Linux container compatibility
+# =========================================================
+Dockerfile text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# =========================================================
+# POWERSHELL AUTOMATION RUNNERS
+# =========================================================
+# Enforce CRLF endings for:
+#   • Windows-native PowerShell execution
+#   • Local development environments
+#   • Windows terminal compatibility
+# =========================================================
+*.ps1 text eol=crlf
+
+# =========================================================
+# GENERAL DOCUMENTATION / TEXT FILES
+# =========================================================
+# Normalize text handling for:
+#   • Markdown documentation
+#   • Plain-text supporting files
+# =========================================================
+*.md text
+*.txt text

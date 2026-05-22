@@ -39,7 +39,7 @@ init_core
 | `init_demo` | core + Master + Demo + sanity (**default** in `init.sql`) |
 | `init_qa` | core + Master + sanity (**CI / automated QA**) |
 | `init_test` | alias → `init_qa` |
-| `init_full_qa` | alias → `init_qa` + hint to run `QA/runners/` |
+| `init_full_qa` | alias → `init_qa` + host step `QA/runners/run_ci.ps1` |
 
 ## CI (init_qa)
 

@@ -1,5 +1,53 @@
+# =========================================================
+# QA CI PIPELINE
+# FILE: .github/workflows/qa-ci.yml
+# =========================================================
+# PURPOSE:
+#   Continuous Integration workflow responsible for validating
+#   database integrity, bootstrap consistency and QA execution
+#   inside an isolated Docker environment.
+#
+# EXECUTION TRIGGERS:
+#   • Push events affecting database or infrastructure files
+#   • Pull requests affecting database or infrastructure files
+#
+# RESPONSIBILITIES:
+#   • Build QA infrastructure containers
+#   • Start PostgreSQL test environment
+#   • Wait for database readiness
+#   • Execute automated QA validation scripts
+#   • Prevent broken database states from being merged
+#
+# VALIDATION SCOPE:
+#   • SQL bootstrap validation
+#   • Database integrity verification
+#   • Docker environment consistency
+#   • QA runner execution
+#   • Infrastructure startup validation
+#
+# DEPENDENCIES:
+#   • docker-compose.yml
+#   • docker-compose.qa.yml
+#   • PostgreSQL container
+#   • DataBase/QA/runners/run_qa.sh
+#
+# EXPECTED RESULT:
+#   Pipeline succeeds only if the complete QA environment
+#   initializes correctly and all integrity validations pass.
+# =========================================================
+
 name: QA CI
 
+# =========================================================
+# WORKFLOW TRIGGERS
+# =========================================================
+# This workflow executes automatically whenever relevant
+# database, Docker or QA-related files are modified.
+#
+# Goal:
+#   Avoid unnecessary CI executions while ensuring all
+#   infrastructure and SQL modifications are validated.
+# =========================================================
 on:
   push:
     paths:
@@ -8,6 +56,7 @@ on:
       - 'docker-compose.qa.yml'
       - 'Dockerfile'
       - '.github/workflows/qa-ci.yml'
+
   pull_request:
     paths:
       - 'DataBase/**'
@@ -17,29 +66,104 @@ on:
       - '.github/workflows/qa-ci.yml'
 
 jobs:
+
+  # =======================================================
+  # DATABASE INTEGRITY VALIDATION JOB
+  # =======================================================
+  # Main QA job responsible for:
+  #   • Starting isolated QA infrastructure
+  #   • Validating PostgreSQL readiness
+  #   • Executing automated integrity tests
+  # =======================================================
   integrity:
+
+    # GitHub-hosted Ubuntu runner
     runs-on: ubuntu-latest
+
+    # Prevent infinite or stalled executions
     timeout-minutes: 25
 
     steps:
+
+      # ===================================================
+      # STEP 1 — CHECKOUT REPOSITORY
+      # ===================================================
+      # Downloads the repository contents into the runner
+      # environment, allowing workflow access to:
+      #   • Docker files
+      #   • Database scripts
+      #   • QA runners
+      # ===================================================
       - uses: actions/checkout@v4
 
+      # ===================================================
+      # STEP 2 — START QA DATABASE ENVIRONMENT
+      # ===================================================
+      # Builds and starts all containers required for the
+      # QA environment using:
+      #
+      #   • Base infrastructure definition
+      #   • QA-specific override configuration
+      #
+      # Containers are started in detached mode.
+      # ===================================================
       - name: Start database (init_qa)
         run: |
-          docker compose -f docker-compose.yml -f docker-compose.qa.yml up -d --build
+          docker compose \
+            -f docker-compose.yml \
+            -f docker-compose.qa.yml \
+            up -d --build
 
+      # ===================================================
+      # STEP 3 — WAIT FOR POSTGRESQL READINESS
+      # ===================================================
+      # Prevents race conditions by ensuring PostgreSQL is
+      # fully initialized before executing QA scripts.
+      #
+      # Validation strategy:
+      #   • Retry readiness check up to 90 times
+      #   • Wait 2 seconds between attempts
+      #   • Maximum wait time ≈ 3 minutes
+      #
+      # Failure behavior:
+      #   • Display latest container logs
+      #   • Abort workflow with failure status
+      # ===================================================
       - name: Wait for PostgreSQL
         run: |
           for i in $(seq 1 90); do
-            if docker exec miacaomigo-db pg_isready -U postgres -d miacaomigo; then
+
+            if docker exec miacaomigo-db \
+              pg_isready -U postgres -d miacaomigo; then
+
               exit 0
             fi
+
             sleep 2
           done
+
           docker logs miacaomigo-db | tail -n 80
+
           exit 1
 
+      # ===================================================
+      # STEP 4 — EXECUTE QA VALIDATION RUNNER
+      # ===================================================
+      # Grants execution permissions to the QA runner and
+      # launches the automated validation process.
+      #
+      # Expected validations may include:
+      #   • Bootstrap execution
+      #   • Schema consistency
+      #   • Constraint validation
+      #   • Function/procedure integrity
+      #   • Relational integrity checks
+      # ===================================================
       - name: Bootstrap + integrity
         run: |
+
+          # Allow script execution
           chmod +x DataBase/QA/runners/run_qa.sh
+
+          # Execute QA validation pipeline
           DataBase/QA/runners/run_qa.sh

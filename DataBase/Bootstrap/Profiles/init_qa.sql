@@ -1,7 +1,7 @@
 -- =========================================================
 -- BOOTSTRAP PROFILE — QA (core + MasterData + sanity)
 -- =========================================================
--- Master-only database for automated QA / CI regression.
+-- Master-only database for automated QA / CI (no DemoData).
 -- DemoData is not loaded. Operational richness for demos: init_demo.
 -- =========================================================
 

@@ -1,7 +1,0 @@
-Suggested run order (requires 04_Loaders/03_TestData.sql + services loaded).
-Location: DataBase/Queries/01_Module1/User_Creation/ (reference only — not 03_Manual workflows):
-  01_Client.sql
-  02_Employee.sql
-  03_Assistant.sql
-  04_Veterinarian.sql
-  05_Verification.sql

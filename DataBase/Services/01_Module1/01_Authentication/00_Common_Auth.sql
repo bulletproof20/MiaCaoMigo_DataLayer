@@ -65,7 +65,7 @@ drop function if exists close_active_sessions_by_email(varchar);
 --   1. Normalize email and skip when no active session exists.
 --   2. Update login_record rows referenced by the active-session view.
 -- EXPECTED RESULT:
---   void; matching rows receive sou_tim_log = now().
+--   void; matching rows receive sou_tim_log strictly after sig_tim_log (ck_login_time).
 -- ---------------------------------------------------------
 
 create or replace function close_active_sessions_by_email(p_email varchar)
@@ -79,7 +79,7 @@ begin
     if has_active_sessions(p_email) then
 
         update login_record lr
-        set sou_tim_log = now()
+        set sou_tim_log = greatest(clock_timestamp(), lr.sig_tim_log + interval '1 microsecond')
         from vw_active_login_sessions als
         where lr.id_log = als.id_log
           and als.ema_log = p_email;

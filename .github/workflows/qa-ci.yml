@@ -7,14 +7,14 @@ on:
       - 'docker-compose.yml'
       - 'docker-compose.qa.yml'
       - 'Dockerfile'
-      - '.github/workflows/qa-regression.yml'
+      - '.github/workflows/qa-ci.yml'
   pull_request:
     paths:
       - 'DataBase/**'
       - 'docker-compose.yml'
       - 'docker-compose.qa.yml'
       - 'Dockerfile'
-      - '.github/workflows/qa-regression.yml'
+      - '.github/workflows/qa-ci.yml'
 
 jobs:
   integrity:

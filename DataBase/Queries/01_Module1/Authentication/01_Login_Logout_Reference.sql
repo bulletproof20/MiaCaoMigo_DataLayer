@@ -2,7 +2,7 @@
 -- QUERIES — MODULE 1 — LOGIN / LOGOUT (reference scenarios)
 -- =========================================================
 -- TYPE:     Queries/ (exploratory — not a manual workflow)
--- REQUIRES: Demo seed or 01_AuthenticationStress.sql for miguel/sofia cases
+-- REQUIRES: init_demo (DemoData) for miguel/sofia active-session scenarios
 -- WORKFLOW: QA/05_Manual/01_Module1/01_Authentication_Session_Workflow.sql
 -- =========================================================
 

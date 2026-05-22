@@ -1,4 +1,4 @@
-# Load QA contracts + modular fixtures (official QA context; no DataSeed TestData).
+# Load QA contracts + modular fixtures (official QA context; no DemoData).
 param(
     [string]$Container = "miacaomigo-db",
     [string]$Db = "miacaomigo",

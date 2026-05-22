@@ -49,7 +49,7 @@ begin
     end if;
 
     update login_record lr
-    set sou_tim_log = now()
+    set sou_tim_log = greatest(clock_timestamp(), lr.sig_tim_log + interval '1 microsecond')
     from vw_active_login_sessions als
     where lr.id_log = als.id_log
       and als.ema_log = p_email;

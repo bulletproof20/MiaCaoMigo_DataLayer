@@ -49,4 +49,18 @@ Optional stress in CI: `.\run_ci.ps1 -IncludeStress`
 | **DemoData** | demos only (`init_demo`) |
 | **QA fixtures** | isolated `QA-*` scenarios |
 
-See `MIGRATION.txt` for profile switching.
+## Profiles and Docker reset
+
+| Profile | Loaded by | Data |
+|---------|-----------|------|
+| `init_demo` | default `init.sql` | Master + Demo |
+| `init_qa` | `docker-compose.qa.yml` entrypoint | Master only |
+
+Init scripts run **once per volume**. Switching profiles requires:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.qa.yml down -v
+docker compose -f docker-compose.yml -f docker-compose.qa.yml up -d --build
+```
+
+GitHub Actions: `.github/workflows/qa-ci.yml`

@@ -12,7 +12,7 @@ declare
 begin
     if not exists (select 1 from product where ref_pro = 'QA-PRO-001') then
         insert into family (nam_fam, des_fam)
-        values ('QA Commercial', 'integrity and regression commercial fixture')
+        values ('QA Commercial', 'integrity QA commercial fixture')
         returning id_fam into v_fam;
 
         insert into product (ref_pro, bar_pro, nam_pro, des_pro, pri_pro, iva_pro, id_fam, min_sto)

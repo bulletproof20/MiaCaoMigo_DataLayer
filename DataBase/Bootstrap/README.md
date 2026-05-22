@@ -41,7 +41,15 @@ init_core
 | `init_test` | alias → `init_qa` |
 | `init_full_qa` | alias → `init_qa` + hint to run `QA/runners/` |
 
-## Reset
+## CI (init_qa)
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.qa.yml down -v
+docker compose -f docker-compose.yml -f docker-compose.qa.yml up -d --build
+cd DataBase/QA/runners && ./run_ci.ps1
+```
+
+## Reset (local demo)
 
 ```bash
 docker compose down -v && docker compose up --build -d

@@ -2,7 +2,7 @@
 -- QUERIES — MODULE 2 — ANIMAL EXPLORATION (reference)
 -- =========================================================
 -- TYPE:     Queries/ (reusable SELECTs — not a manual workflow)
--- REQUIRES: 04_Loaders/03_TestData.sql
+-- REQUIRES: init_demo (Loaders/12_DemoData.sql) or equivalent DemoData seed
 -- WORKFLOWS: QA/05_Manual/02_Module2/
 -- =========================================================
 

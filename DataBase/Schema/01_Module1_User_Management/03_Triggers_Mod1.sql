@@ -28,11 +28,11 @@
 -- Prevents clock-in creation during an absence window
 -- =========================================================
 
-drop trigger if exists trg_block_clock_in_insert on clock_in;
-create trigger trg_block_clock_in_insert
-before insert on clock_in            -- fires before a new row is inserted
-for each row                         -- executes once per inserted row
-execute function fn_block_clock_in_if_absent(); -- calls validation function
+-- drop trigger if exists trg_block_clock_in_insert on clock_in;
+-- create trigger trg_block_clock_in_insert
+-- before insert on clock_in            -- fires before a new row is inserted
+-- for each row                         -- executes once per inserted row
+-- execute function fn_block_clock_in_if_absent(); -- calls validation function
 
 
 -- =========================================================

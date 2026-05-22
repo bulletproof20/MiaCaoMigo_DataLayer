@@ -40,9 +40,9 @@ begin
         where a.id_emp = new.id_emp                -- same employee
           and a.sta_dat_tim_abs <= new.sta_dat_clk -- absence starts before or at clock-in
           and a.end_dat_tim_abs >= new.sta_dat_clk -- absence ends after or at clock-in
-    ) then
-        -- Block insert if overlap exists
-        raise exception 'Employee cannot clock in during an absence period';
+    -- ) then
+    --     -- Block insert if overlap exists
+    --     raise exception 'Employee cannot clock in during an absence period';
     end if;
 
     -- Allow insert if no conflict

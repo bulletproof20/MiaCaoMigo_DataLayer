@@ -23,7 +23,12 @@ declare
     v_t1 timestamptz;
     v_ms numeric;
 begin
-    select id_pro into v_pro from product where ref_pro = 'STRESS-M3';
+    v_pro := qa_stress_product_id();
+
+    if v_pro is null then
+        raise notice 'FAIL: qa_stress_product_id contract missing (run fixtures -IncludeStress)';
+        return;
+    end if;
     select coalesce(sum(qty_sto), 0) into v_initial from stock where id_pro = v_pro;
 
     insert into invoice (dat_inv, bod_inv, sta_inv)

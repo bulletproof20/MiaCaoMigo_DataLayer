@@ -19,3 +19,4 @@ begin
     update animal set sta_ani = 'Interno' where id_ani = v_ani;
 end;
 $$;
+

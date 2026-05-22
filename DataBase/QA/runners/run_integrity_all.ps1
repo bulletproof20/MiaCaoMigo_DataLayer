@@ -125,7 +125,10 @@ $scripts = @(
 
     @{ Path = "01_Module1/02_Login_Session_Rules.sql" }
 
-    @{ Path = "01_Module1/03_Clocking_Rules.sql" }
+    @{
+        Path = "01_Module1/03_Clocking_Rules.sql"
+        Cleanup = "cleanup/01_Reset_Module1_Clocking.sql"
+    }
 
     @{ Path = "01_Module1/04_Absence_Overlap.sql" }
 

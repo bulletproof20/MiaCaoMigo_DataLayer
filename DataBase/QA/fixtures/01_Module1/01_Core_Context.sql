@@ -8,6 +8,46 @@
 --            login session (12@), schedule seed (registrar)
 -- =========================================================
 
+-- -------------------------------------------------------------------------
+-- QA inactive employee (authentication inactive-account coverage)
+-- -------------------------------------------------------------------------
+do $$
+declare
+    v_usr int;
+begin
+    if not exists (
+        select 1
+          from employee
+         where ema_emp = 'qa-manual-inactive@miacaomigo.pt'
+    ) then
+
+        insert into user_account ( nam_usr, add_usr, pos_usr, nif_usr, pho_usr, ema_usr)
+        values (
+            'QA Manual Inactive Employee',
+            'Rua QA Manual 1, Braga',
+            '4700-901',
+            '619000901',
+            '+351910390901',
+            'qa.manual.inactive@qa.miacaomigo.pt'
+        )
+        returning id_usr into v_usr;
+
+        insert into employee ( id_usr, reg_dat_emp, dea_dat_emp, aut_ina_emp, aut_reg_emp, pho_emp, ema_emp, pas_emp)
+        values (
+            v_usr,
+            current_timestamp - interval '2 years',
+            current_timestamp - interval '1 year',
+            1,
+            1,
+            '+351253390901',
+            'qa-manual-inactive@miacaomigo.pt',
+            '$2b$12$cstress_u12_active'
+        );
+
+    end if;
+end;
+$$;
+
 -- Extra specialties for expert / mismatch coverage (Master ships only "geral")
 insert into specialty (nam_spe, des_spe)
 select v.nam, v.des

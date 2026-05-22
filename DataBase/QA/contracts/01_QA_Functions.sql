@@ -135,6 +135,58 @@ as $$
     select id_pro from product where ref_pro = 'QA-PRO-001' limit 1;
 $$;
 
+create or replace function qa_stress_product_id()
+returns integer
+language sql
+stable
+as $$
+    select id_pro from product where ref_pro = 'STRESS-M3' limit 1;
+$$;
+
+create or replace function qa_login_session_emp_email()
+returns varchar
+language sql
+stable
+as $$
+    select e.ema_emp
+      from employee e
+     where e.ema_emp = '12@miacaomigo.pt'
+       and e.dea_dat_emp is null
+     limit 1;
+$$;
+
+create or replace function qa_registrar_emp_email()
+returns varchar
+language sql
+stable
+as $$
+    select e.ema_emp
+      from employee e
+     where e.ema_emp = '20@miacaomigo.pt'
+       and e.dea_dat_emp is null
+     order by e.reg_dat_emp desc
+     limit 1;
+$$;
+
+create or replace function qa_animal_no_delivery_id()
+returns integer
+language sql
+stable
+as $$
+    select id_ani from animal where reg_id_ani = 'QA-ANI-002' limit 1;
+$$;
+
+create or replace function qa_external_entity_shelter_id()
+returns integer
+language sql
+stable
+as $$
+    select id_ext_ent
+      from external_entity
+     where ema_ext_ent = 'shelter@qa.miacaomigo.pt'
+     limit 1;
+$$;
+
 create or replace function qa_appt_overlap_slot()
 returns timestamp
 language sql

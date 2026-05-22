@@ -4,7 +4,8 @@
 -- TYPE:     01_Integrity
 -- REQUIRES: init_qa + fixtures/01_Module1/01_Core_Context.sql
 -- RULE:     login_user — single active session; logout_user semantics
--- FIXTURES: 12@miacaomigo.pt (open session), 20@miacaomigo.pt (no open session)
+-- FIXTURES: qa_login_session_emp_email (open session), qa_registrar_emp_email
+-- CONTRACT: qa_login_session_emp_email(), qa_registrar_emp_email()
 -- =========================================================
 -- expected:
 -- - login blocked when active session exists
@@ -20,7 +21,7 @@ begin
     select login_success
       into v_success
       from login_user(
-          '12@miacaomigo.pt',
+          qa_login_session_emp_email(),
           '$2b$12$cstress_u12_active',
           '127.0.0.1'::inet
       );
@@ -62,7 +63,7 @@ begin
     select login_success
       into v_success
       from login_user(
-          '20@miacaomigo.pt',
+          qa_registrar_emp_email(),
           '$2b$12$cstress_registrar_emp001',
           '127.0.0.2'::inet
       );
@@ -81,5 +82,5 @@ $$;
 -- Re-run safety: close registrar session opened by test 03
 update login_record
    set sou_tim_log = current_timestamp
- where ema_log = '20@miacaomigo.pt'
+ where ema_log = qa_registrar_emp_email()
    and sou_tim_log is null;

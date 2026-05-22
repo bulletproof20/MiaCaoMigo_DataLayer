@@ -20,7 +20,12 @@ declare
     v_t1 timestamptz;
     v_ms numeric;
 begin
-    select id_pro into v_pro from product where ref_pro = 'STRESS-M3';
+    v_pro := qa_stress_product_id();
+
+    if v_pro is null then
+        raise notice 'FAIL: qa_stress_product_id contract missing (run fixtures -IncludeStress)';
+        return;
+    end if;
 
     insert into stock (id_pro, bat_sto, qty_sto, ent_dat_sto, val_dat_sto)
     values (v_pro, 'STRESS-BULK-VOL', v_lines + 50, current_date, current_date + 365);

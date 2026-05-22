@@ -2,15 +2,16 @@
 -- STRESS — MODULE 1 — CLOCKING CONCURRENCY
 -- =========================================================
 -- OBJECTIVE: repeated clock-in attempts on employee with open session
--- VOLUME:    50 fn_clock_employee calls on id_emp 6 (open clock in stress data)
+-- VOLUME:    50 fn_clock_employee calls on QA_EMP_CLOCKABLE (open clock_in fixture)
 -- EXPECTED:  uq_clock_in_active_per_employee holds; toggles clock-out after first
 -- METRICS:   attempts, outcomes, open clock-ins, duration
 -- REQUIRES:  init_qa + fixtures/01_Module1/01_Core_Context.sql
+-- CONTRACT:  qa_emp_clockable_id()
 -- =========================================================
 
 do $$
 declare
-    v_emp int := 6;
+    v_emp int := qa_emp_clockable_id();
     v_attempts int := 50;
     v_clock_in int := 0;
     v_clock_out int := 0;
@@ -22,6 +23,11 @@ declare
     v_t1 timestamptz;
     v_ms numeric;
 begin
+    if v_emp is null then
+        raise notice 'FAIL: qa_emp_clockable_id contract missing (run fixtures Mod1)';
+        return;
+    end if;
+
     for v_i in 1..v_attempts loop
         begin
             v_result := fn_clock_employee(v_emp);

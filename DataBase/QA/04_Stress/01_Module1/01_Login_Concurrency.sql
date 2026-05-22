@@ -2,14 +2,16 @@
 -- STRESS — MODULE 1 — LOGIN CONCURRENCY (session race)
 -- =========================================================
 -- OBJECTIVE: repeated login while active session exists
--- VOLUME:    100 login_user calls on 12@miacaomigo.pt (open session from QA fixture)
+-- VOLUME:    100 login_user calls on qa_login_session_emp_email (open session fixture)
 -- EXPECTED:  login_success = false when session active; no duplicate open sessions
 -- METRICS:   attempts, blocked logins, open sessions count, duration
 -- REQUIRES:  init_qa + fixtures/01_Module1/01_Core_Context.sql
+-- CONTRACT:  qa_login_session_emp_email()
 -- =========================================================
 
 do $$
 declare
+    v_email varchar := qa_login_session_emp_email();
     v_attempts int := 100;
     v_blocked int := 0;
     v_success int := 0;
@@ -20,11 +22,16 @@ declare
     v_t1 timestamptz;
     v_ms numeric;
 begin
+    if v_email is null then
+        raise notice 'FAIL: qa_login_session_emp_email contract missing (run fixtures Mod1)';
+        return;
+    end if;
+
     for v_i in 1..v_attempts loop
         select login_success
           into v_login_success
           from login_user(
-              '12@miacaomigo.pt',
+              v_email,
               '$2b$12$cstress_u12_active',
               '127.0.0.1'::inet
           );
@@ -38,7 +45,7 @@ begin
 
     select count(*) into v_open
       from login_record
-     where ema_log = '12@miacaomigo.pt'
+     where ema_log = v_email
        and sou_tim_log is null
        and suc_log = true;
 

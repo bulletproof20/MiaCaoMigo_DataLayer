@@ -54,10 +54,28 @@ Guaranteed entities after `run_fixtures.ps1` (not bulk datasets).
 | Entity | `reg_id_ani` | State |
 |--------|--------------|-------|
 | Internal | QA-ANI-001 | Interno |
+| No delivery | QA-ANI-002 | Interno |
 | Adopted | QA-ANI-003 | Adotado |
 | Stress internal | QA-ANI-005 | Interno |
 
 Fixture: `02_Module2/01_Animals_Ownership.sql`
+
+Lookups: `qa_animal_internal_id()`, `qa_animal_no_delivery_id()`, `qa_animal_adopted_id()`, `qa_animal_stress_internal_id()`
+
+## QA_EXTERNAL_SHELTER
+
+| | |
+|--|--|
+| Key | `shelter@qa.miacaomigo.pt` |
+| Lookup | `qa_external_entity_shelter_id()` |
+| Use | Mod2 delivery integrity |
+
+## QA_LOGIN_SESSION_EMP
+
+| | |
+|--|--|
+| Key | `12@miacaomigo.pt` (open session in fixture) |
+| Lookup | `qa_login_session_emp_email()` |
 
 ## QA_PRODUCT_STOCK
 
@@ -65,6 +83,15 @@ Fixture: `02_Module2/01_Animals_Ownership.sql`
 |--|--|
 | Key | `ref_pro = QA-PRO-001` |
 | Fixture | `03_Module3/01_Commercial_Product.sql` |
+| Lookup | `qa_product_int_p001_id()` |
+
+## QA_PRODUCT_STRESS
+
+| | |
+|--|--|
+| Key | `ref_pro = STRESS-M3` |
+| Fixture | `03_Module3/02_Stress_Commercial.sql` |
+| Lookup | `qa_stress_product_id()` |
 
 ## Time slots (Mod4)
 

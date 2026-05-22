@@ -4,22 +4,28 @@
 -- TYPE:     01_Integrity
 -- REQUIRES: init_qa + fixtures/03_Module3/01_Commercial_Product.sql
 -- RULE:     trg_prevent_inactive_product_sale
--- FIXTURES: Demo product id_pro 1
+-- CONTRACT: qa_product_int_p001_id()
 -- =========================================================
 -- expected:
 -- - sale line for inactive product blocked
 -- =========================================================
 
 insert into stock (id_pro, bat_sto, qty_sto, ent_dat_sto, val_dat_sto)
-select id_pro, 'INT-STOCK-02', 20, current_date, current_date + interval '1 year'
-  from product where ref_pro = 'QA-PRO-001';
+select qa_product_int_p001_id(), 'INT-STOCK-02', 20, current_date, current_date + interval '1 year'
+ where not exists (
+    select 1 from stock s
+     where s.id_pro = qa_product_int_p001_id() and s.bat_sto = 'INT-STOCK-02'
+ );
 
 do $$
 declare
     v_id_inv int;
-    v_id_pro int;
+    v_id_pro int := qa_product_int_p001_id();
 begin
-    select id_pro into v_id_pro from product where ref_pro = 'QA-PRO-001';
+    if v_id_pro is null then
+        raise notice 'FAIL: qa_product_int_p001_id contract missing (run fixtures Mod3)';
+        return;
+    end if;
     update product set ina_dat_pro = current_timestamp where id_pro = v_id_pro;
 
     insert into invoice (dat_inv, bod_inv, sta_inv)

@@ -9,7 +9,7 @@
 -- Close open login sessions used by integrity login tests
 update login_record
    set sou_tim_log = current_timestamp
- where ema_log in ('12@miacaomigo.pt', '20@miacaomigo.pt')
+ where ema_log in (qa_login_session_emp_email(), qa_registrar_emp_email())
    and sou_tim_log is null;
 
 delete from absence

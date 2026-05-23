@@ -8,7 +8,7 @@
 --
 -- DEPENDENCIES
 --   - Services/01_Module1/01_Authentication/00_Common_Auth.sql (has_active_sessions)
---   - Services/00_Core/00_Normalization.sql (normalize_email)
+--   - Services/00_Core/01_Normalization_Identity.sql (normalize_email)
 --   - Schema/01_Module1_User_Management/07_Views_Mod1.sql (vw_active_login_sessions)
 --   - Schema/01_Module1_User_Management/00_Tables_Mod1.sql (login_record)
 --
@@ -45,6 +45,7 @@ begin
     v_has_session := has_active_sessions(p_email);
 
     if not v_has_session then
+        raise notice 'Logout attempt Fail (no active session): %', p_email;
         return false;
     end if;
 
@@ -54,9 +55,8 @@ begin
     where lr.id_log = als.id_log
       and als.ema_log = p_email;
 
-    get diagnostics v_closed = row_count;
-
-    return v_closed > 0;
+    raise notice 'Logged out successfully: %', p_email;
+    return true;
 
 end;
 $$;

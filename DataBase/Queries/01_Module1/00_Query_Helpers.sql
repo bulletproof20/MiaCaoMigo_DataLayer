@@ -1,18 +1,50 @@
 -- =========================================================
 -- MODULE 1 — USER MANAGEMENT
--- FILE: 08_Query_Helpers_Mod1.sql
+-- FILE: Queries/01_Module1/00_Query_Helpers.sql
 -- =========================================================
--- PURPOSE:   Deterministic ranking helpers (CTEs + window functions)
--- DOMAIN:    Module 1 — login sessions and employment history
--- LOADED BY: Bootstrap/Loaders/03_Integrity.sql (after 07_Views_Mod1.sql)
--- CLEANUP:   drop function if exists before create
+-- PURPOSE:
+--   Deterministic query helper functions for resolving
+--   canonical rows through ranking and scoped filtering.
+--
+-- DOMAIN:
+--   Authentication, employment lifecycle, schedules
+--   and attendance tracking.
+--
+-- RESPONSIBILITIES:
+--   - Resolve latest login attempts
+--   - Resolve canonical employee records
+--   - Resolve schedule source employees
+--   - Resolve active clock-in sessions
+--
+-- ARCHITECTURE ROLE:
+--   Read-only query-layer helpers consumed by services.
+--
+-- TECHNICAL STRATEGY:
+--   - CTE-based filtering
+--   - ROW_NUMBER ranking
+--   - Deterministic tie-breaking
+--
+-- LOADED BY:
+--   Bootstrap/Loaders/03_Integrity.sql
 -- =========================================================
 
--- --- fn_pick_latest_login_record ---
--- PURPOSE: return the latest login_record row for a user with optional outcome filter
--- BEHAVIOUR: ROW_NUMBER over sig_tim_log desc, id_log desc breaks timestamp ties
--- RELATIONSHIPS: login_record; consumed by session read services
 
+-- =========================================================
+-- fn_pick_latest_login_record
+-- =========================================================
+-- PURPOSE:
+--   Resolve the latest login record for a user,
+--   optionally filtered by authentication outcome.
+--
+-- BEHAVIOUR:
+--   Latest sig_tim_log wins; id_log breaks ties.
+--
+-- RELATIONSHIPS:
+--   login_record
+--
+-- CONSUMED BY:
+--   Authentication and audit workflows.
+-- =========================================================
 drop function if exists fn_pick_latest_login_record(int, boolean, boolean);
 
 create or replace function fn_pick_latest_login_record(
@@ -57,10 +89,27 @@ as $$
 $$;
 
 
--- --- fn_pick_most_recent_employee ---
--- PURPOSE: pick the canonical employment row for renewal validation
--- BEHAVIOUR: active rows outrank inactive; then latest dea_dat_emp / reg_dat_emp
--- RELATIONSHIPS: employee; used by fn_renew_employee_record
+-- =========================================================
+-- fn_pick_most_recent_employee
+-- =========================================================
+-- PURPOSE:
+--   Resolve the canonical employee row associated
+--   with a user for renewal and lifecycle operations.
+--
+-- BEHAVIOUR:
+--   - Active employments outrank inactive employments
+--   - Latest dea_dat_emp wins among inactive rows
+--   - Latest reg_dat_emp acts as secondary ordering
+--   - id_emp acts as deterministic tie-breaker
+--
+-- RELATIONSHIPS:
+--   - employee
+--
+-- CONSUMED BY:
+--   - employment renewal workflows
+--   - employee lifecycle services
+--   - employment validation logic
+-- =========================================================
 
 drop function if exists fn_pick_most_recent_employee(int);
 
@@ -89,10 +138,28 @@ as $$
 $$;
 
 
--- --- fn_pick_schedule_source_employee ---
--- PURPOSE: locate the latest inactive employee that already owns a schedule
--- BEHAVIOUR: preserves legacy global pick (not scoped per user) for replication
--- RELATIONSHIPS: employee, schedule; used by fn_replicate_previous_schedule
+-- =========================================================
+-- fn_pick_schedule_source_employee
+-- =========================================================
+-- PURPOSE:
+--   Resolve the latest inactive employee that already
+--   owns schedules available for replication workflows.
+--
+-- BEHAVIOUR:
+--   - Only inactive employees are considered
+--   - Employee must already possess schedules
+--   - Latest dea_dat_emp wins
+--   - id_emp acts as deterministic tie-breaker
+--   - Preserves current global-selection strategy
+--
+-- RELATIONSHIPS:
+--   - employee
+--   - schedule
+--
+-- CONSUMED BY:
+--   - schedule replication workflows
+--   - onboarding assistance logic
+-- =========================================================
 
 drop function if exists fn_pick_schedule_source_employee();
 
@@ -121,10 +188,27 @@ as $$
 $$;
 
 
--- --- fn_pick_open_clock_session ---
--- PURPOSE: resolve the open clock-in row for an employee deterministically
--- BEHAVIOUR: newest sta_dat_clk wins; aligns with uq_clock_in_active_per_employee
--- RELATIONSHIPS: clock_in; used by fn_clock_employee
+-- =========================================================
+-- fn_pick_open_clock_session
+-- =========================================================
+-- PURPOSE:
+--   Resolve the active/open clock-in session associated
+--   with an employee.
+--
+-- BEHAVIOUR:
+--   - Only open clock sessions are considered
+--   - Latest sta_dat_clk wins
+--   - id_clk acts as deterministic tie-breaker
+--   - Aligns with uq_clock_in_active_per_employee
+--
+-- RELATIONSHIPS:
+--   - clock_in
+--
+-- CONSUMED BY:
+--   - attendance workflows
+--   - clock-in/clock-out services
+--   - attendance validation logic
+-- =========================================================
 
 drop function if exists fn_pick_open_clock_session(int);
 

@@ -10,7 +10,7 @@
 -- DEPENDENCIES
 --   - Services/01_Module1/02_User_Creation/00_UserCreation.sql (fn_create_user_account)
 --   - Services/01_Module1/00_Core_Mod1/01_Identity.sql (fn_get_user_by_nif, fn_get_user_by_email)
---   - Services/00_Core/00_Normalization.sql (normalize_email)
+--   - Services/00_Core/01_Normalization_Identity.sql
 --   - Schema/01_Module1_User_Management/00_Tables_Mod1.sql (employee)
 --
 -- LOADED BY
@@ -62,7 +62,7 @@ declare
 
 begin
 
-    p_nif_usr := trim(p_nif_usr);
+    p_nif_usr := normalize_nif(p_nif_usr);
     p_ema_usr := normalize_email(p_ema_usr);
 
     if not exists (
@@ -119,10 +119,10 @@ begin
     )
     values (
         v_id_usr,
-        trim(p_pho_emp),
-        trim(p_pho_emg),
+        normalize_phone_nullable(p_pho_emp),
+        normalize_phone_nullable(p_pho_emg),
         v_ema_emp,
-        trim(p_pas_emp),
+        normalize_secret(p_pas_emp),
         current_timestamp,
         p_id_emp_reg
     )

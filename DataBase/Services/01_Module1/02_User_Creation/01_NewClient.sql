@@ -11,7 +11,7 @@
 --   - Services/01_Module1/02_User_Creation/00_UserCreation.sql (fn_create_user_account)
 --   - Services/01_Module1/00_Core_Mod1/01_Identity.sql (fn_get_user_by_nif, fn_get_user_by_email, fn_client_exists)
 --   - Services/01_Module1/00_Core_Mod1/02_Validations.sql (validate_password)
---   - Services/00_Core/00_Normalization.sql (normalize_email)
+--   - Services/00_Core/01_Normalization_Identity.sql
 --   - Schema/01_Module1_User_Management/00_Tables_Mod1.sql (client)
 --
 -- LOADED BY
@@ -59,7 +59,7 @@ declare
 
 begin
 
-    p_nif_usr := trim(p_nif_usr);
+    p_nif_usr := normalize_nif(p_nif_usr);
     p_ema_usr := normalize_email(p_ema_usr);
 
     v_id_usr_by_nif := fn_get_user_by_nif(p_nif_usr);
@@ -95,7 +95,7 @@ begin
     end if;
 
     insert into client (id_usr, pas_cli)
-    values (v_id_usr, trim(p_pas_cli))
+    values (v_id_usr, normalize_secret(p_pas_cli))
     returning id_cli
     into v_id_cli;
 

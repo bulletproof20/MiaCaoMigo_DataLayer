@@ -98,7 +98,6 @@
 
 \echo '--- module 1 | views'
 \i /docker-entrypoint-initdb.d/Schema/01_Module1_User_Management/07_Views_Mod1.sql
-\i /docker-entrypoint-initdb.d/Schema/01_Module1_User_Management/08_Query_Helpers_Mod1.sql
 
 
 \echo '--- module 2 | views'

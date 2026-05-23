@@ -8,7 +8,8 @@
 -- employee profiles used by client/employee creation flows.
 --
 -- DEPENDENCIES
---   - Services/00_Core/00_Normalization.sql (normalize_email)
+--   - Services/00_Core/00_Normalization_Text.sql
+--   - Services/00_Core/01_Normalization_Identity.sql
 --   - Schema/01_Module1_User_Management/02_Functions_Mod1.sql (fn_create_default_setup trigger)
 --   - Schema/01_Module1_User_Management/00_Tables_Mod1.sql (user_account, occupies)
 --
@@ -26,7 +27,7 @@ drop function if exists fn_create_user_account(
 -- INTENT:
 --   Insert a new shared user_account identity row.
 -- FLOW:
---   1. Trim and normalize input fields.
+--   1. Normalize input fields via 00_Core helpers.
 --   2. INSERT into user_account; setup row is created by trigger.
 -- EXPECTED RESULT:
 --   id_usr of the newly created user.
@@ -49,11 +50,11 @@ declare
 
 begin
 
-    p_nam_usr := trim(p_nam_usr);
-    p_add_usr := trim(p_add_usr);
-    p_pos_usr := trim(p_pos_usr);
-    p_nif_usr := trim(p_nif_usr);
-    p_pho_usr := trim(p_pho_usr);
+    p_nam_usr := normalize_text(p_nam_usr);
+    p_add_usr := normalize_text(p_add_usr);
+    p_pos_usr := normalize_postal_code_pt(p_pos_usr);
+    p_nif_usr := normalize_nif(p_nif_usr);
+    p_pho_usr := normalize_phone_nullable(p_pho_usr);
     p_ema_usr := normalize_email(p_ema_usr);
 
     insert into user_account (

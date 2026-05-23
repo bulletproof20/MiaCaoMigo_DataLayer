@@ -18,7 +18,10 @@
 
 \echo '>>> loading services layer (00_Core)'
 
-\i /docker-entrypoint-initdb.d/Services/00_Core/00_Normalization.sql
+\i /docker-entrypoint-initdb.d/Services/00_Core/00_Normalization_Text.sql
+\i /docker-entrypoint-initdb.d/Services/00_Core/01_Normalization_Identity.sql
+\i /docker-entrypoint-initdb.d/Services/00_Core/02_Normalization_Codes.sql
+\i /docker-entrypoint-initdb.d/Services/00_Core/03_Normalization_Search.sql
 
 \echo '>>> loading services layer (01_Module1)'
 

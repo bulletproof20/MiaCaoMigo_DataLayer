@@ -8,7 +8,7 @@
 -- authentication, onboarding, RBAC, and attendance services.
 --
 -- DEPENDENCIES
---   - Services/00_Core/00_Normalization.sql (normalize_email)
+--   - Services/00_Core/01_Normalization_Identity.sql (normalize_email, normalize_nif)
 --   - Schema/01_Module1_User_Management/00_Tables_Mod1.sql
 --     (user_account, employee, client, veterinarian, assistant)
 --
@@ -102,7 +102,7 @@ as $$
 declare
     v_id_usr int;
 begin
-    p_nif := trim(p_nif);
+    p_nif := normalize_nif(p_nif);
 
     select u.id_usr
     into v_id_usr
@@ -295,7 +295,7 @@ returns boolean
 language plpgsql
 as $$
 begin
-    p_nif := trim(p_nif);
+    p_nif := normalize_nif(p_nif);
 
     return exists (
         select 1

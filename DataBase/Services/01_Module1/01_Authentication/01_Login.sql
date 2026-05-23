@@ -8,7 +8,7 @@
 -- and audit every attempt in login_record.
 --
 -- DEPENDENCIES
---   - Services/00_Core/00_Normalization.sql (normalize_email)
+--   - Services/00_Core/01_Normalization_Identity.sql (normalize_email)
 --   - Services/01_Module1/00_Core_Mod1/01_Identity.sql (fn_user_exists_by_email, fn_get_user_by_email)
 --   - Services/01_Module1/00_Core_Mod1/02_Validations.sql (validate_password, fn_is_account_active)
 --   - Services/01_Module1/01_Authentication/00_Common_Auth.sql (has_active_sessions)
@@ -66,6 +66,7 @@ begin
 
     if not fn_user_exists_by_email(p_email) then
 
+        raise notice 'Login attempt Fail (with non-existent email): %', p_email;
         insert into login_record (sig_tim_log, suc_log, ip_add_log, ema_log)
         values (now(), false, p_ip, p_email);
 
@@ -86,6 +87,7 @@ begin
 
     if not v_password_ok then
 
+        raise notice 'Login attempt Fail (with incorrect password): %', p_email;
         insert into login_record (sig_tim_log, suc_log, ip_add_log, ema_log)
         values (now(), false, p_ip, p_email);
 
@@ -107,9 +109,8 @@ begin
 
     if not v_account_active then
 
-        insert into login_record (
-            sig_tim_log, suc_log, ip_add_log, ema_log, id_usr
-        )
+        raise notice 'Login attempt Fail (with inactive account): %', p_email;
+        insert into login_record (sig_tim_log, suc_log, ip_add_log, ema_log, id_usr)
         values (now(), false, p_ip, p_email, v_user_id);
 
         return query
@@ -126,18 +127,16 @@ begin
     end if;
 
     v_has_session := has_active_sessions(p_email);
+
+    if v_has_session then 
+        raise notice 'Login attempt Fail (with active session): %', p_email;
+    else
+        raise notice 'Logged in successfully: %', p_email;
+    end if;
     v_login_success := not v_has_session;
 
-    insert into login_record (
-        sig_tim_log, suc_log, ip_add_log, ema_log, id_usr
-    )
-    values (
-        now(),
-        v_login_success,
-        p_ip,
-        p_email,
-        v_user_id
-    );
+    insert into login_record (sig_tim_log, suc_log, ip_add_log, ema_log, id_usr)
+    values (now(), v_login_success, p_ip, p_email, v_user_id);
 
     return query
     select

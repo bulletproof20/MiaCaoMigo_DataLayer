@@ -1,6 +1,6 @@
 -- =========================================================
 -- EMPLOYEE RENEWAL (MODULE 1 — ROLE CHANGE)
--- FILE: Services/01_Module1/03_Role_Change/00_CommonManagement.sql
+-- FILE: Services/01_Module1/03_Role_Change/00_Renew_Employee_Record.sql
 -- =========================================================
 --
 -- PURPOSE

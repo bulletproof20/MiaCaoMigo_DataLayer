@@ -57,7 +57,7 @@ declare
 
 begin
 
-    p_num_omv_vet := trim(p_num_omv_vet);
+    p_num_omv_vet := normalize_omv_number(p_num_omv_vet);
 
     v_id_emp := fn_create_employee(
         p_nam_usr,

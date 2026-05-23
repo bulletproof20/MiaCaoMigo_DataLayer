@@ -80,7 +80,7 @@ begin
     end if;
 
     insert into assistant (id_emp, fun_ass)
-    values (v_id_emp, trim(p_fun_ass));
+    values (v_id_emp, normalize_text(p_fun_ass));
 
     return v_id_emp;
 

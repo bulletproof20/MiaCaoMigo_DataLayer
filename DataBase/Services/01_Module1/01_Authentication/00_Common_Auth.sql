@@ -8,7 +8,7 @@
 -- before login/logout orchestration runs.
 --
 -- DEPENDENCIES
---   - Services/00_Core/00_Normalization.sql (normalize_email)
+--   - Services/00_Core/01_Normalization_Identity.sql (normalize_email)
 --   - Schema/01_Module1_User_Management/07_Views_Mod1.sql (vw_active_login_sessions)
 --   - Schema/01_Module1_User_Management/00_Tables_Mod1.sql (login_record)
 --

@@ -73,15 +73,57 @@ delete from absence
 -- =========================================================
 -- MODULE 4 — APPOINTMENT / NOTIFICATION RESET
 -- =========================================================
--- Removes deterministic far-future appointments created for
--- scheduling, overlap and notification scenarios.
+-- Removes QA-scoped appointments (2099 slots + integrity near-now rows).
 
 
 delete from appointment_notification
  where id_app in (
-     select a.id_app
-       from appointment a
-      where a.sch_dat_app >= timestamp '2099-01-01'
+     select ap.id_app
+       from appointment ap
+       join animal a on a.id_ani = ap.id_ani
+      where a.reg_id_ani like 'QA-%'
+ );
+
+
+delete from rel_app_product
+ where id_app in (
+     select ap.id_app
+       from appointment ap
+       join animal a on a.id_ani = ap.id_ani
+      where a.reg_id_ani like 'QA-%'
+ );
+
+
+delete from prescription
+ where id_app in (
+     select ap.id_app
+       from appointment ap
+       join animal a on a.id_ani = ap.id_ani
+      where a.reg_id_ani like 'QA-%'
+ );
+
+
+delete from anamnesis
+ where id_app in (
+     select ap.id_app
+       from appointment ap
+       join animal a on a.id_ani = ap.id_ani
+      where a.reg_id_ani like 'QA-%'
+ );
+
+
+delete from overall_assessment
+ where id_app in (
+     select ap.id_app
+       from appointment ap
+       join animal a on a.id_ani = ap.id_ani
+      where a.reg_id_ani like 'QA-%'
+ );
+
+
+delete from appointment
+ where id_ani in (
+     select id_ani from animal where reg_id_ani like 'QA-%'
  );
 
 

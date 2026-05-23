@@ -14,7 +14,7 @@ begin
     select b.id_bre into v_mismatch_bre
       from breed b
       join species s on s.id_spc = b.id_spc
-     where s.nam_spc = 'Cat'
+     where s.id_spc = qa_species_cat_id()
      limit 1;
 
     update animal

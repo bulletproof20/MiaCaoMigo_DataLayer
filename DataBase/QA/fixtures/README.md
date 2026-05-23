@@ -30,7 +30,8 @@ cd DataBase/QA/runners
 
 | Rule | Detail |
 |------|--------|
-| Keys | `QA-ANI-*`, `QA-PRO-001`, `OMV-QA-PRIMARY` |
+| Keys | `QA-ANI-001..005`, `QA-PRO-001`, `OMV-QA-PRIMARY` |
 | Time | Mod4 uses `2099-*` slots |
 | Scope | Never TRUNCATE Master catalogs |
 | Isolation | Prefix `QA-%`; reset in `00_Reset_QA_State.sql` |
+| Idempotency | Resolve `user_account` by `ema_usr` before employee/role inserts; rerunnable via `run_fixtures.ps1` |

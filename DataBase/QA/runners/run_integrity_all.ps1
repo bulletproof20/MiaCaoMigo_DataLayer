@@ -212,7 +212,7 @@ Write-Host "========================================"
 if (-not $SkipFixtures) {
 
     Write-Host ""
-    Write-Host ">>> PRE-FLIGHT — QA CONTRACTS + FIXTURES"
+    Write-Host ">>> PRE-FLIGHT - QA CONTRACTS + FIXTURES"
 
     & (Join-Path $PSScriptRoot "run_fixtures.ps1") `
         -Container $Container `
@@ -271,7 +271,7 @@ foreach ($entry in $scripts) {
         $cleanupRel = $entry.Cleanup
 
         Write-Host ""
-        Write-Host ">>> CLEANUP — $cleanupRel"
+        Write-Host ">>> CLEANUP - $cleanupRel"
 
         $cleanupPath = Join-Path $Fixtures $cleanupRel
 

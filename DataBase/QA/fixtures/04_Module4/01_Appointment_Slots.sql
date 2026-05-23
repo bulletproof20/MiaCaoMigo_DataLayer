@@ -30,3 +30,8 @@ begin
         (v_cli, v_ani, v_emp, v_spe, (qa_appt_notification_date()::timestamp + time '09:30'), 'scheduled');
 end;
 $$;
+
+
+select *
+from appointment
+where sch_dat_app >= timestamp '2099-01-01';

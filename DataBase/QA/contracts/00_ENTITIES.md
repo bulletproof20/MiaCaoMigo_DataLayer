@@ -51,16 +51,17 @@ Guaranteed entities after `run_fixtures.ps1` (not bulk datasets).
 
 ## QA_ANIMAL_*
 
-| Entity | `reg_id_ani` | State |
-|--------|--------------|-------|
-| Internal | QA-ANI-001 | Interno |
-| No delivery | QA-ANI-002 | Interno |
-| Adopted | QA-ANI-003 | Adotado |
-| Stress internal | QA-ANI-005 | Interno |
+| Entity | `reg_id_ani` | State | Role |
+|--------|--------------|-------|------|
+| Internal | QA-ANI-001 | Interno | welfare delivery + ownership lifecycle |
+| No delivery | QA-ANI-002 | Interno | concession / delivery-date integrity |
+| Adopted | QA-ANI-003 | Adotado | Mod4 scheduling / overlap |
+| Shelter delivery | QA-ANI-004 | Interno | shelter intake delivery |
+| Stress internal | QA-ANI-005 | Interno | concurrent adoption stress |
 
 Fixture: `02_Module2/01_Animals_Ownership.sql`
 
-Lookups: `qa_animal_internal_id()`, `qa_animal_no_delivery_id()`, `qa_animal_adopted_id()`, `qa_animal_stress_internal_id()`
+Lookups: `qa_animal_internal_id()`, `qa_animal_no_delivery_id()`, `qa_animal_adopted_id()`, `qa_animal_delivery_shelter_id()`, `qa_animal_stress_internal_id()`
 
 ## QA_EXTERNAL_SHELTER
 

@@ -11,16 +11,23 @@ declare
     v_fam int;
     v_pro int;
 begin
-    if not exists (select 1 from product where ref_pro = 'STRESS-M3') then
-        insert into family (nam_fam, des_fam)
-        values ('Stress Commercial', 'stress tier commercial isolation')
-        returning id_fam into v_fam;
+    select id_pro into v_pro from product where ref_pro = 'STRESS-M3';
+
+    if v_pro is null then
+        select f.id_fam into v_fam
+          from family f
+         where f.nam_fam = 'Stress Commercial'
+         limit 1;
+
+        if v_fam is null then
+            insert into family (nam_fam, des_fam)
+            values ('Stress Commercial', 'stress tier commercial isolation')
+            returning id_fam into v_fam;
+        end if;
 
         insert into product (ref_pro, bar_pro, nam_pro, des_pro, pri_pro, iva_pro, id_fam, min_sto)
         values ('STRESS-M3', '9000000000999', 'Stress Product M3', 'stress', 10.00, 23.00, v_fam, 0)
         returning id_pro into v_pro;
-    else
-        select id_pro into v_pro from product where ref_pro = 'STRESS-M3';
     end if;
 
     delete from "return" where id_inv_lin in (

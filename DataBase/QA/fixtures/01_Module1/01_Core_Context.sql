@@ -6,6 +6,7 @@
 -- PROVIDES: QA_CLIENT_ACTIVE, QA_CLIENT_SECONDARY, QA_REGISTRAR,
 --            QA_VET_PRIMARY, QA_EMP_CLOCKABLE, QA_ABSENCE_OVERLAP,
 --            login session (12@), schedule seed (registrar)
+-- IDEMPOTENT: resolve user_account by ema_usr, then employee/roles
 -- =========================================================
 
 -- -------------------------------------------------------------------------
@@ -15,13 +16,12 @@ do $$
 declare
     v_usr int;
 begin
-    if not exists (
-        select 1
-          from employee
-         where ema_emp = 'qa-manual-inactive@miacaomigo.pt'
-    ) then
+    select u.id_usr into v_usr
+      from user_account u
+     where u.ema_usr = 'qa.manual.inactive@qa.miacaomigo.pt';
 
-        insert into user_account ( nam_usr, add_usr, pos_usr, nif_usr, pho_usr, ema_usr)
+    if v_usr is null then
+        insert into user_account (nam_usr, add_usr, pos_usr, nif_usr, pho_usr, ema_usr)
         values (
             'QA Manual Inactive Employee',
             'Rua QA Manual 1, Braga',
@@ -31,8 +31,15 @@ begin
             'qa.manual.inactive@qa.miacaomigo.pt'
         )
         returning id_usr into v_usr;
+    end if;
 
-        insert into employee ( id_usr, reg_dat_emp, dea_dat_emp, aut_ina_emp, aut_reg_emp, pho_emp, ema_emp, pas_emp)
+    if not exists (
+        select 1 from employee where ema_emp = 'qa-manual-inactive@miacaomigo.pt'
+    ) then
+        insert into employee (
+            id_usr, reg_dat_emp, dea_dat_emp, aut_ina_emp, aut_reg_emp,
+            pho_emp, ema_emp, pas_emp
+        )
         values (
             v_usr,
             current_timestamp - interval '2 years',
@@ -43,7 +50,6 @@ begin
             'qa-manual-inactive@miacaomigo.pt',
             '$2b$12$cstress_u12_active'
         );
-
     end if;
 end;
 $$;
@@ -88,8 +94,13 @@ select u.id_usr, v.pas, current_timestamp - interval '2 years', null
 do $$
 declare
     v_usr int;
+    v_emp int;
 begin
-    if not exists (select 1 from employee where ema_emp = '20@miacaomigo.pt') then
+    select u.id_usr into v_usr
+      from user_account u
+     where u.ema_usr = 'claudia.faria.cstress@icloud.com';
+
+    if v_usr is null then
         insert into user_account (nam_usr, add_usr, pos_usr, nif_usr, pho_usr, ema_usr)
         values (
             'QA Registrar Spell',
@@ -100,7 +111,13 @@ begin
             'claudia.faria.cstress@icloud.com'
         )
         returning id_usr into v_usr;
+    end if;
 
+    select e.id_emp into v_emp
+      from employee e
+     where e.ema_emp = '20@miacaomigo.pt';
+
+    if v_emp is null then
         insert into employee (id_usr, reg_dat_emp, aut_reg_emp, pho_emp, pho_emg, ema_emp, pas_emp)
         values (
             v_usr,
@@ -110,14 +127,19 @@ begin
             '+351912340020',
             '20@miacaomigo.pt',
             '$2b$12$cstress_registrar_emp001'
-        );
-        insert into occupies (id_emp, id_pro)
-        select e.id_emp, 1 from employee e where e.ema_emp = '20@miacaomigo.pt';
+        )
+        returning id_emp into v_emp;
     end if;
+
+    insert into occupies (id_emp, id_pro)
+    select v_emp, 1
+     where not exists (
+         select 1 from occupies o where o.id_emp = v_emp and o.id_pro = 1
+     );
 end;
 $$;
 
--- Schedule seed for registrar (id_emp 1 bootstrap admin OR 20@ — test targets emp 1)
+-- Schedule seed for bootstrap admin (schedule exclusion integrity)
 insert into schedule (id_emp, day_wee_sch, sta_tim_sch, fin_hou_sch)
 select e.id_emp, 1, '08:00', '18:00'
   from employee e
@@ -128,7 +150,7 @@ select e.id_emp, 1, '08:00', '18:00'
    );
 
 -- -------------------------------------------------------------------------
--- QA vet primary (OMV contract) + expert rows (spe 1 and 7)
+-- QA vet primary (OMV-QA-PRIMARY) + expert rows
 -- -------------------------------------------------------------------------
 do $$
 declare
@@ -140,7 +162,11 @@ begin
     select id_spe into v_spe1 from specialty where nam_spe = 'medicina interna' limit 1;
     select id_spe into v_spe7 from specialty where nam_spe = 'medicina felina' limit 1;
 
-    if not exists (select 1 from veterinarian where num_omv_vet = 'OMV-QA-PRIMARY') then
+    select u.id_usr into v_usr
+      from user_account u
+     where u.ema_usr = 'bruno.matos.cstress@outlook.pt';
+
+    if v_usr is null then
         insert into user_account (nam_usr, add_usr, pos_usr, nif_usr, pho_usr, ema_usr)
         values (
             'Bruno Filipe Matos QA Vet',
@@ -151,35 +177,73 @@ begin
             'bruno.matos.cstress@outlook.pt'
         )
         returning id_usr into v_usr;
-
-        insert into employee (id_usr, reg_dat_emp, aut_reg_emp, pho_emp, pho_emg, ema_emp, pas_emp)
-        values (
-            v_usr,
-            current_timestamp - interval '3 years',
-            1,
-            '+351253444001',
-            '+351912344001',
-            '8@miacaomigo.pt',
-            '$2b$12$cstress_u04_vet_track'
-        )
-        returning id_emp into v_emp;
-
-        insert into occupies (id_emp, id_pro) values (v_emp, 2);
-        insert into veterinarian (id_emp, num_omv_vet) values (v_emp, 'OMV-QA-PRIMARY');
-    else
-        select id_emp into v_emp from veterinarian where num_omv_vet = 'OMV-QA-PRIMARY';
     end if;
 
-    if v_spe1 is not null and not exists (
-        select 1 from expert where id_emp = v_emp and id_spe = v_spe1
-    ) then
-        insert into expert (id_emp, id_spe) values (v_emp, v_spe1);
+    select v.id_emp into v_emp
+      from veterinarian v
+     where v.num_omv_vet = 'OMV-QA-PRIMARY';
+
+    if v_emp is null then
+        select e.id_emp into v_emp
+          from employee e
+         where e.ema_emp = '8@miacaomigo.pt'
+           and e.dea_dat_emp is null
+         limit 1;
+
+        if v_emp is null then
+            select e.id_emp into v_emp
+              from employee e
+             where e.id_usr = v_usr
+               and e.dea_dat_emp is null
+             order by e.reg_dat_emp desc
+             limit 1;
+        end if;
+
+        if v_emp is null then
+            insert into employee (id_usr, reg_dat_emp, aut_reg_emp, pho_emp, pho_emg, ema_emp, pas_emp)
+            values (
+                v_usr,
+                current_timestamp - interval '3 years',
+                1,
+                '+351253444001',
+                '+351912344001',
+                '8@miacaomigo.pt',
+                '$2b$12$cstress_u04_vet_track'
+            )
+            returning id_emp into v_emp;
+        end if;
+
+        insert into veterinarian (id_emp, num_omv_vet)
+        select v_emp, 'OMV-QA-PRIMARY'
+         where not exists (
+             select 1 from veterinarian v where v.num_omv_vet = 'OMV-QA-PRIMARY'
+         );
+
+        select v.id_emp into v_emp
+          from veterinarian v
+         where v.num_omv_vet = 'OMV-QA-PRIMARY';
     end if;
 
-    if v_spe7 is not null and not exists (
-        select 1 from expert where id_emp = v_emp and id_spe = v_spe7
-    ) then
-        insert into expert (id_emp, id_spe) values (v_emp, v_spe7);
+    insert into occupies (id_emp, id_pro)
+    select v_emp, 2
+     where not exists (
+         select 1 from occupies o where o.id_emp = v_emp and o.id_pro = 2
+     );
+
+    if v_spe1 is not null then
+        insert into expert (id_emp, id_spe)
+        select v_emp, v_spe1
+         where not exists (
+             select 1 from expert ex where ex.id_emp = v_emp and ex.id_spe = v_spe1
+         );
+    end if;
+
+    if v_spe7 is not null then
+        insert into expert (id_emp, id_spe)
+        select v_emp, v_spe7
+         where not exists (
+             select 1 from expert ex where ex.id_emp = v_emp and ex.id_spe = v_spe7
+         );
     end if;
 end;
 $$;
@@ -192,7 +256,11 @@ declare
     v_usr int;
     v_emp int;
 begin
-    if not exists (select 1 from employee where ema_emp = 'qa.clockable@miacaomigo.pt') then
+    select u.id_usr into v_usr
+      from user_account u
+     where u.ema_usr = 'qa.clockable.user@gmail.com';
+
+    if v_usr is null then
         insert into user_account (nam_usr, add_usr, pos_usr, nif_usr, pho_usr, ema_usr)
         values (
             'QA Clockable Employee',
@@ -203,7 +271,13 @@ begin
             'qa.clockable.user@gmail.com'
         )
         returning id_usr into v_usr;
+    end if;
 
+    select e.id_emp into v_emp
+      from employee e
+     where e.ema_emp = 'qa.clockable@miacaomigo.pt';
+
+    if v_emp is null then
         insert into employee (id_usr, reg_dat_emp, aut_reg_emp, pho_emp, ema_emp, pas_emp)
         values (
             v_usr,
@@ -215,14 +289,23 @@ begin
         )
         returning id_emp into v_emp;
     else
-        select id_emp into v_emp from employee where ema_emp = 'qa.clockable@miacaomigo.pt';
+        update employee
+           set dea_dat_emp = null
+         where id_emp = v_emp
+           and dea_dat_emp is not null;
     end if;
 
-    update clock_in set end_dat_clk = current_timestamp
-     where id_emp = v_emp and end_dat_clk is null;
+    update clock_in
+       set end_dat_clk = current_timestamp
+     where id_emp = v_emp
+       and end_dat_clk is null;
 
     insert into clock_in (id_emp, sta_dat_clk)
-    values (v_emp, current_timestamp - interval '75 minutes');
+    select v_emp, current_timestamp - interval '75 minutes'
+     where not exists (
+         select 1 from clock_in c
+          where c.id_emp = v_emp and c.end_dat_clk is null
+     );
 end;
 $$;
 
@@ -231,9 +314,14 @@ $$;
 -- -------------------------------------------------------------------------
 do $$
 declare
+    v_usr int;
     v_emp int;
 begin
-    if not exists (select 1 from employee where ema_emp = '21@miacaomigo.pt') then
+    select u.id_usr into v_usr
+      from user_account u
+     where u.ema_usr = 'filipe.castro.cstress@outlook.pt';
+
+    if v_usr is null then
         insert into user_account (nam_usr, add_usr, pos_usr, nif_usr, pho_usr, ema_usr)
         values (
             'QA Absence Overlap Vet',
@@ -242,42 +330,57 @@ begin
             '610000021',
             '+351910300021',
             'filipe.castro.cstress@outlook.pt'
-        );
+        )
+        returning id_usr into v_usr;
+    end if;
 
+    select e.id_emp into v_emp
+      from employee e
+     where e.ema_emp = '21@miacaomigo.pt';
+
+    if v_emp is null then
         insert into employee (id_usr, reg_dat_emp, aut_reg_emp, pho_emp, ema_emp, pas_emp)
-        select
-            u.id_usr,
+        values (
+            v_usr,
             current_timestamp - interval '3 years',
             1,
             '+351253461001',
             '21@miacaomigo.pt',
             '$2b$12$cstress_u21_vet'
-          from user_account u
-         where u.ema_usr = 'filipe.castro.cstress@outlook.pt';
+        )
+        returning id_emp into v_emp;
 
         insert into occupies (id_emp, id_pro)
-        select e.id_emp, 2 from employee e where e.ema_emp = '21@miacaomigo.pt';
+        select v_emp, 2
+         where not exists (
+             select 1 from occupies o where o.id_emp = v_emp and o.id_pro = 2
+         );
 
         insert into veterinarian (id_emp, num_omv_vet)
-        select e.id_emp, 'OMV-PT-2023-CR-03319'
-          from employee e where e.ema_emp = '21@miacaomigo.pt';
+        select v_emp, 'OMV-PT-2023-CR-03319'
+         where not exists (
+             select 1 from veterinarian v where v.num_omv_vet = 'OMV-PT-2023-CR-03319'
+         );
     end if;
-
-    select id_emp into v_emp from employee where ema_emp = '21@miacaomigo.pt';
 
     delete from absence
      where id_emp = v_emp
        and mot_abs like 'qa fixture%';
 
     insert into absence (id_emp, sta_dat_tim_abs, end_dat_tim_abs, mot_abs, sta_abs, cre_tim_abs)
-    values (
+    select
         v_emp,
         current_timestamp + interval '15 days',
         current_timestamp + interval '16 days',
         'qa fixture pending absence overlap seed',
         'pending',
         current_timestamp - interval '3 days'
-    );
+     where not exists (
+         select 1 from absence a
+          where a.id_emp = v_emp
+            and a.mot_abs = 'qa fixture pending absence overlap seed'
+            and a.sta_abs = 'pending'
+     );
 end;
 $$;
 
@@ -287,8 +390,13 @@ $$;
 do $$
 declare
     v_usr int;
+    v_emp int;
 begin
-    if not exists (select 1 from employee where ema_emp = '12@miacaomigo.pt') then
+    select u.id_usr into v_usr
+      from user_account u
+     where u.ema_usr = 'duarte.ramos.cstress@gmail.com';
+
+    if v_usr is null then
         insert into user_account (nam_usr, add_usr, pos_usr, nif_usr, pho_usr, ema_usr)
         values (
             'QA Login Session Employee',
@@ -299,7 +407,13 @@ begin
             'duarte.ramos.cstress@gmail.com'
         )
         returning id_usr into v_usr;
+    end if;
 
+    select e.id_emp into v_emp
+      from employee e
+     where e.ema_emp = '12@miacaomigo.pt';
+
+    if v_emp is null then
         insert into employee (id_usr, reg_dat_emp, aut_reg_emp, pho_emp, ema_emp, pas_emp)
         values (
             v_usr,
@@ -308,25 +422,32 @@ begin
             '+351253452002',
             '12@miacaomigo.pt',
             '$2b$12$cstress_u12_active'
-        );
+        )
+        returning id_emp into v_emp;
     end if;
 
     select u.id_usr into v_usr
       from employee e
       join user_account u on u.id_usr = e.id_usr
-     where e.ema_emp = '12@miacaomigo.pt';
+     where e.id_emp = v_emp;
 
     delete from login_record
-     where ema_log = '12@miacaomigo.pt' and sou_tim_log is null;
+     where ema_log = '12@miacaomigo.pt'
+       and sou_tim_log is null;
 
     insert into login_record (sig_tim_log, sou_tim_log, suc_log, ip_add_log, ema_log, id_usr)
-    values (
+    select
         current_timestamp - interval '90 minutes',
         null,
         true,
         '192.168.60.77'::inet,
         '12@miacaomigo.pt',
         v_usr
-    );
+     where not exists (
+         select 1 from login_record lr
+          where lr.ema_log = '12@miacaomigo.pt'
+            and lr.sou_tim_log is null
+            and lr.suc_log = true
+     );
 end;
 $$;

@@ -108,7 +108,7 @@ Write-Host ""
 # =========================================================
 if (-not $SkipBootstrapCheck) {
 
-    Write-Host ">>> STEP 1 — BOOTSTRAP VALIDATION"
+    Write-Host ">>> STEP 1 - BOOTSTRAP VALIDATION"
 
     & (Join-Path $Runners "run_bootstrap_check.ps1") `
         -Container $Container `
@@ -135,7 +135,7 @@ if (-not $SkipBootstrapCheck) {
 #   • Appointment contexts
 #   • Controlled integrity scenarios
 # =========================================================
-Write-Host ">>> STEP 2 — FIXTURE INITIALIZATION"
+Write-Host ">>> STEP 2 - FIXTURE INITIALIZATION"
 
 & (Join-Path $Runners "run_fixtures.ps1") `
     -Container $Container `
@@ -165,7 +165,7 @@ if ($LASTEXITCODE -ne 0) {
 # Fixture loading is skipped because fixtures were already
 # initialized during the previous stage.
 # =========================================================
-Write-Host ">>> STEP 3 — INTEGRITY VALIDATION"
+Write-Host ">>> STEP 3 - INTEGRITY VALIDATION"
 
 & (Join-Path $Runners "run_integrity_all.ps1") `
     -Container $Container `
@@ -194,7 +194,7 @@ if ($LASTEXITCODE -ne 0) {
 # =========================================================
 if ($IncludeStress) {
 
-    Write-Host ">>> STEP 4 — STRESS VALIDATION"
+    Write-Host ">>> STEP 4 - STRESS VALIDATION"
 
     & (Join-Path $Runners "run_stress_all.ps1") `
         -Container $Container `

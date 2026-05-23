@@ -78,6 +78,42 @@ as $$
     limit 1;
 $$;
 
+create or replace function qa_species_dog_id()
+returns integer
+language sql
+stable
+as $$
+    select id_spc
+      from species
+     where sci_nam_spc = 'Canis lupus familiaris'
+     order by id_spc
+     limit 1;
+$$;
+
+create or replace function qa_species_cat_id()
+returns integer
+language sql
+stable
+as $$
+    select id_spc
+      from species
+     where sci_nam_spc = 'Felis catus'
+     order by id_spc
+     limit 1;
+$$;
+
+create or replace function qa_species_bird_id()
+returns integer
+language sql
+stable
+as $$
+    select id_spc
+      from species
+     where sci_nam_spc = 'Aves'
+     order by id_spc
+     limit 1;
+$$;
+
 create or replace function qa_animal_internal_id()
 returns integer
 language sql
@@ -174,6 +210,14 @@ language sql
 stable
 as $$
     select id_ani from animal where reg_id_ani = 'QA-ANI-002' limit 1;
+$$;
+
+create or replace function qa_animal_delivery_shelter_id()
+returns integer
+language sql
+stable
+as $$
+    select id_ani from animal where reg_id_ani = 'QA-ANI-004' limit 1;
 $$;
 
 create or replace function qa_external_entity_shelter_id()

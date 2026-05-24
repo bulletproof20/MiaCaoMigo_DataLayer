@@ -77,6 +77,7 @@ $$;
 
 
 drop function if exists fn_validate_password(varchar, varchar);
+drop function if exists validate_password(varchar, varchar);
 
 -- ---------------------------------------------------------
 -- FUNCTION: fn_validate_password
@@ -123,14 +124,3 @@ as $$
     );
 $$;
 
--- deprecated alias — prefer fn_validate_password (Phase 1)
-drop function if exists validate_password(varchar, varchar);
-
-create function validate_password(p_email varchar, p_password varchar)
-returns boolean
-language sql
-stable
-parallel safe
-as $$
-    select fn_validate_password(p_email, p_password);
-$$;

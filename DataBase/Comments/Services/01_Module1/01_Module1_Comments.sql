@@ -46,11 +46,21 @@ comment on function fn_is_assistant(integer) is
 comment on function fn_is_account_active(character varying) is
 'Internal: active employee or client for normalized email.';
 
+-- query helpers (fn_pick_* internal)
+comment on function fn_pick_latest_login_record(integer, boolean, boolean) is
+'Internal: latest login_record for user with optional outcome filter.';
+
+comment on function fn_pick_most_recent_employee(integer) is
+'Internal: canonical id_emp for user (renewal/lifecycle).';
+
+comment on function fn_pick_schedule_source_employee() is
+'Internal: latest inactive employee with schedules for replication.';
+
+comment on function fn_pick_open_clock_session(integer) is
+'Internal: active open clock-in session for employee.';
+
 comment on function fn_validate_password(character varying, character varying) is
 'Internal: compares API hash with pas_emp or pas_cli.';
-
-comment on function validate_password(character varying, character varying) is
-'DEPRECATED alias for fn_validate_password.';
 
 -- session helpers (fn_* internal)
 comment on function fn_has_active_sessions(character varying) is
@@ -135,4 +145,4 @@ comment on function fn_create_user_account(character varying, text, character va
 
 comment on function fn_assign_profile(integer, integer) is
 'Internal: links employee to profile via occupies.';
-
+

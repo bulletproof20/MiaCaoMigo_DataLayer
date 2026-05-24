@@ -6,22 +6,6 @@
 -- svc_* — application entry points (delegates to sp_create_*).
 -- =========================================================
 
-drop function if exists fn_create_client(
-    varchar, text, varchar, varchar, varchar, varchar, varchar, varchar
-);
-drop function if exists fn_create_employee(
-    varchar, text, varchar, varchar, varchar, varchar,
-    varchar, varchar, varchar, int
-);
-drop function if exists fn_create_assistant(
-    varchar, text, varchar, varchar, varchar, varchar,
-    varchar, varchar, varchar, int, varchar
-);
-drop function if exists fn_create_veterinarian(
-    varchar, text, varchar, varchar, varchar, varchar,
-    varchar, varchar, varchar, int, varchar
-);
-
 drop function if exists svc_create_client(
     varchar, text, varchar, varchar, varchar, varchar, varchar, varchar
 );

@@ -1,16 +1,21 @@
 -- =========================================================
--- MODULE 2 — ANIMAL LIFECYCLE (svc_* public API)
--- FILE: 01_Animal_Lifecycle.sql
+-- MODULE 2 — PUBLIC API (svc_*)
+-- FILE: Services/02_Module2/99_Public_API.sql
 -- =========================================================
 --
--- Orchestrates Schema procedures (sp_*) or controlled DML.
--- Legacy fn_* aliases at file bottom (deprecated).
+-- Sole Services layer for Module 2: public entry points only.
+-- Workflows live in Schema (sp_assign_ownership, sp_record_delivery).
 -- =========================================================
 
 drop function if exists svc_register_adoption(int, int, int, varchar);
 drop function if exists svc_register_delivery(int, int, varchar, varchar, int[]);
 drop function if exists svc_animal_exit(int, varchar);
 drop function if exists svc_get_animal_history(int);
+drop function if exists svc_list_internal_animals_available();
+drop function if exists svc_get_active_ownership_by_animal(int);
+drop function if exists svc_get_animal_catalog_entry(int);
+
+-- --- lifecycle (sp_* delegation + controlled DML) ---
 
 create function svc_register_adoption(
     p_id_cli int,
@@ -90,25 +95,37 @@ as $$
     order by 1 desc;
 $$;
 
--- deprecated aliases (Phase 1)
-drop function if exists fn_register_adoption(int, int, int, varchar);
-create function fn_register_adoption(int, int, int, varchar)
-returns void language plpgsql as $$
-begin perform svc_register_adoption($1, $2, $3, $4); end; $$;
+-- --- read (vw_* facades) ---
 
-drop function if exists fn_register_delivery_team(int, int, varchar, varchar, int[]);
-create function fn_register_delivery_team(int, int, varchar, varchar, int[])
-returns void language plpgsql as $$
-begin perform svc_register_delivery($1, $2, $3, $4, $5); end; $$;
+create function svc_list_internal_animals_available()
+returns setof vw_internal_animals_available
+language sql
+stable
+parallel safe
+as $$
+    select *
+    from vw_internal_animals_available
+    order by reg_dat_ani desc;
+$$;
 
-drop function if exists fn_animal_exit(int, varchar);
-create function fn_animal_exit(int, varchar)
-returns void language plpgsql as $$
-begin perform svc_animal_exit($1, $2); end; $$;
+create function svc_get_active_ownership_by_animal(p_id_ani int)
+returns setof vw_active_ownership_detail
+language sql
+stable
+parallel safe
+as $$
+    select *
+    from vw_active_ownership_detail
+    where id_ani = p_id_ani;
+$$;
 
-drop function if exists fn_get_animal_history(int);
-create function fn_get_animal_history(p_id_ani int)
-returns table(event_date date, description text)
-language sql stable parallel safe as $$
-    select * from svc_get_animal_history(p_id_ani);
+create function svc_get_animal_catalog_entry(p_id_ani int)
+returns vw_animal_catalog_detail
+language sql
+stable
+parallel safe
+as $$
+    select *
+    from vw_animal_catalog_detail
+    where id_ani = p_id_ani;
 $$;

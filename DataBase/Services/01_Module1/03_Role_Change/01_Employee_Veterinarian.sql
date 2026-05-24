@@ -18,7 +18,7 @@ declare
     v_id_emp_new int;
 begin
 
-    p_num_omv_vet := fn_normalize_omv_number(p_num_omv_vet);
+    p_num_omv_vet := fn_normalize_text(p_num_omv_vet);
 
     v_id_emp_old := fn_get_active_employee_by_user(p_id_usr);
 

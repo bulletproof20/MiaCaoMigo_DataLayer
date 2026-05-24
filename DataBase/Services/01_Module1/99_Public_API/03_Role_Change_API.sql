@@ -6,10 +6,6 @@
 -- svc_* — application entry points (delegates to sp_promote_* / sp_demote_*).
 -- =========================================================
 
-drop function if exists fn_alter_employee_to_veterinarian(int, varchar, int);
-drop function if exists fn_alter_employee_to_assistant(int, varchar, int);
-drop function if exists fn_alter_employee_to_general(int, int);
-
 drop function if exists svc_promote_to_veterinarian(int, varchar, int);
 drop function if exists svc_promote_to_assistant(int, varchar, int);
 drop function if exists svc_demote_to_general_employee(int, int);

@@ -62,7 +62,7 @@ begin
     end if;
 
     insert into client (id_usr, pas_cli)
-    values (v_id_usr, fn_normalize_secret(p_pas_cli))
+    values (v_id_usr, fn_normalize_text(p_pas_cli))
     returning id_cli
     into p_id_cli;
 

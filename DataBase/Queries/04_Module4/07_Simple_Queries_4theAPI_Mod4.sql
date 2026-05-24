@@ -1,7 +1,7 @@
 -- =========================================================
 -- QUERIES — MODULE 4 (API REFERENCE)
 -- =========================================================
--- DEPRECATED: prefer Services/04_Module4/01_Appointment_Read.sql (svc_*)
+-- DEPRECATED: prefer Services/04_Module4/99_Public_API.sql (svc_*)
 -- and reporting views (vw_appointment_detail, vw_appointments_today).
 -- =========================================================
 

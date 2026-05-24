@@ -90,7 +90,7 @@ begin
         fn_normalize_phone_nullable(p_pho_emp),
         fn_normalize_phone_nullable(p_pho_emg),
         v_ema_emp,
-        fn_normalize_secret(p_pas_emp),
+        fn_normalize_text(p_pas_emp),
         current_timestamp,
         p_id_emp_reg
     )

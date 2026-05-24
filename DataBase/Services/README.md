@@ -8,8 +8,8 @@ orchestration, and the **official public database API** (`svc_*`).
 | Layer | Responsibility |
 |-------|----------------|
 | **Schema** | Tables, `vw_*`, technical functions, triggers, **technical** `sp_*` (jobs/hygiene) |
-| **Services** | Business `sp_*` workflows, internal `fn_*`, public `svc_*` API |
-| **Queries** | Read/ranking helpers (`fn_pick_*`) consumed by Services |
+| **Services** | Business `sp_*` workflows, internal `fn_*` (incl. `fn_pick_*`), public `svc_*` API |
+| **Queries** | Manual inspection SQL (not loaded by bootstrap) |
 
 ## Reference flow (Module 1)
 
@@ -22,20 +22,20 @@ Application / API
        ▼
     sp_*           ← Services/01_Module1/* (business workflows)
        │
-       ├── fn_*   ← Services/00_Core, 00_Core_Mod1, Queries/
+       ├── fn_*   ← Services/00_Core, 00_Core_Mod1, 05_Query_Helpers/
        └── vw_*   ← Schema/07_Views_Mod1.sql
 ```
 
-Module 2–4: `svc_*` over Schema `sp_*` / `vw_*` where applicable.
+Modules 2–4: all `svc_*` in a single `99_Public_API.sql` over Schema `sp_*` / `vw_*`.
 
 ## Prefix contract
 
 | Prefix | Where | Callable by API? |
 |--------|-------|------------------|
-| **`svc_*`** | `99_Public_API/` (M1) | **Yes** — sole public contract |
+| **`svc_*`** | `99_Public_API/` (M1) or `99_Public_API.sql` (M2–M4) | **Yes** — sole public contract |
 | **`sp_*`** | Services (M1 workflows); Schema (technical only) | No |
-| **`fn_*`** | Services / Queries | No — internal helpers |
-| **`vw_*`** | Schema | No — via `sp_*` / `fn_*` |
+| **`fn_*`** | Services | No — internal helpers |
+| **`vw_*`** | Schema | No — via `sp_*` / `fn_*` / `svc_*` |
 
 ## Module 1 layout
 
@@ -46,10 +46,21 @@ Services/01_Module1/
 ├── 02_User_Creation/       fn building blocks + sp_create_*
 ├── 03_Role_Change/         sp_renew_* + sp_promote_* / sp_demote_*
 ├── 04_Attendance_Management/  sp_clock_* / sp_replicate_*
+├── 05_Query_Helpers/       fn_pick_* ranking helpers
 └── 99_Public_API/          svc_* by domain (official entry points)
 ```
 
 **Schema M1 technical procedures:** `sp_auto_close_clock_in_midnight`, `sp_auto_cancel_expired_absences`
+
+## Modules 2–4 layout
+
+```
+Services/02_Module2/99_Public_API.sql   (7 svc_* — animals)
+Services/03_Module3/99_Public_API.sql   (5 svc_* — commercial)
+Services/04_Module4/99_Public_API.sql   (5 svc_* — appointments)
+```
+
+No internal `sp_*` / `fn_*` in Services for M2–M4; complexity stays in Schema.
 
 Load order: `Bootstrap/Loaders/06_Services.sql`
 

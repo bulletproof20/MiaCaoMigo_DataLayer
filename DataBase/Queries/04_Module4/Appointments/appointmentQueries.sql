@@ -1,7 +1,7 @@
 -- =========================================================
 -- QUERIES — MODULE 4 APPOINTMENTS (REFERENCE ONLY)
 -- =========================================================
--- Prefer Services/04_Module4/01_Appointment_Read.sql:
+-- Prefer Services/04_Module4/99_Public_API.sql:
 --   svc_list_vet_appointments_from(id_emp, from_date)
 --   svc_list_animal_appointment_history(id_ani)
 --   svc_get_appointment_detail(id_app)

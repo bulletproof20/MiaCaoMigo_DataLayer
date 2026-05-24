@@ -16,18 +16,3 @@ comment on function svc_list_vet_appointments_from(integer, date) is
 
 comment on function svc_list_animal_appointment_history(integer) is
 'Public API: appointment history for one animal from vw_appointment_detail.';
-
-comment on function fn_list_appointments_today() is
-'DEPRECATED alias for svc_list_appointments_today.';
-
-comment on function fn_list_appointments_tomorrow() is
-'DEPRECATED alias for svc_list_appointments_tomorrow.';
-
-comment on function fn_get_appointment_detail(integer) is
-'DEPRECATED alias for svc_get_appointment_detail.';
-
-comment on function fn_list_vet_appointments_from(integer, date) is
-'DEPRECATED alias for svc_list_vet_appointments_from.';
-
-comment on function fn_list_animal_appointment_history(integer) is
-'DEPRECATED alias for svc_list_animal_appointment_history.';

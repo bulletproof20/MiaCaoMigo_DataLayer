@@ -6,8 +6,6 @@
 -- svc_* — application entry points (delegates to sp_auth_*).
 -- =========================================================
 
-drop function if exists login_user(varchar, varchar, inet);
-drop function if exists logout_user(varchar);
 drop function if exists svc_auth_login(varchar, varchar, inet);
 drop function if exists svc_auth_logout(varchar);
 

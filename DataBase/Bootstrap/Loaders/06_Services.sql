@@ -16,11 +16,11 @@
 
 -- ARCHITECTURE
 
---   svc_*  — public API (99_Public_API/; application entry points)
+--   svc_*  — public API (M1: 99_Public_API/; M2–M4: 99_Public_API.sql)
 
 --   sp_*   — business workflows (Services/01_Module1; not Schema)
 
---   fn_*   — internal helpers (normalization, validation, identity)
+--   fn_*   — internal helpers (normalization, validation, identity, fn_pick_*)
 
 --   vw_*   — read models (Schema; consumed by sp_* / fn_*)
 
@@ -32,7 +32,7 @@
 
 -- LOAD ORDER (Module 1)
 
---   fn core → auth helpers → sp workflows → svc public API
+--   fn core → fn_pick helpers → auth helpers → sp workflows → svc public API
 
 -- =========================================================
 
@@ -43,14 +43,7 @@
 
 
 \i /docker-entrypoint-initdb.d/Services/00_Core/00_Normalization_Text.sql
-
 \i /docker-entrypoint-initdb.d/Services/00_Core/01_Normalization_Identity.sql
-
-\i /docker-entrypoint-initdb.d/Services/00_Core/02_Normalization_Codes.sql
-
-\i /docker-entrypoint-initdb.d/Services/00_Core/03_Normalization_Search.sql
-
-
 
 \echo '>>> loading services layer (01_Module1)'
 
@@ -58,7 +51,7 @@
 
 \echo '--- module 1 | query helpers (fn_pick_*)'
 
-\i /docker-entrypoint-initdb.d/Queries/01_Module1/00_Query_Helpers.sql
+\i /docker-entrypoint-initdb.d/Services/01_Module1/05_Query_Helpers/00_Pick_Helpers.sql
 
 
 
@@ -120,9 +113,9 @@
 
 
 
-\i /docker-entrypoint-initdb.d/Services/02_Module2/01_Animal_Lifecycle.sql
+\echo '--- module 2 | public API (svc_*)'
 
-\i /docker-entrypoint-initdb.d/Services/02_Module2/02_Animal_Read.sql
+\i /docker-entrypoint-initdb.d/Services/02_Module2/99_Public_API.sql
 
 
 
@@ -130,9 +123,9 @@
 
 
 
-\i /docker-entrypoint-initdb.d/Services/03_Module3/02_Inventory_Read.sql
+\echo '--- module 3 | public API (svc_*)'
 
-\i /docker-entrypoint-initdb.d/Services/03_Module3/03_Commercial_Write.sql
+\i /docker-entrypoint-initdb.d/Services/03_Module3/99_Public_API.sql
 
 
 
@@ -140,6 +133,7 @@
 
 
 
-\i /docker-entrypoint-initdb.d/Services/04_Module4/01_Appointment_Read.sql
+\echo '--- module 4 | public API (svc_*)'
 
+\i /docker-entrypoint-initdb.d/Services/04_Module4/99_Public_API.sql
 

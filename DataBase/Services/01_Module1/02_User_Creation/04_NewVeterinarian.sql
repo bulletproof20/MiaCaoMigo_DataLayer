@@ -30,7 +30,7 @@ declare
     v_id_emp int;
 begin
 
-    p_num_omv_vet := fn_normalize_omv_number(p_num_omv_vet);
+    p_num_omv_vet := fn_normalize_text(p_num_omv_vet);
 
     call sp_create_employee(
         p_nam_usr,

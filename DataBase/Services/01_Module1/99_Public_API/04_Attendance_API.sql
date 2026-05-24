@@ -6,9 +6,6 @@
 -- svc_* — application entry points (delegates to sp_clock_* / sp_replicate_*).
 -- =========================================================
 
-drop function if exists fn_clock_employee(int);
-drop function if exists fn_replicate_previous_schedule(int);
-
 drop function if exists svc_clock_toggle(int);
 drop function if exists svc_replicate_schedule(int);
 

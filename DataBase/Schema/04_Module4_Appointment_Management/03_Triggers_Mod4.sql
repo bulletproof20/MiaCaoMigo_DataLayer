@@ -80,3 +80,13 @@ create trigger trg_prevent_completed_appointment_modification
 before update on appointment
 for each row
 execute function tfn_prevent_completed_appointment_modification();
+
+-- =========================================================
+-- Mirrors invoice.id_app when appointment.id_inv is set or cleared
+-- =========================================================
+
+drop trigger if exists trg_sync_invoice_appointment_link on appointment;
+create trigger trg_sync_invoice_appointment_link
+after insert or update of id_inv or delete on appointment
+for each row
+execute function tfn_sync_invoice_appointment_link();

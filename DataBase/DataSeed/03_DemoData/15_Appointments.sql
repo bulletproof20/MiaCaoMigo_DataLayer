@@ -46,7 +46,7 @@ values
     -- 22 May Tico completed (Isabel client)
     (8, 8, 5, 5, 1,
      '2026-05-22 10:00:00+01', '2026-05-22 10:02:00+01', '2026-05-22 10:28:00+01',
-     'completed', 'Mild gingivitis', 'Dental hygiene plan', 6),  -- id_inv set at insert; invoice.id_app linked below
+     'completed', 'Mild gingivitis', 'Dental hygiene plan', 6),
     -- 20 May Bento palliative (Ana)
     (9, 6, 5, 3, 1,
      '2026-05-20 14:00:00+01', '2026-05-20 14:05:00+01', '2026-05-20 14:40:00+01',
@@ -67,10 +67,6 @@ where id_ani = 6 and end_dat_own is null;
 update animal
 set sta_ani = 'Falecido', ina_dat_ani = '2026-05-28'
 where id_ani = 6;
-
--- Link consultation invoices (appointments must exist before FK on invoice.id_app)
-update invoice set id_app = 8 where id_inv = 6;
-update invoice set id_app = 3 where id_inv = 7;
 
 alter table appointment enable trigger trg_block_past_appointments;
 

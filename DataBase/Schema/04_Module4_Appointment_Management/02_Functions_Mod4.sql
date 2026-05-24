@@ -233,3 +233,39 @@ begin
     return new;
 end;
 $$ language plpgsql;
+
+-- =========================================================
+-- Keeps invoice.id_app in sync with appointment.id_inv (1:1 consultation billing)
+-- =========================================================
+
+create or replace function tfn_sync_invoice_appointment_link()
+returns trigger as $$
+begin
+    if tg_op = 'DELETE' then
+        if old.id_inv is not null then
+            update invoice
+            set id_app = null
+            where id_inv = old.id_inv
+              and id_app = old.id_app;
+        end if;
+        return old;
+    end if;
+
+    if tg_op = 'UPDATE'
+       and old.id_inv is distinct from new.id_inv
+       and old.id_inv is not null then
+        update invoice
+        set id_app = null
+        where id_inv = old.id_inv
+          and id_app = old.id_app;
+    end if;
+
+    if new.id_inv is not null then
+        update invoice
+        set id_app = new.id_app
+        where id_inv = new.id_inv;
+    end if;
+
+    return new;
+end;
+$$ language plpgsql;

@@ -41,7 +41,7 @@ comment on column invoice.sta_inv is
 'invoice workflow state using centralized invoice_status enum';
 
 comment on column invoice.id_app is
-'optional appointment reference (no FK; may be set from Module 4 billing flow)';
+'consultation back-reference mirrored from appointment.id_inv (unique when set; retail invoices stay null)';
 
 comment on constraint pk_invoice on invoice is
 'primary key for invoice rows';

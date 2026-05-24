@@ -3,7 +3,7 @@
 -- =========================================================
 -- Orchestration only: Core data reset + MasterData inserts (00_MasterData/*).
 -- PREREQUISITE: Loaders 00–08 (schema + services).
--- INVOKED BY: init_demo, init_master.
+-- INVOKED BY: init_demo, init_qa.
 -- =========================================================
 
 \echo '========================================'

@@ -68,7 +68,7 @@ Dockerfile
   Single orchestration layer (`00_Extensions` … `12_DemoData`). Data tiers `\i` datasets under `DataSeed/` directly.
 
 * **Bootstrap/Profiles/**
-  Reusable compositions: `init_minimal`, `init_master`, `init_demo`, `init_test`, `init_full_qa`.
+  `init_core` (shared base), `init_demo` (default Docker), `init_qa` (CI overlay via `docker-compose.qa.yml`).
 
 * **DataSeed/**
   INSERT tiers only (MasterData and DemoData).

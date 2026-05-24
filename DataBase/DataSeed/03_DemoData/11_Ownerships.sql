@@ -15,10 +15,10 @@ values
     (5, 4, 11, '2025-12-15', null, 'pedro costa dog thor', 2),
     (6, 3, 6, '2018-01-01', null, 'ana lourenco cat bento', 2);
 
-update animal set sta_ani = 'Adotado', id_cli = 1 where id_ani = 1;
-update animal set sta_ani = 'Adotado', id_cli = 5 where id_ani in (8, 9, 10);
-update animal set sta_ani = 'Adotado', id_cli = 4 where id_ani = 11;
-update animal set sta_ani = 'Adotado', id_cli = 3 where id_ani = 6;
+update animal set sta_ani = 'Adotado' where id_ani = 1;
+update animal set sta_ani = 'Adotado' where id_ani in (8, 9, 10);
+update animal set sta_ani = 'Adotado' where id_ani = 11;
+update animal set sta_ani = 'Adotado' where id_ani = 6;
 
 select setval(pg_get_serial_sequence('ownership', 'id_own'),
     (select coalesce(max(id_own), 1) from ownership));

@@ -31,3 +31,6 @@ comment on function tfn_validate_animal_client_relationship() is
 
 comment on function tfn_prevent_completed_appointment_modification() is
 'blocks edits once an appointment reaches a terminal status';
+
+comment on function tfn_sync_invoice_appointment_link() is
+'maintains invoice.id_app when appointment.id_inv is set, changed, or cleared (1:1 consultation billing)';

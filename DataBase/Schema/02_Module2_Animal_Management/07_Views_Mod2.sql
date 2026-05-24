@@ -53,9 +53,9 @@ where o.end_dat_own is null;
 
 
 -- =========================================================
--- Animal catalog with taxonomy and optional owner
+-- Animal catalog with taxonomy and active ownership owner
 -- =========================================================
--- Entities: animal, species, breed, client, user_account
+-- Entities: animal, species, breed, ownership, client, user_account
 -- Purpose: consolidated animal registry for operational search
 
 drop view if exists vw_animal_catalog_detail;
@@ -75,13 +75,15 @@ select
     s.nam_spc,
     b.id_bre,
     b.nam_bre,
-    a.id_cli,
+    o.id_cli,
     u.nam_usr as owner_name,
     u.ema_usr as owner_email
 from animal a
 inner join species s on s.id_spc = a.id_spc
 left join breed b on b.id_bre = a.id_bre
-left join client c on c.id_cli = a.id_cli
+left join ownership o on o.id_ani = a.id_ani
+    and o.end_dat_own is null
+left join client c on c.id_cli = o.id_cli
 left join user_account u on u.id_usr = c.id_usr;
 
 

@@ -26,3 +26,6 @@ comment on trigger trg_validate_appointment_vet_specialty on appointment is
 
 comment on trigger trg_prevent_completed_appointment_modification on appointment is
 'fires before update to freeze terminal appointments';
+
+comment on trigger trg_sync_invoice_appointment_link on appointment is
+'fires after insert/update of id_inv or delete to mirror invoice.id_app from appointment.id_inv';

@@ -66,7 +66,7 @@ create table invoice (
     -- Invoice workflow state (centralized enum)
 
     id_app int,
-    -- Optional appointment reference (no FK; linked from appointment.id_inv in Module 4)
+    -- Consultation back-reference (maintained by appointment.id_inv sync trigger in Module 4)
 
     constraint pk_invoice primary key (id_inv)
 );

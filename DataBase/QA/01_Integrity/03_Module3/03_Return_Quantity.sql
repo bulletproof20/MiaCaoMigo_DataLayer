@@ -2,7 +2,7 @@
 -- INTEGRITY — MODULE 3 — RETURN QUANTITY
 -- =========================================================
 -- TYPE:     01_Integrity
--- REQUIRES: init_qa + fixtures/03_Module3/01_Commercial_Product.sql
+-- REQUIRES: init_qa + fixtures/seed/m3_commercial_product.sql
 -- RULE:     trg_return_restock / tfn_return_restock
 -- CONTRACT: qa_product_int_p001_id()
 -- =========================================================

@@ -22,7 +22,7 @@
 --
 -- RELATED:
 --   QA/contracts/01_QA_Functions.sql
---   QA/fixtures/02_Module2/01_Animals_Ownership.sql
+--   QA/fixtures/seed/m2_animals_ownership.sql
 --   QA/01_Integrity/02_Module2/01_Duplicate_Ownership.sql
 --   QA/01_Integrity/02_Module2/02_Ownership_Lifecycle.sql
 -- =========================================================

@@ -14,7 +14,7 @@
 -- RELATED:
 --   Services/01_Module1/02_User_Creation/01_NewClient.sql
 --   QA/contracts/01_QA_Functions.sql
---   QA/fixtures/01_Module1/01_Core_Context.sql
+--   QA/fixtures/seed/m1_core_context.sql
 --   Queries/01_Module1/02_User_Creation_Inspection.sql
 -- =========================================================
 

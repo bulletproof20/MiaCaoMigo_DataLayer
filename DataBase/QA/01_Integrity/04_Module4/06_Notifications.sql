@@ -2,7 +2,7 @@
 -- INTEGRITY — MODULE 4 — APPOINTMENT NOTIFICATIONS
 -- =========================================================
 -- TYPE:     01_Integrity
--- REQUIRES: init_qa + fixtures/04_Module4/01_Appointment_Slots.sql
+-- REQUIRES: init_qa + fixtures/seed/m4_appointment_slots.sql
 -- RULE:     appointment_notification persistence
 -- CONTRACT: qa_client_active_id, qa_appt_notification_date
 -- =========================================================

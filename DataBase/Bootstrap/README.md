@@ -43,7 +43,7 @@ init_core
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.qa.yml down -v
 docker compose -f docker-compose.yml -f docker-compose.qa.yml up -d --build
-cd DataBase/QA/runners && ./run_ci.ps1
+cd DataBase/QA/runners && ./ci.ps1
 ```
 
 ## Reset (local demo)

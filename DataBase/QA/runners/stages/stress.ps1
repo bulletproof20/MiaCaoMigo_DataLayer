@@ -1,18 +1,5 @@
-# =========================================================
-# QA RUNNER - FULL STRESS VALIDATION SUITE
-# FILE: QA/runners/run_stress_all.ps1
-# =========================================================
-# PURPOSE:
-#   Executes the complete 04_Stress validation suite after
-#   deterministic QA fixtures (including stress datasets).
-#
-# PREREQUISITES:
-#   init_qa bootstrap, Docker PostgreSQL, lib/Invoke-QaSqlRunner.ps1
-#
-# NOTE:
-#   Use ASCII hyphens only inside double-quoted strings so
-#   Windows PowerShell 5.1 parses UTF-8 files without BOM.
-# =========================================================
+# stages/stress.ps1 — 04_Stress suite (loads fixtures with -IncludeStress first)
+# Usage: .\stages\stress.ps1
 
 param(
     [string]$Container = "miacaomigo-db",
@@ -22,37 +9,33 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-. (Join-Path $PSScriptRoot "lib/Invoke-QaSqlRunner.ps1")
+$RunnersRoot = Split-Path $PSScriptRoot -Parent
+$TestsRoot = Split-Path $RunnersRoot -Parent
 
-$Tests = Split-Path $PSScriptRoot -Parent
-$Stress = Join-Path $Tests "04_Stress"
+. (Join-Path $RunnersRoot "lib/Invoke-QaSqlRunner.ps1")
+
+$Stress = Join-Path $TestsRoot "04_Stress"
 
 $scripts = @(
     "01_Module1/01_Login_Concurrency.sql"
     "01_Module1/02_Clocking_Concurrency.sql"
-
     "02_Module2/01_Concurrent_Adoption.sql"
-
     "03_Module3/01_Concurrent_Sales.sql"
     "03_Module3/02_High_Volume_Invoice_Lines.sql"
     "03_Module3/03_FIFO_Consumption.sql"
     "03_Module3/04_Return_Storm.sql"
-
     "04_Module4/01_Concurrent_Appointment_Booking.sql"
     "04_Module4/02_Appointment_Lifecycle_Load.sql"
 )
 
 Write-Host "========================================"
-Write-Host "FULL SYSTEM STRESS VALIDATION"
-Write-Host "Scripts Scheduled: $($scripts.Count)"
-Write-Host "Container: $Container"
-Write-Host "Database: $Db"
+Write-Host "QA STRESS ($($scripts.Count) scripts)"
 Write-Host "========================================"
 
 Write-Host ""
-Write-Host ">>> PRE-FLIGHT - QA FIXTURES + STRESS DATASETS"
+Write-Host ">>> PRE-FLIGHT - fixtures + stress seed"
 
-& (Join-Path $PSScriptRoot "run_fixtures.ps1") `
+& (Join-Path $RunnersRoot "stages/fixtures.ps1") `
     -Container $Container `
     -Db $Db `
     -User $User `
@@ -70,7 +53,6 @@ $totalError = 0
 $totalFatal = 0
 
 foreach ($rel in $scripts) {
-
     Write-Host ""
     Write-Host ">>> $rel"
 
@@ -78,7 +60,7 @@ foreach ($rel in $scripts) {
 
     if (-not (Test-Path -LiteralPath $path)) {
         $scriptsFailed++
-        Write-Host "ERROR: stress script not found -> $path"
+        Write-Host "ERROR: not found -> $path"
         continue
     }
 
@@ -91,14 +73,13 @@ foreach ($rel in $scripts) {
     $result.Output | Write-Host
 
     $scriptsRun++
-
     $totalFail += $result.Metrics.FailCount
     $totalError += $result.Metrics.ErrorCount
     $totalFatal += $result.Metrics.FatalCount
 
     if (-not $result.Success) {
         $scriptsFailed++
-        Write-Host "ERROR: stress validation failed -> $rel"
+        Write-Host "ERROR: failed -> $rel"
     }
 }
 

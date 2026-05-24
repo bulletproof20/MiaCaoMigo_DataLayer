@@ -2,7 +2,7 @@
 -- INTEGRITY — MODULE 2 — OWNERSHIP LIFECYCLE
 -- =========================================================
 -- TYPE:     01_Integrity
--- REQUIRES: fixtures/cleanup/02_Reset_Module2_Animal1.sql (runner prefix)
+-- REQUIRES: fixtures/reset/m2_animal1_ownership.sql (runner prefix)
 -- RULE:     sp_assign_ownership, sp_end_ownership
 -- CONTRACT: qa_animal_internal_id, qa_client_active_id, qa_registrar_emp_id
 -- =========================================================

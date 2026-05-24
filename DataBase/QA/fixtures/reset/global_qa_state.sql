@@ -10,10 +10,10 @@
 --
 -- EXECUTION:
 --   Automatically loaded by:
---     - run_fixtures.ps1
---     - run_ci.ps1
---     - run_integrity_all.ps1
---     - run_stress_all.ps1
+--     - stages/fixtures.ps1
+--     - ci.ps1
+--     - stages/integrity.ps1
+--     - stages/stress.ps1
 --
 -- REQUIRES:
 --   Bootstrap init_qa (Master baseline only; no DemoData)
@@ -39,7 +39,7 @@
 -- RELATED:
 --   QA/contracts/01_QA_Functions.sql
 --   QA/fixtures/*
---   QA/fixtures/cleanup/*
+--   QA/fixtures/reset/*
 -- =========================================================
 
 

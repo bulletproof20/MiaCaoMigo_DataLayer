@@ -5,7 +5,7 @@
 -- VOLUME:    100 svc_auth_login calls on qa_login_session_emp_email (open session fixture)
 -- EXPECTED:  login_success = false when session active; no duplicate open sessions
 -- METRICS:   attempts, blocked logins, open sessions count, duration
--- REQUIRES:  init_qa + fixtures/01_Module1/01_Core_Context.sql
+-- REQUIRES:  init_qa + fixtures/seed/m1_core_context.sql
 -- CONTRACT:  qa_login_session_emp_email()
 -- =========================================================
 

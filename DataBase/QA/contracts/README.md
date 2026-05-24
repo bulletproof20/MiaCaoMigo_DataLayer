@@ -1,6 +1,6 @@
 # QA contracts
 
-Semantic lookups (`qa_*()`). Loaded by `run_fixtures.ps1`. **Not** in Bootstrap init.
+Semantic lookups (`qa_*()`). Loaded by `stages/fixtures.ps1`. **Not** in Bootstrap init.
 
 ## Functions
 

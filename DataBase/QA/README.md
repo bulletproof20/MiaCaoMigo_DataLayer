@@ -20,27 +20,27 @@ QA/
 ```powershell
 docker compose -f docker-compose.yml -f docker-compose.qa.yml up -d --build
 cd DataBase/QA/runners
-.\run_ci.ps1
+.\ci.ps1
 ```
 
 ```bash
-chmod +x DataBase/QA/runners/run_qa.sh
-DataBase/QA/runners/run_qa.sh
+chmod +x DataBase/QA/runners/qa.sh
+DataBase/QA/runners/qa.sh
 ```
 
-Optional stress in CI: `.\run_ci.ps1 -IncludeStress`
+Optional stress in CI: `.\ci.ps1 -IncludeStress`
 
 ## Runners
 
-`run_ci.ps1` (PowerShell) and `run_qa.sh` (Linux/CI) are the only orchestration entrypoints. Other runners are modular stages invoked by the pipeline or run standalone.
+`ci.ps1` (PowerShell) and `qa.sh` (Linux/CI) are the only orchestration entrypoints. Other runners are modular stages invoked by the pipeline or run standalone.
 
 | Script | CI | Purpose |
 |--------|-----|---------|
-| `run_ci.ps1` | yes | orchestration: bootstrap + fixtures + integrity (+ optional stress) |
-| `run_bootstrap_check.ps1` | stage | `00_Bootstrap` |
-| `run_fixtures.ps1` | stage | contracts + fixtures |
-| `run_integrity_all.ps1` | stage | 21 integrity scripts |
-| `run_stress_all.ps1` | optional | `04_Stress` |
+| `ci.ps1` | yes | orchestration: bootstrap + fixtures + integrity (+ optional stress) |
+| `stages/bootstrap.ps1` | stage | `00_Bootstrap` |
+| `stages/fixtures.ps1` | stage | contracts + fixtures |
+| `stages/integrity.ps1` | stage | 21 integrity scripts |
+| `stages/stress.ps1` | optional | `04_Stress` |
 | `run_manual_module.ps1` | no | `05_Manual` |
 
 ## Tiers

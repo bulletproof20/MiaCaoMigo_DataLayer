@@ -2,7 +2,7 @@
 -- INTEGRITY — MODULE 1 — LOGIN / SESSION RULES
 -- =========================================================
 -- TYPE:     01_Integrity
--- REQUIRES: init_qa + fixtures/01_Module1/01_Core_Context.sql
+-- REQUIRES: init_qa + fixtures/seed/m1_core_context.sql
 -- RULE:     svc_auth_login — single active session; svc_auth_logout semantics
 -- FIXTURES: qa_login_session_emp_email (open session), qa_registrar_emp_email
 -- CONTRACT: qa_login_session_emp_email(), qa_registrar_emp_email()

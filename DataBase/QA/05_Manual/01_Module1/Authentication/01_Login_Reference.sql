@@ -9,12 +9,12 @@
 --   and svc_auth_logout against deterministic QA session fixtures.
 --
 -- REQUIRES:
---   init_qa + QA fixtures (run_fixtures.ps1)
+--   init_qa + QA fixtures (stages/fixtures.ps1)
 --
 -- RELATED:
 --   Services/01_Module1/01_Authentication/01_Login.sql
 --   Services/01_Module1/01_Authentication/02_Logout.sql
---   QA/fixtures/01_Module1/01_Core_Context.sql
+--   QA/fixtures/seed/m1_core_context.sql
 --   QA/01_Integrity/01_Module1/02_Login_Session_Rules.sql
 --   Queries/01_Module1/01_Authentication.sql
 -- =========================================================

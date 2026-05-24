@@ -2,7 +2,7 @@
 -- INTEGRITY — MODULE 2 — CONCESSION / INACTIVE OWNERSHIP
 -- =========================================================
 -- TYPE:     01_Integrity
--- REQUIRES: init_qa + fixtures/02_Module2/01_Animals_Ownership.sql
+-- REQUIRES: init_qa + fixtures/seed/m2_animals_ownership.sql
 -- RULE:     sp_process_concession; tfn_block_ownership_if_animal_inactive
 -- CONTRACT: qa_animal_adopted_id, qa_registrar_emp_id, qa_client_secondary_id
 -- =========================================================

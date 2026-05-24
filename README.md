@@ -88,7 +88,7 @@ Master-only bootstrap for automated validation:
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.qa.yml up -d --build
 cd DataBase/QA/runners
-./run_ci.ps1
+./ci.ps1
 ```
 
 Requires a **fresh volume** when switching from `init_demo` to `init_qa` (`docker compose down -v`). See `DataBase/QA/README.md`.

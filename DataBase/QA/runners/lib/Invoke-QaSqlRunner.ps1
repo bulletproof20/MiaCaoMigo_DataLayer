@@ -28,11 +28,11 @@
 #   • Write-QaRunSummary
 #
 # USED BY:
-#   • run_bootstrap_check.ps1
-#   • run_ci.ps1
-#   • run_fixtures.ps1
-#   • run_integrity_all.ps1
-#   • run_stress_all.ps1
+#   • stages/bootstrap.ps1
+#   • ci.ps1
+#   • stages/fixtures.ps1
+#   • stages/integrity.ps1
+#   • stages/stress.ps1
 #
 # EXECUTION MODEL:
 #   This library is intended to be imported through

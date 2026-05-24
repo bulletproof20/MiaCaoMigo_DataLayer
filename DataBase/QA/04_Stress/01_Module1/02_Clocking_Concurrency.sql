@@ -5,7 +5,7 @@
 -- VOLUME:    50 svc_clock_toggle calls on QA_EMP_CLOCKABLE (open clock_in fixture)
 -- EXPECTED:  uq_clock_in_active_per_employee holds; toggles clock-out after first
 -- METRICS:   attempts, outcomes, open clock-ins, duration
--- REQUIRES:  init_qa + fixtures/01_Module1/01_Core_Context.sql
+-- REQUIRES:  init_qa + fixtures/seed/m1_core_context.sql
 -- CONTRACT:  qa_emp_clockable_id()
 -- =========================================================
 

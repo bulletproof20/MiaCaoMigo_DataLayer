@@ -2,7 +2,7 @@
 -- INTEGRITY — MODULE 4 — APPOINTMENT OVERLAP (GiST)
 -- =========================================================
 -- TYPE:     01_Integrity
--- REQUIRES: init_qa + fixtures/04_Module4/01_Appointment_Slots.sql
+-- REQUIRES: init_qa + fixtures/seed/m4_appointment_slots.sql
 -- RULE:     ex_appointment_vet_overlap
 -- CONTRACT: qa_client_active_id, qa_animal_adopted_id, qa_vet_primary_id, qa_specialty_general_id
 -- =========================================================
@@ -16,7 +16,7 @@ declare
     v_spe int := qa_specialty_general_id();
 begin
     if v_slot is null then
-        raise notice 'FAIL: qa_appt_overlap_slot fixture missing — run run_fixtures.ps1';
+        raise notice 'FAIL: qa_appt_overlap_slot fixture missing — run stages/fixtures.ps1';
         return;
     end if;
 

@@ -38,7 +38,7 @@
 --   and allow scoped cleanup/reset operations.
 --
 -- CLEANUP:
---   fixtures/00_Reset_QA_State.sql
+--   fixtures/reset/global_qa_state.sql
 -- =========================================================================
 
 

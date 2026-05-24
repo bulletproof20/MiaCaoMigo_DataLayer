@@ -17,7 +17,7 @@
 --   semantic fixture entities referenced through contracts.
 --
 -- RELATED:
---   QA/fixtures/01_Module1/01_Core_Context.sql
+--   QA/fixtures/seed/m1_core_context.sql
 --   QA/contracts/01_QA_Functions.sql
 --   QA/01_Integrity/01_Module1/03_Clocking_Rules.sql
 --   QA/01_Integrity/01_Module1/04_Absence_Overlap.sql

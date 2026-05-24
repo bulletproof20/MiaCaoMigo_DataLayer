@@ -1,7 +1,7 @@
 -- =========================================================
 -- QA CONTRACT — semantic lookup functions (Tests only)
 -- =========================================================
--- Loaded by runners/run_fixtures.ps1 (QA layer only).
+-- Loaded by runners/stages/fixtures.ps1 (QA layer only).
 -- Resolves stable fixture / contract keys to current surrogate IDs.
 -- Does not alter application Services or Bootstrap init.
 -- =========================================================

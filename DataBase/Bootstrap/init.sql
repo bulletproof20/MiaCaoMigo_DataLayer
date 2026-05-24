@@ -11,7 +11,7 @@
 --
 -- QA PROFILE (docker-compose.qa.yml → entrypoints/init_qa_entry.sql)
 --   Profiles/init_qa.sql — core + MasterData + sanity (no DemoData)
---   Then run QA/runners/run_ci.ps1 on the host.
+--   Then run QA/runners/ci.ps1 on the host.
 --
 -- SHARED BASE (not a standalone Docker profile)
 --   Profiles/init_core.sql — DDL + services + comments

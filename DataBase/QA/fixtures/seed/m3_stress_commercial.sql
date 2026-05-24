@@ -3,7 +3,7 @@
 -- =========================================================
 -- TYPE:     fixture (data only)
 -- PROVIDES: STRESS-M3 product and FIFO batches
--- LOADED:   run_stress_all.ps1 only (not CI integrity fixtures)
+-- LOADED:   stages/stress.ps1 only (not CI integrity fixtures)
 -- =========================================================
 
 do $$

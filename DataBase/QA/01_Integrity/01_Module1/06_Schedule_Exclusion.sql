@@ -2,7 +2,7 @@
 -- INTEGRITY — MODULE 1 — SCHEDULE EXCLUSION
 -- =========================================================
 -- TYPE:     01_Integrity
--- REQUIRES: fixtures/01_Module1/01_Core_Context.sql + Bootstrap Master (1@miacaomigo.pt)
+-- REQUIRES: fixtures/seed/m1_core_context.sql + Bootstrap Master (1@miacaomigo.pt)
 -- RULE:     ex_schedule_overlap (GiST on schedule)
 -- FIXTURES: bootstrap admin schedule Monday 08:00-18:00
 -- =========================================================

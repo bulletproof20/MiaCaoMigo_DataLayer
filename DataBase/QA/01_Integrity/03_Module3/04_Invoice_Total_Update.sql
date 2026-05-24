@@ -2,7 +2,7 @@
 -- INTEGRITY — MODULE 3 — INVOICE TOTAL UPDATE
 -- =========================================================
 -- TYPE:     01_Integrity
--- REQUIRES: init_qa + fixtures/03_Module3/01_Commercial_Product.sql
+-- REQUIRES: init_qa + fixtures/seed/m3_commercial_product.sql
 -- RULE:     trg_update_invoice_total / tfn_update_invoice_total
 -- CONTRACT: qa_product_int_p001_id() (unit price 14.50, iva 6%)
 -- =========================================================

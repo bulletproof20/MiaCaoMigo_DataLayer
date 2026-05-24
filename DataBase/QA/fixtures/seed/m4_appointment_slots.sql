@@ -2,7 +2,7 @@
 -- QA FIXTURE — MODULE 4 — DETERMINISTIC APPOINTMENT SLOTS
 -- =========================================================
 -- TYPE:     fixture (data only)
--- REQUIRES: contracts + fixtures/02_Module2
+-- REQUIRES: contracts + fixtures/seed/m2_animals_ownership.sql
 -- PROVIDES: overlap slot 2099-06-15, notification date 2099-07-11
 -- =========================================================
 

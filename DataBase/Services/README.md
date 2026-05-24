@@ -50,7 +50,7 @@ Services/01_Module1/
 └── 99_Public_API/          svc_* by domain (official entry points)
 ```
 
-**Schema M1 technical procedures:** `sp_auto_close_clock_in_midnight`, `sp_auto_cancel_expired_absences`
+**Schema M1 technical procedures:** `jpr_auto_close_clock_in_midnight`, `jpr_auto_cancel_expired_absences`
 
 ## Modules 2–4 layout
 

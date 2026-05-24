@@ -1,6 +1,6 @@
 -- =========================================================
 -- NARRATIVE DEMO — 17 NOTIFICATIONS
--- Story: cron sp_generate_appointment_warnings (08:00 tomorrow)
+-- Story: cron jpr_generate_appointment_warnings (08:00 tomorrow)
 -- =========================================================
 
 set timezone to 'Europe/Lisbon';

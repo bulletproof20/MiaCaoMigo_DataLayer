@@ -3,7 +3,7 @@
 -- =========================================================
 -- TYPE:     01_Integrity
 -- REQUIRES: init_qa + fixtures/03_Module3/01_Commercial_Product.sql
--- RULE:     trg_update_invoice_total / fn_update_invoice_total
+-- RULE:     trg_update_invoice_total / tfn_update_invoice_total
 -- CONTRACT: qa_product_int_p001_id() (unit price 14.50, iva 6%)
 -- =========================================================
 -- expected:

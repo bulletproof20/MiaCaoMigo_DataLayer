@@ -49,7 +49,7 @@ $$;
 -- Raises a notice when post-sale stock falls at or below minimum
 -- =========================================================
 
-create or replace function fn_warn_low_stock()
+create or replace function tfn_warn_low_stock()
 returns trigger
 language plpgsql
 as $$
@@ -79,7 +79,7 @@ $$;
 -- Blocks invoice lines when requested quantity exceeds available stock
 -- =========================================================
 
-create or replace function fn_check_stock_before_sale()
+create or replace function tfn_check_stock_before_sale()
 returns trigger
 language plpgsql
 as $$
@@ -102,7 +102,7 @@ $$;
 -- Applies FIFO stock reductions after an invoice line insert
 -- =========================================================
 
-create or replace function fn_stock_after_sale()
+create or replace function tfn_stock_after_sale()
 returns trigger
 language plpgsql
 as $$
@@ -140,7 +140,7 @@ $$;
 -- Recalculates invoice total from persisted invoice lines
 -- =========================================================
 
-create or replace function fn_update_invoice_total()
+create or replace function tfn_update_invoice_total()
 returns trigger
 language plpgsql
 as $$
@@ -168,7 +168,7 @@ $$;
 -- Restocks inventory when a return row is recorded
 -- =========================================================
 
-create or replace function fn_return_restock()
+create or replace function tfn_return_restock()
 returns trigger
 language plpgsql
 as $$
@@ -210,7 +210,7 @@ $$;
 -- Blocks sales lines targeting inactive products
 -- =========================================================
 
-create or replace function fn_prevent_inactive_product_sale()
+create or replace function tfn_prevent_inactive_product_sale()
 returns trigger
 language plpgsql
 as $$
@@ -234,7 +234,7 @@ $$;
 -- Defaults return inactivation timestamp when omitted on insert
 -- =========================================================
 
-create or replace function fn_set_return_inactivation_date()
+create or replace function tfn_set_return_inactivation_date()
 returns trigger
 language plpgsql
 as $$

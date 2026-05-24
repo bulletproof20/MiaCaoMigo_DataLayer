@@ -30,7 +30,7 @@
 select cron.schedule(
     'auto_close_clockin_midnight',
     '0 0 * * *',  -- every day at 00:00
-    $$ call sp_auto_close_clock_in_midnight(); $$
+    $$ call jpr_auto_close_clock_in_midnight(); $$
 );
 
 
@@ -41,5 +41,5 @@ select cron.schedule(
 select cron.schedule( 
     'auto_cancel_expired_absences',
     '5 0 * * *',  -- every day at 00:05
-    $$ call sp_auto_cancel_expired_absences(); $$
+    $$ call jpr_auto_cancel_expired_absences(); $$
 );

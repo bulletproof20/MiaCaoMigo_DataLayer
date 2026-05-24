@@ -106,7 +106,7 @@ exclude using gist (
 -- OPERATIONAL — absence rows by employee
 -- =========================================================
 -- Optimizes:
---   - fn_block_absence_overlap_by_user (absence ↔ employee join)
+--   - tfn_block_absence_overlap_by_user (absence ↔ employee join)
 --   - vw_operational_absences
 --   - absence maintenance by id_emp
 --
@@ -121,7 +121,7 @@ on absence (id_emp);
 -- OPERATIONAL — pending absence expiry (job)
 -- =========================================================
 -- Optimizes:
---   - sp_auto_cancel_expired_absences
+--   - jpr_auto_cancel_expired_absences
 --   - pending rows filtered by end_dat_tim_abs
 --
 -- Narrow partial index for the daily cancellation sweep.
@@ -136,7 +136,7 @@ where sta_abs = 'pending';
 -- OPERATIONAL — open clock-in batch close (job)
 -- =========================================================
 -- Optimizes:
---   - sp_auto_close_clock_in_midnight
+--   - jpr_auto_close_clock_in_midnight
 --   - rows with end_dat_clk is null and sta_dat_clk before today
 --
 -- Complements uq_clock_in_active_per_employee (unique per employee).

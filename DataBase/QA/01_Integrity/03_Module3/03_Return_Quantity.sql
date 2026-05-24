@@ -3,7 +3,7 @@
 -- =========================================================
 -- TYPE:     01_Integrity
 -- REQUIRES: init_qa + fixtures/03_Module3/01_Commercial_Product.sql
--- RULE:     trg_return_restock / fn_return_restock
+-- RULE:     trg_return_restock / tfn_return_restock
 -- CONTRACT: qa_product_int_p001_id()
 -- =========================================================
 -- expected:

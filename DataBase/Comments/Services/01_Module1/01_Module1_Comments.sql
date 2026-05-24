@@ -143,6 +143,5 @@ comment on function svc_replicate_schedule(integer) is
 comment on function fn_create_user_account(character varying, text, character varying, character varying, character varying, character varying) is
 'Internal: inserts user_account (setup via trigger).';
 
-comment on function fn_assign_profile(integer, integer) is
-'Internal: links employee to profile via occupies.';
+-- fn_assign_profile is not deployed (see 00_UserCreation.sql); comment omitted.
 

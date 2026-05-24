@@ -29,8 +29,8 @@
 -- Blocks clock-in when the timestamp falls inside an absence window
 -- =========================================================
 
-drop function if exists fn_block_clock_in_if_absent();
-create or replace function fn_block_clock_in_if_absent()
+drop function if exists tfn_block_clock_in_if_absent();
+create or replace function tfn_block_clock_in_if_absent()
 returns trigger as $$
 begin
     -- Check if there is any absence overlapping the clock-in time
@@ -55,8 +55,8 @@ $$ language plpgsql;
 -- Blocks employee inactivation while an open clock-in exists
 -- =========================================================
 
-drop function if exists fn_block_inactivate_if_clock_active();
-create or replace function fn_block_inactivate_if_clock_active()
+drop function if exists tfn_block_inactivate_if_clock_active();
+create or replace function tfn_block_inactivate_if_clock_active()
 returns trigger as $$
 begin
     -- Check if employee is being inactivated (dea_dat_emp is being set)
@@ -85,8 +85,8 @@ $$ language plpgsql;
 -- Blocks assistant assignment when the employee is already a veterinarian
 -- =========================================================
 
-drop function if exists fn_block_assistant_if_veterinarian_exists();
-create or replace function fn_block_assistant_if_veterinarian_exists()
+drop function if exists tfn_block_assistant_if_veterinarian_exists();
+create or replace function tfn_block_assistant_if_veterinarian_exists()
 returns trigger as $$
 begin
     -- Check if employee is being assigned as assistant
@@ -111,8 +111,8 @@ $$ language plpgsql;
 -- Blocks veterinarian assignment when the employee is already an assistant
 -- =========================================================
 
-drop function if exists fn_block_veterinarian_if_assistant_exists();
-create or replace function fn_block_veterinarian_if_assistant_exists()
+drop function if exists tfn_block_veterinarian_if_assistant_exists();
+create or replace function tfn_block_veterinarian_if_assistant_exists()
 returns trigger as $$
 begin
     -- Check if employee is being assigned as veterinarian
@@ -137,8 +137,8 @@ $$ language plpgsql;
 -- Prevents overlapping absences for the same user across employee rows
 -- =========================================================
 
-drop function if exists fn_block_absence_overlap_by_user();
-create or replace function fn_block_absence_overlap_by_user()
+drop function if exists tfn_block_absence_overlap_by_user();
+create or replace function tfn_block_absence_overlap_by_user()
 returns trigger as $$
 begin
 
@@ -200,8 +200,8 @@ $$ language plpgsql;
 -- Creates default setup row after user_account insert (1:1 initialization)
 -- =========================================================
 
-drop function if exists fn_create_default_setup();
-create function fn_create_default_setup()
+drop function if exists tfn_create_default_setup();
+create function tfn_create_default_setup()
 returns trigger as $$
 begin
 

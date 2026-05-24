@@ -47,8 +47,8 @@ exclude using gist (
 -- SCHEDULING — cron jobs on scheduled appointments
 -- =========================================================
 -- Optimizes:
---   - sp_auto_update_no_show_appointments
---   - sp_generate_appointment_warnings (scheduled + date filter)
+--   - jpr_auto_update_no_show_appointments
+--   - jpr_generate_appointment_warnings (scheduled + date filter)
 --   - partial scans on status_app = scheduled ordered by time
 --
 -- Replaces a generic sch_dat_app index for job-shaped queries.

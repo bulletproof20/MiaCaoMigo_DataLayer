@@ -3,8 +3,8 @@
 -- =========================================================
 -- TYPE:     01_Integrity
 -- REQUIRES: init_qa + fixtures/01_Module1/01_Core_Context.sql
--- RULE:     fn_block_clock_in_if_absent; uq_clock_in_active_per_employee;
---           fn_block_inactivate_if_clock_active
+-- RULE:     tfn_block_clock_in_if_absent; uq_clock_in_active_per_employee;
+--           tfn_block_inactivate_if_clock_active
 -- CONTRACT: qa_registrar_emp_id, qa_emp_clockable_id
 -- =========================================================
 -- expected:

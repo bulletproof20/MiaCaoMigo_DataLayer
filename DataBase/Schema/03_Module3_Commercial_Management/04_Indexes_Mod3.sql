@@ -26,7 +26,7 @@ drop index if exists ix_invoice_line_id_inv;
 -- =========================================================
 -- Optimizes:
 --   - fn_get_available_stock
---   - fn_stock_after_sale (qty_sto > 0, order by val_dat_sto)
+--   - tfn_stock_after_sale (qty_sto > 0, order by val_dat_sto)
 --   - vw_product_stock_levels / vw_products_to_reorder
 --
 -- High-frequency filter: stock.id_pro with positive quantities.
@@ -54,7 +54,7 @@ on purchase_line (id_pur);
 -- OPERATIONAL — invoice line aggregation
 -- =========================================================
 -- Optimizes:
---   - fn_update_invoice_total
+--   - tfn_update_invoice_total
 --   - invoice line triggers (insert/update/delete)
 --
 -- Supports recalculating invoice.val_inv from child rows.

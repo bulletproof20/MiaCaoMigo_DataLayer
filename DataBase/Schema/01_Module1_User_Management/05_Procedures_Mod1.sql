@@ -29,8 +29,8 @@ drop procedure if exists sp_renew_employee_record(int, int, out int);
 -- Closes overnight clock-ins still missing an end timestamp
 -- =========================================================
 
-drop procedure if exists sp_auto_close_clock_in_midnight();
-create or replace procedure sp_auto_close_clock_in_midnight()
+drop procedure if exists jpr_auto_close_clock_in_midnight();
+create or replace procedure jpr_auto_close_clock_in_midnight()
 language plpgsql
 as $$
 begin
@@ -48,8 +48,8 @@ $$;
 -- Marks expired pending absences as cancelled
 -- =========================================================
 
-drop procedure if exists sp_auto_cancel_expired_absences();
-create or replace procedure sp_auto_cancel_expired_absences()
+drop procedure if exists jpr_auto_cancel_expired_absences();
+create or replace procedure jpr_auto_cancel_expired_absences()
 language plpgsql
 as $$
 begin

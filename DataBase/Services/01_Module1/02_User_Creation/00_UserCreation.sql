@@ -10,7 +10,7 @@
 -- DEPENDENCIES
 --   - Services/00_Core/00_Normalization_Text.sql
 --   - Services/00_Core/01_Normalization_Identity.sql
---   - Schema/01_Module1_User_Management/02_Functions_Mod1.sql (fn_create_default_setup trigger)
+--   - Schema/01_Module1_User_Management/02_Functions_Mod1.sql (tfn_create_default_setup trigger)
 --   - Schema/01_Module1_User_Management/00_Tables_Mod1.sql (user_account, occupies)
 --
 -- LOADED BY

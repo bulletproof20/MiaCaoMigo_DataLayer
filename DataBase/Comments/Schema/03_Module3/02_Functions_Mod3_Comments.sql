@@ -21,7 +21,7 @@ comment on function tfn_update_invoice_total() is
 'recalculates invoice header totals when lines change';
 
 comment on function tfn_return_restock() is
-'creates restock rows when returns reference invoice lines';
+'restocks from return.id_pro; validates qty and product against id_inv_lin when set';
 
 comment on function tfn_prevent_inactive_product_sale() is
 'blocks invoice lines for inactivated products';

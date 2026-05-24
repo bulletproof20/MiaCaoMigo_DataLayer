@@ -35,8 +35,15 @@ begin
     values (v_id_inv, v_id_pro, 2, 10.00, 23.00)
     returning id_inv_lin into v_id_lin;
 
-    insert into "return" (id_inv_lin, qty_ret, mot_ret)
-    values (v_id_lin, 99, 'integrity excessive return');
+    insert into "return" (id_cli, id_emp, id_pro, id_inv_lin, qty_ret, mot_ret)
+    values (
+        qa_client_active_id(),
+        qa_registrar_emp_id(),
+        v_id_pro,
+        v_id_lin,
+        99,
+        'integrity excessive return'
+    );
 
     raise notice 'FAIL: excessive return quantity should be blocked';
 exception

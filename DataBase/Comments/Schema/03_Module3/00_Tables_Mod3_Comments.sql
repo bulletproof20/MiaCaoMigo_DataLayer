@@ -41,7 +41,7 @@ comment on column invoice.sta_inv is
 'invoice workflow state using centralized invoice_status enum';
 
 comment on column invoice.id_app is
-'optional appointment linkage (FK in 01_ForeignKeys_Mod3.sql)';
+'optional appointment reference (no FK; may be set from Module 4 billing flow)';
 
 comment on constraint pk_invoice on invoice is
 'primary key for invoice rows';
@@ -81,17 +81,8 @@ comment on column product.reg_dat_pro is
 comment on column product.ina_dat_pro is
 'inactivation timestamp when the sku retires';
 
-comment on column product.id_pur is
-'optional pointer to latest purchase (FK phase)';
-
-comment on column product.id_sto is
-'optional pointer to primary stock row (FK phase)';
-
 comment on column product.id_fam is
 'required catalog family';
-
-comment on column product.id_ret is
-'optional pointer to latest return (FK phase)';
 
 comment on constraint pk_product on product is
 'primary key for product rows';
@@ -155,10 +146,10 @@ comment on column purchase.sta_pur is
 'workflow state using centralized purchase_status enum (nullable until confirmed)';
 
 comment on column purchase.id_inv is
-'linked invoice when billed';
+'linked invoice when billed (nullable; no FK)';
 
 comment on column purchase.id_cli is
-'optional client reference';
+'client for retail purchases (nullable; no FK)';
 
 comment on column purchase.id_emp is
 'employee responsible for the purchase';
@@ -193,7 +184,7 @@ comment on column purchase_line.uni_cos_pln is
 'unit cost';
 
 comment on column purchase_line.id_sto is
-'optional stock row created from this line';
+'stock row created on receive (nullable; no FK; set by sp_receive_purchase)';
 
 comment on constraint pk_purchase_line on purchase_line is
 'primary key for purchase_line rows';
@@ -239,10 +230,19 @@ comment on constraint ck_qty_inv_lin on invoice_line is
 --=========================================================
 
 comment on table "return" is
-'commercial return header with optional invoice line linkage';
+'commercial return header: one client, one employee, one product; optional invoice line trace';
 
 comment on column "return".id_ret is
 'unique return identifier';
+
+comment on column "return".id_cli is
+'client who returned the product';
+
+comment on column "return".id_emp is
+'employee who processed the return';
+
+comment on column "return".id_pro is
+'returned product (source of truth for restock)';
 
 comment on column "return".mot_ret is
 'reason narrative';
@@ -254,90 +254,10 @@ comment on column "return".ina_dat_ret is
 'closure or inactivation timestamp';
 
 comment on column "return".id_inv_lin is
-'optional originating invoice line';
+'optional originating invoice line (nullable; no FK; validated in tfn_return_restock)';
 
 comment on column "return".qty_ret is
 'quantity being returned';
 
 comment on constraint pk_return on "return" is
 'primary key for return rows';
-
-
---=========================================================
--- 9. purchase_product
---=========================================================
-
-comment on table purchase_product is
-'associative detail between purchases and products with quantities';
-
-comment on column purchase_product.id_pur is
-'purchase reference';
-
-comment on column purchase_product.id_pro is
-'product reference';
-
-comment on column purchase_product.qty_pur_pro is
-'quantity associated with the pair';
-
-comment on constraint pk_purchase_product on purchase_product is
-'composite primary key';
-
-comment on constraint ck_qty_purchase on purchase_product is
-'enforces strictly positive quantities';
-
-
---=========================================================
--- 10. return_product
---=========================================================
-
-comment on table return_product is
-'associative detail between returns and products';
-
-comment on column return_product.id_ret is
-'return reference';
-
-comment on column return_product.id_pro is
-'product reference';
-
-comment on column return_product.qty_ret_pro is
-'returned quantity';
-
-comment on constraint pk_return_product on return_product is
-'composite primary key';
-
-comment on constraint ck_qty_return on return_product is
-'enforces strictly positive quantities';
-
-
---=========================================================
--- 11. employee_purchase
---=========================================================
-
-comment on table employee_purchase is
-'links employees to purchases they processed';
-
-comment on column employee_purchase.id_emp is
-'employee identifier';
-
-comment on column employee_purchase.id_pur is
-'purchase identifier';
-
-comment on constraint pk_employee_purchase on employee_purchase is
-'composite primary key';
-
-
---=========================================================
--- 12. employee_return
---=========================================================
-
-comment on table employee_return is
-'links employees to returns they supervised';
-
-comment on column employee_return.id_emp is
-'employee identifier';
-
-comment on column employee_return.id_ret is
-'return identifier';
-
-comment on constraint pk_employee_return on employee_return is
-'composite primary key';

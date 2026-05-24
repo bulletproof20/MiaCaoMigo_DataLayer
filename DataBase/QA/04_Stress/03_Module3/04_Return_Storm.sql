@@ -44,8 +44,15 @@ begin
          limit v_lines
     loop
         begin
-            insert into "return" (id_inv_lin, qty_ret, mot_ret)
-            values (v_rec.id_inv_lin, 1, 'STRESS return');
+            insert into "return" (id_cli, id_emp, id_pro, id_inv_lin, qty_ret, mot_ret)
+            values (
+                qa_client_active_id(),
+                qa_registrar_emp_id(),
+                v_pro,
+                v_rec.id_inv_lin,
+                1,
+                'STRESS return'
+            );
             v_ret := v_ret + 1;
         exception
             when others then

@@ -173,27 +173,39 @@ returns trigger
 language plpgsql
 as $$
 declare
-    v_id_pro int;
+    v_line_pro int;
     v_qty_sold int;
 begin
-    select il.id_pro, il.qty_inv_lin
-      into v_id_pro, v_qty_sold
-    from invoice_line il
-    where il.id_inv_lin = new.id_inv_lin;
+    if new.id_inv_lin is not null then
+        select il.id_pro, il.qty_inv_lin
+          into v_line_pro, v_qty_sold
+        from invoice_line il
+        where il.id_inv_lin = new.id_inv_lin;
 
-    if new.qty_ret > v_qty_sold then
-        raise exception
-            'Quantidade devolvida (%) excede a quantidade vendida (%)',
-            new.qty_ret, v_qty_sold;
+        if not found then
+            raise exception 'Linha de fatura com ID % não encontrada.', new.id_inv_lin;
+        end if;
+
+        if v_line_pro <> new.id_pro then
+            raise exception
+                'O produto da devolução (%) não coincide com o da linha de fatura (%).',
+                new.id_pro, v_line_pro;
+        end if;
+
+        if new.qty_ret > v_qty_sold then
+            raise exception
+                'Quantidade devolvida (%) excede a quantidade vendida (%)',
+                new.qty_ret, v_qty_sold;
+        end if;
     end if;
 
     insert into stock (id_pro, bat_sto, qty_sto, ent_dat_sto, val_dat_sto)
     values (
-        v_id_pro,
+        new.id_pro,
         (
             select bat_sto
             from stock
-            where id_pro = v_id_pro
+            where id_pro = new.id_pro
             order by ent_dat_sto desc
             limit 1
         ),

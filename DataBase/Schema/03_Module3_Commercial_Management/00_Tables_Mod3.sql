@@ -17,10 +17,6 @@
 
 drop table if exists purchase_line cascade;
 drop table if exists invoice_line cascade;
-drop table if exists employee_purchase cascade;
-drop table if exists employee_return cascade;
-drop table if exists purchase_product cascade;
-drop table if exists return_product cascade;
 drop table if exists "return" cascade;
 drop table if exists purchase cascade;
 drop table if exists stock cascade;
@@ -70,7 +66,7 @@ create table invoice (
     -- Invoice workflow state (centralized enum)
 
     id_app int,
-    -- Optional appointment (FK in 01_ForeignKeys_Mod3.sql)
+    -- Optional appointment reference (no FK; linked from appointment.id_inv in Module 4)
 
     constraint pk_invoice primary key (id_inv)
 );
@@ -114,15 +110,6 @@ create table product (
 
     min_sto int not null default 5,
     -- Minimum stock threshold
-
-    id_pur int,
-    -- Optional pointer to latest purchase (FK phase)
-
-    id_sto int,
-    -- Optional pointer to primary stock row (FK phase)
-
-    id_ret int,
-    -- Optional pointer to latest return (FK phase)
 
     constraint pk_product primary key (id_pro),
 
@@ -187,10 +174,10 @@ create table purchase (
     -- Workflow state (centralized enum)
 
     id_inv int,
-    -- Linked invoice when billed (FK in 01_ForeignKeys_Mod3.sql)
+    -- Linked invoice when billed (nullable; no FK — supplier POs may omit)
 
     id_cli int,
-    -- Optional client (FK in 01_ForeignKeys_Mod3.sql)
+    -- Client for retail purchases (nullable; no FK — supplier POs may omit)
 
     id_emp int,
     -- Employee responsible (FK in 01_ForeignKeys_Mod3.sql)
@@ -224,7 +211,7 @@ create table purchase_line (
     -- Unit cost
 
     id_sto int,
-    -- Optional stock row created from this line (FK phase)
+    -- Stock row created on receive (nullable; no FK — set by sp_receive_purchase)
 
     constraint pk_purchase_line primary key (id_pur_lin),
 
@@ -267,11 +254,21 @@ create table invoice_line (
 --=========================================================
 -- 8. RETURN
 --=========================================================
--- Commercial return header with optional invoice line linkage
+-- Commercial return: one client, one employee, one product per header.
+-- Optional invoice_line reference for sale traceability and qty validation.
 
 create table "return" (
     id_ret int generated always as identity,
     -- Return identifier
+
+    id_cli int not null,
+    -- Client (FK in 01_ForeignKeys_Mod3.sql)
+
+    id_emp int not null,
+    -- Responsible employee (FK in 01_ForeignKeys_Mod3.sql)
+
+    id_pro int not null,
+    -- Returned product (FK in 01_ForeignKeys_Mod3.sql)
 
     mot_ret varchar(100),
     -- Reason narrative
@@ -280,7 +277,7 @@ create table "return" (
     -- Closure or inactivation timestamp
 
     id_inv_lin int,
-    -- Optional originating invoice line (FK in 01_ForeignKeys_Mod3.sql)
+    -- Optional originating invoice line (nullable; no FK — audit/qty check in trigger)
 
     qty_ret int not null default 1,
     -- Quantity being returned
@@ -289,80 +286,4 @@ create table "return" (
 
     constraint ck_qty_ret
     check (qty_ret > 0)
-);
-
-
---=========================================================
--- 9. PURCHASE_PRODUCT
---=========================================================
--- Associative detail between purchases and products with quantities
-
-create table purchase_product (
-    id_pur int not null,
-    -- Purchase reference (FK in 01_ForeignKeys_Mod3.sql)
-
-    id_pro int not null,
-    -- Product reference (FK in 01_ForeignKeys_Mod3.sql)
-
-    qty_pur_pro int not null,
-    -- Quantity associated with the pair
-
-    constraint pk_purchase_product primary key (id_pur, id_pro),
-
-    constraint ck_qty_purchase
-    check (qty_pur_pro > 0)
-);
-
-
---=========================================================
--- 10. RETURN_PRODUCT
---=========================================================
--- Associative detail between returns and products
-
-create table return_product (
-    id_ret int not null,
-    -- Return reference (FK in 01_ForeignKeys_Mod3.sql)
-
-    id_pro int not null,
-    -- Product reference (FK in 01_ForeignKeys_Mod3.sql)
-
-    qty_ret_pro int not null,
-    -- Returned quantity
-
-    constraint pk_return_product primary key (id_ret, id_pro),
-
-    constraint ck_qty_return
-    check (qty_ret_pro > 0)
-);
-
-
---=========================================================
--- 11. EMPLOYEE_PURCHASE
---=========================================================
--- Links employees to purchases they processed
-
-create table employee_purchase (
-    id_emp int not null,
-    -- Employee identifier (FK in 01_ForeignKeys_Mod3.sql)
-
-    id_pur int not null,
-    -- Purchase identifier (FK in 01_ForeignKeys_Mod3.sql)
-
-    constraint pk_employee_purchase primary key (id_emp, id_pur)
-);
-
-
---=========================================================
--- 12. EMPLOYEE_RETURN
---=========================================================
--- Links employees to returns they supervised
-
-create table employee_return (
-    id_emp int not null,
-    -- Employee identifier (FK in 01_ForeignKeys_Mod3.sql)
-
-    id_ret int not null,
-    -- Return identifier (FK in 01_ForeignKeys_Mod3.sql)
-
-    constraint pk_employee_return primary key (id_emp, id_ret)
 );

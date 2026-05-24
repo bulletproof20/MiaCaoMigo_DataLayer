@@ -23,8 +23,6 @@ begin
 end;
 $body$;
 
-insert into employee_purchase (id_emp, id_pur) values (4, 1), (4, 2);
-
 -- Invoices
 insert into invoice (id_inv, dat_inv, sta_inv, bod_inv, id_app)
 overriding system value
@@ -65,13 +63,10 @@ insert into invoice_line (id_inv, id_pro, qty_inv_lin, uni_pri_inv_lin, iva_inv_
     (6, 2, 1, 18.50, 23.00),
     (7, 4, 1, 24.80, 6.00);
 
--- 18 May return — Marta defective toy (invoice_line 5 on inv 2)
-insert into "return" (id_ret, mot_ret, id_inv_lin, qty_ret)
+-- 18 May return — Marta defective toy (invoice_line 5: inv 2, product 8)
+insert into "return" (id_ret, id_cli, id_emp, id_pro, mot_ret, id_inv_lin, qty_ret)
 overriding system value
-values (1, 'defective rubber toy batch', 5, 1);
-
-insert into return_product (id_ret, id_pro, qty_ret_pro) values (1, 8, 1);
-insert into employee_return (id_emp, id_ret) values (4, 1);
+values (1, 2, 4, 8, 'defective rubber toy batch', 5, 1);
 
 select setval(pg_get_serial_sequence('purchase', 'id_pur'), (select max(id_pur) from purchase));
 select setval(pg_get_serial_sequence('invoice', 'id_inv'), (select max(id_inv) from invoice));

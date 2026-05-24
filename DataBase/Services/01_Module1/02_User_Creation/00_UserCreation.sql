@@ -50,12 +50,12 @@ declare
 
 begin
 
-    p_nam_usr := normalize_text(p_nam_usr);
-    p_add_usr := normalize_text(p_add_usr);
-    p_pos_usr := normalize_postal_code_pt(p_pos_usr);
-    p_nif_usr := normalize_nif(p_nif_usr);
-    p_pho_usr := normalize_phone_nullable(p_pho_usr);
-    p_ema_usr := normalize_email(p_ema_usr);
+    p_nam_usr := fn_normalize_text(p_nam_usr);
+    p_add_usr := fn_normalize_text(p_add_usr);
+    p_pos_usr := fn_normalize_postal_code_pt(p_pos_usr);
+    p_nif_usr := fn_normalize_nif(p_nif_usr);
+    p_pho_usr := fn_normalize_phone_nullable(p_pho_usr);
+    p_ema_usr := fn_normalize_email(p_ema_usr);
 
     insert into user_account (
         nam_usr,

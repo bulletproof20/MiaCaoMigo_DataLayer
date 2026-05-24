@@ -4,11 +4,10 @@
 -- =========================================================
 --
 -- PURPOSE
--- Shared helpers for detecting and closing open login sessions
--- before login/logout orchestration runs.
+-- Internal session helpers (fn_*) over vw_active_login_sessions.
 --
 -- DEPENDENCIES
---   - Services/00_Core/01_Normalization_Identity.sql (normalize_email)
+--   - Services/00_Core/01_Normalization_Identity.sql (fn_normalize_email)
 --   - Schema/01_Module1_User_Management/07_Views_Mod1.sql (vw_active_login_sessions)
 --   - Schema/01_Module1_User_Management/00_Tables_Mod1.sql (login_record)
 --
@@ -17,20 +16,9 @@
 -- =========================================================
 
 drop function if exists has_active_sessions(varchar);
+drop function if exists fn_has_active_sessions(varchar);
 
--- ---------------------------------------------------------
--- FUNCTION: has_active_sessions
--- ---------------------------------------------------------
--- INTENT:
---   Check whether an email currently has an open successful session.
--- FLOW:
---   1. Normalize the email input.
---   2. Probe vw_active_login_sessions for a matching row.
--- EXPECTED RESULT:
---   true when at least one active session exists; otherwise false.
--- ---------------------------------------------------------
-
-create or replace function has_active_sessions(p_email varchar)
+create or replace function fn_has_active_sessions(p_email varchar)
 returns boolean
 language plpgsql
 stable
@@ -39,7 +27,7 @@ declare
     v_exists boolean;
 begin
 
-    p_email := normalize_email(p_email);
+    p_email := fn_normalize_email(p_email);
 
     select exists (
         select 1
@@ -55,36 +43,31 @@ $$;
 
 
 drop function if exists close_active_sessions_by_email(varchar);
+drop function if exists fn_close_active_sessions_by_email(varchar);
 
--- ---------------------------------------------------------
--- FUNCTION: close_active_sessions_by_email
--- ---------------------------------------------------------
--- INTENT:
---   Terminate every open successful session tied to an email.
--- FLOW:
---   1. Normalize email and skip when no active session exists.
---   2. Update login_record rows referenced by the active-session view.
--- EXPECTED RESULT:
---   void; matching rows receive sou_tim_log strictly after sig_tim_log (ck_login_time).
--- ---------------------------------------------------------
-
-create or replace function close_active_sessions_by_email(p_email varchar)
-returns void
+create or replace function fn_close_active_sessions_by_email(p_email varchar)
+returns boolean
 language plpgsql
 as $$
+declare
+    v_closed int;
 begin
 
-    p_email := normalize_email(p_email);
+    p_email := fn_normalize_email(p_email);
 
-    if has_active_sessions(p_email) then
-
-        update login_record lr
-        set sou_tim_log = greatest(clock_timestamp(), lr.sig_tim_log + interval '1 microsecond')
-        from vw_active_login_sessions als
-        where lr.id_log = als.id_log
-          and als.ema_log = p_email;
-
+    if not fn_has_active_sessions(p_email) then
+        return false;
     end if;
+
+    update login_record lr
+    set sou_tim_log = greatest(clock_timestamp(), lr.sig_tim_log + interval '1 microsecond')
+    from vw_active_login_sessions als
+    where lr.id_log = als.id_log
+      and als.ema_log = p_email;
+
+    get diagnostics v_closed = row_count;
+
+    return v_closed > 0;
 
 end;
 $$;

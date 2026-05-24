@@ -5,23 +5,25 @@
 -- =========================================================
 --
 -- DESCRIPTION
--- ---------------------------------------------------------
--- Operational procedures supporting HR attendance hygiene and
--- absence lifecycle automation.
---
--- This file contains:
--- - Midnight closure for dangling clock-ins
--- - Automatic cancellation of stale pending absences
--- ---------------------------------------------------------
+-- Schema-layer technical procedures (jobs, hygiene automation).
+-- Business workflows live in Services/01_Module1 (sp_*).
 --
 -- LOAD ORDER
--- ---------------------------------------------------------
--- Requires:
--- - 02_Functions_Mod1.sql / related tables populated
---
--- Must load before:
--- - 06_Jobs_Mod1.sql (pg_cron call targets)
+-- Requires: 02_Functions_Mod1.sql, 07_Views_Mod1.sql
+-- Must load before: 06_Jobs_Mod1.sql
 -- =========================================================
+
+-- Remove business workflows previously placed in Schema (reverted to Services).
+drop procedure if exists sp_replicate_schedule(int);
+drop procedure if exists sp_clock_toggle(int, out varchar);
+drop procedure if exists sp_create_employee(
+    varchar, text, varchar, varchar, varchar, varchar,
+    varchar, varchar, varchar, int, out int
+);
+drop procedure if exists sp_create_client(
+    varchar, text, varchar, varchar, varchar, varchar, varchar, varchar, out int
+);
+drop procedure if exists sp_renew_employee_record(int, int, out int);
 
 -- =========================================================
 -- Closes overnight clock-ins still missing an end timestamp
@@ -33,11 +35,10 @@ language plpgsql
 as $$
 begin
 
-    -- Update all open clock-in records from previous days
     update clock_in
-    set end_dat_clk = date_trunc('day', now())  -- current day at 00:00
+    set end_dat_clk = date_trunc('day', now())
     where end_dat_clk is null
-      and sta_dat_clk < date_trunc('day', now()); -- started before today
+      and sta_dat_clk < date_trunc('day', now());
 
 end;
 $$;
@@ -53,7 +54,6 @@ language plpgsql
 as $$
 begin
 
-    -- Update expired pending absences
     update absence
     set sta_abs = 'cancelled'
     where sta_abs = 'pending'

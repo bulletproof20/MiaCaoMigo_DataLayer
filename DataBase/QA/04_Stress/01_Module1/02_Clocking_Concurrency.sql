@@ -2,7 +2,7 @@
 -- STRESS — MODULE 1 — CLOCKING CONCURRENCY
 -- =========================================================
 -- OBJECTIVE: repeated clock-in attempts on employee with open session
--- VOLUME:    50 fn_clock_employee calls on QA_EMP_CLOCKABLE (open clock_in fixture)
+-- VOLUME:    50 svc_clock_toggle calls on QA_EMP_CLOCKABLE (open clock_in fixture)
 -- EXPECTED:  uq_clock_in_active_per_employee holds; toggles clock-out after first
 -- METRICS:   attempts, outcomes, open clock-ins, duration
 -- REQUIRES:  init_qa + fixtures/01_Module1/01_Core_Context.sql
@@ -30,7 +30,7 @@ begin
 
     for v_i in 1..v_attempts loop
         begin
-            v_result := fn_clock_employee(v_emp);
+            v_result := svc_clock_toggle(v_emp);
             if v_result = 'CLOCK_IN' then
                 v_clock_in := v_clock_in + 1;
             elsif v_result = 'CLOCK_OUT' then

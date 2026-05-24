@@ -8,7 +8,7 @@
 -- authentication, onboarding, RBAC, and attendance services.
 --
 -- DEPENDENCIES
---   - Services/00_Core/01_Normalization_Identity.sql (normalize_email, normalize_nif)
+--   - Services/00_Core/01_Normalization_Identity.sql (fn_normalize_email, fn_normalize_nif)
 --   - Schema/01_Module1_User_Management/00_Tables_Mod1.sql
 --     (user_account, employee, client, veterinarian, assistant)
 --
@@ -30,14 +30,13 @@ drop function if exists fn_is_employee_email(varchar);
 --   true for corporate domain; false for personal client emails.
 -- ---------------------------------------------------------
 
-create function fn_is_employee_email(p_email varchar)
+create or replace function fn_is_employee_email(p_email varchar)
 returns boolean
-language plpgsql
+language sql
+immutable
+parallel safe
 as $$
-begin
-    p_email := normalize_email(p_email);
-    return p_email ~ '^[^@\s]+@miacaomigo\.pt$';
-end;
+    select fn_normalize_email(p_email) ~ '^[^@\s]+@miacaomigo\.pt$';
 $$;
 
 
@@ -62,7 +61,7 @@ as $$
 declare
     v_user_id integer;
 begin
-    p_email := normalize_email(p_email);
+    p_email := fn_normalize_email(p_email);
 
     if fn_is_employee_email(p_email) then
         select e.id_usr
@@ -102,7 +101,7 @@ as $$
 declare
     v_id_usr int;
 begin
-    p_nif := normalize_nif(p_nif);
+    p_nif := fn_normalize_nif(p_nif);
 
     select u.id_usr
     into v_id_usr
@@ -258,7 +257,7 @@ returns boolean
 language plpgsql
 as $$
 begin
-    p_email := normalize_email(p_email);
+    p_email := fn_normalize_email(p_email);
 
     return exists (
         select 1
@@ -295,7 +294,7 @@ returns boolean
 language plpgsql
 as $$
 begin
-    p_nif := normalize_nif(p_nif);
+    p_nif := fn_normalize_nif(p_nif);
 
     return exists (
         select 1

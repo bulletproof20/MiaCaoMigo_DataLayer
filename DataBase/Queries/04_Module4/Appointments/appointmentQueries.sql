@@ -2,9 +2,9 @@
 -- QUERIES — MODULE 4 APPOINTMENTS (REFERENCE ONLY)
 -- =========================================================
 -- Prefer Services/04_Module4/01_Appointment_Read.sql:
---   fn_list_vet_appointments_from(id_emp, from_date)
---   fn_list_animal_appointment_history(id_ani)
---   fn_get_appointment_detail(id_app)
+--   svc_list_vet_appointments_from(id_emp, from_date)
+--   svc_list_animal_appointment_history(id_ani)
+--   svc_get_appointment_detail(id_app)
 -- Or views: vw_appointment_detail, vw_appointments_today
 -- =========================================================
 

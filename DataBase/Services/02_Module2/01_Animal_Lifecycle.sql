@@ -1,19 +1,18 @@
 -- =========================================================
--- MODULE 2 — ANIMAL MANAGEMENT (SERVICES)
+-- MODULE 2 — ANIMAL LIFECYCLE (svc_* public API)
 -- FILE: 01_Animal_Lifecycle.sql
 -- =========================================================
 --
--- Thin wrappers around schema procedures (05_Procedures_Mod2).
--- Preserves existing fn_* signatures for application compatibility.
+-- Orchestrates Schema procedures (sp_*) or controlled DML.
+-- Legacy fn_* aliases at file bottom (deprecated).
 -- =========================================================
 
--- ---------------------------------------------------------
--- fn_register_adoption → sp_assign_ownership
--- ---------------------------------------------------------
+drop function if exists svc_register_adoption(int, int, int, varchar);
+drop function if exists svc_register_delivery(int, int, varchar, varchar, int[]);
+drop function if exists svc_animal_exit(int, varchar);
+drop function if exists svc_get_animal_history(int);
 
-drop function if exists fn_register_adoption(int, int, int, varchar);
-
-create function fn_register_adoption(
+create function svc_register_adoption(
     p_id_cli int,
     p_id_ani int,
     p_id_emp int,
@@ -27,14 +26,7 @@ begin
 end;
 $$;
 
-
--- ---------------------------------------------------------
--- fn_register_delivery_team → sp_record_delivery
--- ---------------------------------------------------------
-
-drop function if exists fn_register_delivery_team(int, int, varchar, varchar, int[]);
-
-create function fn_register_delivery_team(
+create function svc_register_delivery(
     p_id_ani int,
     p_id_ext_ent int,
     p_location varchar,
@@ -56,15 +48,7 @@ begin
 end;
 $$;
 
-
--- ---------------------------------------------------------
--- fn_animal_exit — ownership closure + status update
--- (no matching single procedure for arbitrary exit reason)
--- ---------------------------------------------------------
-
-drop function if exists fn_animal_exit(int, varchar);
-
-create function fn_animal_exit(
+create function svc_animal_exit(
     p_id_ani int,
     p_sta_ani varchar
 )
@@ -72,7 +56,6 @@ returns void
 language plpgsql
 as $$
 begin
-
     update animal
     set sta_ani = p_sta_ani
     where id_ani = p_id_ani;
@@ -84,23 +67,19 @@ begin
 
 exception
     when others then
-        raise exception 'Falha ao registar saída do animal %: %', p_id_ani, sqlerrm;
+        raise exception using
+            message = format('svc_animal_exit failed for animal %s', p_id_ani),
+            detail = sqlerrm,
+            errcode = sqlstate;
 end;
 $$;
 
-
--- ---------------------------------------------------------
--- fn_get_animal_history — merged ownership / concession trail
--- ---------------------------------------------------------
-
-drop function if exists fn_get_animal_history(int);
-
-create function fn_get_animal_history(p_id_ani int)
+create function svc_get_animal_history(p_id_ani int)
 returns table(event_date date, description text)
-language plpgsql
+language sql
+stable
+parallel safe
 as $$
-begin
-    return query
     select o.sta_dat_own, 'Adopted by client id: ' || o.id_cli::text
     from ownership o
     where o.id_ani = p_id_ani
@@ -109,5 +88,27 @@ begin
     from concession c
     where c.id_ani = p_id_ani
     order by 1 desc;
-end;
+$$;
+
+-- deprecated aliases (Phase 1)
+drop function if exists fn_register_adoption(int, int, int, varchar);
+create function fn_register_adoption(int, int, int, varchar)
+returns void language plpgsql as $$
+begin perform svc_register_adoption($1, $2, $3, $4); end; $$;
+
+drop function if exists fn_register_delivery_team(int, int, varchar, varchar, int[]);
+create function fn_register_delivery_team(int, int, varchar, varchar, int[])
+returns void language plpgsql as $$
+begin perform svc_register_delivery($1, $2, $3, $4, $5); end; $$;
+
+drop function if exists fn_animal_exit(int, varchar);
+create function fn_animal_exit(int, varchar)
+returns void language plpgsql as $$
+begin perform svc_animal_exit($1, $2); end; $$;
+
+drop function if exists fn_get_animal_history(int);
+create function fn_get_animal_history(p_id_ani int)
+returns table(event_date date, description text)
+language sql stable parallel safe as $$
+    select * from svc_get_animal_history(p_id_ani);
 $$;

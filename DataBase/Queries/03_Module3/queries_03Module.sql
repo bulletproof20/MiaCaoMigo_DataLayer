@@ -1,7 +1,7 @@
 -- =========================================================
 -- QUERIES — MODULE 3 (API REFERENCE)
 -- =========================================================
--- DEPRECATED: prefer Services/03_Module3/02_Inventory_Read.sql
+-- DEPRECATED: prefer Services/03_Module3/02_Inventory_Read.sql (svc_*)
 -- Canonical columns: id_inv, id_pro, qty_inv_lin, id_pur, id_pur_lin.
 -- =========================================================
 

@@ -8,9 +8,8 @@
 -- by the authentication service layer before session creation.
 --
 -- DEPENDENCIES
---   - Services/00_Core/01_Normalization_Identity.sql (normalize_email)
+--   - Services/00_Core/01_Normalization_Identity.sql (fn_normalize_email)
 --   - Services/01_Module1/00_Core_Mod1/01_Identity.sql (fn_is_employee_email)
---   - Services/01_Module1/00_Core_Mod1/01_Identity.sql (fn_is_employee_email semantics)
 --   - Schema/01_Module1_User_Management/00_Tables_Mod1.sql (employee, client, user_account)
 --   - password hash contract documented in 00_MiaCaoMigo_Engineering
 --
@@ -36,7 +35,7 @@ language sql
 stable
 as $$
     with normalized_identity as (
-        select normalize_email(p_email) as email_norm
+        select fn_normalize_email(p_email) as email_norm
     ),
     identity_channel as (
         select
@@ -77,10 +76,10 @@ as $$
 $$;
 
 
-drop function if exists validate_password(varchar, varchar);
+drop function if exists fn_validate_password(varchar, varchar);
 
 -- ---------------------------------------------------------
--- FUNCTION: validate_password
+-- FUNCTION: fn_validate_password
 -- ---------------------------------------------------------
 -- INTENT:
 --   Compare stored hash with the API-supplied hash for the email channel.
@@ -92,18 +91,16 @@ drop function if exists validate_password(varchar, varchar);
 --   true when hashes match; false when missing or different.
 -- ---------------------------------------------------------
 
-create or replace function validate_password(p_email varchar, p_password varchar)
+create or replace function fn_validate_password(p_email varchar, p_password varchar)
 returns boolean
 language sql
 stable
 as $$
     with normalized_identity as (
-        select normalize_email(p_email) as email_norm
+        select fn_normalize_email(p_email) as email_norm
     ),
     stored_hash as (
         select e.pas_emp as pass_hash
-        from employee e
-        cross join select e.pas_emp as pass_hash
         from employee e
         cross join normalized_identity ni
         where e.ema_emp = ni.email_norm
@@ -111,15 +108,6 @@ as $$
         union all
         select c.pas_cli
         from client c
-        inner join user_account u on u.id_usr = c.id_usr
-        cross join normalized_identity ni
-        where u.ema_usr = ni.email_norm
-          and not fn_is_employee_email(ni.email_norm) ni
-        where e.ema_emp = ni.email_norm
-          and fn_is_employee_email(ni.email_norm)
-        union all
-        select c.pas_cli
-        from client c 
         inner join user_account u on u.id_usr = c.id_usr
         cross join normalized_identity ni
         where u.ema_usr = ni.email_norm
@@ -133,4 +121,16 @@ as $$
         ),
         false
     );
+$$;
+
+-- deprecated alias — prefer fn_validate_password (Phase 1)
+drop function if exists validate_password(varchar, varchar);
+
+create function validate_password(p_email varchar, p_password varchar)
+returns boolean
+language sql
+stable
+parallel safe
+as $$
+    select fn_validate_password(p_email, p_password);
 $$;

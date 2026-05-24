@@ -1,17 +1,11 @@
 -- =========================================================
--- SERVICES — CORE NORMALIZATION (SEARCH)
+-- SERVICES — CORE (fn_* normalization — search)
 -- FILE: 03_Normalization_Search.sql
 -- =========================================================
---
--- Read-side / filter input cleanup (no LIKE escaping here).
--- =========================================================
 
-drop function if exists normalize_search_term(text);
+drop function if exists fn_normalize_search_term(text);
 
--- ---------------------------------------------------------
--- normalize_search_term — lower(trim) + collapsed whitespace
--- ---------------------------------------------------------
-create function normalize_search_term(p_term text)
+create function fn_normalize_search_term(p_term text)
 returns text
 language sql
 immutable

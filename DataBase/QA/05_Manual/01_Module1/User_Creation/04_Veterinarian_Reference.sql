@@ -5,7 +5,7 @@
 --   Exploratory reference scenarios
 --
 -- PURPOSE:
---   Manual validation of fn_create_veterinarian onboarding,
+--   Manual validation of svc_create_veterinarian onboarding,
 --   OMV uniqueness, and assistant/veterinarian exclusivity.
 --
 -- REQUIRES:
@@ -64,7 +64,7 @@ delete from user_account
 -- - employee + veterinarian rows
 -- - returns id_emp
 
-select fn_create_veterinarian(
+select svc_create_veterinarian(
     'QA Manual New Veterinarian',
     'Rua QA Manual Vet 1, Braga',
     '4700-841',
@@ -85,7 +85,7 @@ select fn_create_veterinarian(
 -- - identity reused
 -- - employee + veterinarian created
 
-select fn_create_veterinarian(
+select svc_create_veterinarian(
     'Goncalo Miguel Pratas QA',
     'Rua da Se 12, Faro',
     '8000-078',
@@ -108,7 +108,7 @@ select fn_create_veterinarian(
 -- context: qa_vet_primary_id() / OMV-QA-PRIMARY
 -- expected: exception — veterinarian role already exists
 
-select fn_create_veterinarian(
+select svc_create_veterinarian(
     'Bruno Filipe Matos QA Vet',
     'Rua da Junqueira 55, Coimbra',
     '3000-341',
@@ -127,7 +127,7 @@ select fn_create_veterinarian(
 -- context: OMV-PT-2023-CR-03319 on QA absence overlap vet (21@)
 -- expected: exception — OMV uniqueness
 
-select fn_create_veterinarian(
+select svc_create_veterinarian(
     'QA Manual Duplicated OMV',
     'Rua Teste',
     '4700-999',
@@ -145,7 +145,7 @@ select fn_create_veterinarian(
 -- invalid OMV format
 -- expected: check constraint / validation exception
 
-select fn_create_veterinarian(
+select svc_create_veterinarian(
     'QA Manual Invalid OMV',
     'Rua Teste',
     '4700-999',
@@ -163,7 +163,7 @@ select fn_create_veterinarian(
 -- invalid registering employee
 -- expected: exception — invalid registrar
 
-select fn_create_veterinarian(
+select svc_create_veterinarian(
     'QA Manual Invalid Registrar Vet',
     'Rua Teste',
     '4700-999',

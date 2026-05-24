@@ -1,43 +1,14 @@
 -- =========================================================
 -- NEW EMPLOYEE (MODULE 1 — USER CREATION)
--- FILE: Services/01_Module1/02_User_Creation/02_NewEmployee.sql
--- =========================================================
---
--- PURPOSE
--- Create an employee row with corporate email generation and optional
--- reuse of an existing user_account identity.
---
--- DEPENDENCIES
---   - Services/01_Module1/02_User_Creation/00_UserCreation.sql (fn_create_user_account)
---   - Services/01_Module1/00_Core_Mod1/01_Identity.sql (fn_get_user_by_nif, fn_get_user_by_email)
---   - Services/00_Core/01_Normalization_Identity.sql
---   - Schema/01_Module1_User_Management/00_Tables_Mod1.sql (employee)
---
--- LOADED BY
---   - Bootstrap/Loaders/06_Services.sql
+-- BUSINESS WORKFLOW: sp_create_employee
 -- =========================================================
 
-drop function if exists fn_create_employee(
+drop procedure if exists sp_create_employee(
     varchar, text, varchar, varchar, varchar, varchar,
-    varchar, varchar, varchar,
-    int
+    varchar, varchar, varchar, int, out int
 );
 
--- ---------------------------------------------------------
--- FUNCTION: fn_create_employee
--- ---------------------------------------------------------
--- INTENT:
---   Register an employee linked to a shared or new user identity.
--- FLOW:
---   1. Normalize inputs and validate registering employee is active.
---   2. Resolve identity; reject NIF/email conflicts and duplicate employees.
---   3. Create user_account when needed; build corporate email {id_usr}@miacaomigo.pt.
---   4. INSERT employee row with audit columns.
--- EXPECTED RESULT:
---   id_emp of the newly created employee row.
--- ---------------------------------------------------------
-
-create or replace function fn_create_employee(
+create or replace procedure sp_create_employee(
     p_nam_usr varchar,
     p_add_usr text,
     p_pos_usr varchar,
@@ -47,23 +18,20 @@ create or replace function fn_create_employee(
     p_pho_emp varchar,
     p_pho_emg varchar,
     p_pas_emp varchar,
-    p_id_emp_reg int
+    p_id_emp_reg int,
+    out p_id_emp int
 )
-returns int
 language plpgsql
 as $$
-
 declare
     v_id_usr int;
-    v_id_emp int;
     v_ema_emp varchar;
     v_id_usr_by_nif int;
     v_id_usr_by_email int;
-
 begin
 
-    p_nif_usr := normalize_nif(p_nif_usr);
-    p_ema_usr := normalize_email(p_ema_usr);
+    p_nif_usr := fn_normalize_nif(p_nif_usr);
+    p_ema_usr := fn_normalize_email(p_ema_usr);
 
     if not exists (
         select 1
@@ -119,17 +87,15 @@ begin
     )
     values (
         v_id_usr,
-        normalize_phone_nullable(p_pho_emp),
-        normalize_phone_nullable(p_pho_emg),
+        fn_normalize_phone_nullable(p_pho_emp),
+        fn_normalize_phone_nullable(p_pho_emg),
         v_ema_emp,
-        normalize_secret(p_pas_emp),
+        fn_normalize_secret(p_pas_emp),
         current_timestamp,
         p_id_emp_reg
     )
     returning id_emp
-    into v_id_emp;
-
-    return v_id_emp;
+    into p_id_emp;
 
 exception
     when check_violation then
@@ -153,5 +119,4 @@ exception
             detail = sqlerrm,
             errcode = sqlstate;
 end;
-
 $$;

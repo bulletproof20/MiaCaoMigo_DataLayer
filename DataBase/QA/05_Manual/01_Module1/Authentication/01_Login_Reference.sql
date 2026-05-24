@@ -5,8 +5,8 @@
 --   Exploratory reference scenarios
 --
 -- PURPOSE:
---   Manual validation and behavioral exploration for login_user
---   and logout_user against deterministic QA session fixtures.
+--   Manual validation and behavioral exploration for svc_auth_login
+--   and svc_auth_logout against deterministic QA session fixtures.
 --
 -- REQUIRES:
 --   init_qa + QA fixtures (run_fixtures.ps1)
@@ -31,7 +31,7 @@
 -- - user_id is null
 
 select *
-  from login_user(
+  from svc_auth_login(
       'qa-manual-missing@qa.miacaomigo.pt',
       '$2b$12$fakepasswordhash000000000',
       '127.0.0.1'
@@ -45,7 +45,7 @@ select *
 -- - login_success = false
 
 select *
-  from login_user(
+  from svc_auth_login(
       'goncalo.pratas.cstress@gmail.com',
       'wrong_password_hash',
       '127.0.0.1'
@@ -59,7 +59,7 @@ select *
 -- - has_active_session = true
 
 select *
-  from login_user(
+  from svc_auth_login(
       'goncalo.pratas.cstress@gmail.com',
       '$2b$12$cstress_cli_pure_u023',
       '127.0.0.1'
@@ -72,7 +72,7 @@ select *
 -- - login_success = true
 
 select *
-  from login_user(
+  from svc_auth_login(
       '20@miacaomigo.pt',
       '$2b$12$cstress_registrar_emp001',
       '127.0.0.2'
@@ -86,7 +86,7 @@ select *
 -- - has_active_session = true
 
 select *
-  from login_user(
+  from svc_auth_login(
       '12@miacaomigo.pt',
       '$2b$12$cstress_u12_active',
       '127.0.0.1'
@@ -100,7 +100,7 @@ select *
 -- - account_active = false
 
 select *
-  from login_user(
+  from svc_auth_login(
       'qa-manual-inactive@miacaomigo.pt',
       '$2b$12$cstress_u12_active',
       '127.0.0.3'
@@ -112,21 +112,21 @@ select *
 -- expected: successive failures; inspect login_record via Queries/
 
 select *
-  from login_user(
+  from svc_auth_login(
       '20@miacaomigo.pt',
       'wrong_hash_1',
       '192.168.50.10'
   );
 
 select *
-  from login_user(
+  from svc_auth_login(
       '20@miacaomigo.pt',
       'wrong_hash_2',
       '192.168.50.10'
   );
 
 select *
-  from login_user(
+  from svc_auth_login(
       '20@miacaomigo.pt',
       'wrong_hash_3',
       '192.168.50.10'

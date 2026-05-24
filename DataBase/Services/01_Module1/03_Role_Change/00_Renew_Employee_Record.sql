@@ -1,49 +1,22 @@
 -- =========================================================
 -- EMPLOYEE RENEWAL (MODULE 1 — ROLE CHANGE)
 -- FILE: Services/01_Module1/03_Role_Change/00_Renew_Employee_Record.sql
--- =========================================================
---
--- PURPOSE
--- Renew employment by inactivating the latest employee row and
--- inserting a successor record with duplicated contact data.
---
--- DEPENDENCIES
---   - Schema/01_Module1_User_Management/08_Query_Helpers_Mod1.sql (fn_pick_most_recent_employee)
---   - Schema/01_Module1_User_Management/00_Tables_Mod1.sql (employee)
---   - Services/01_Module1/03_Role_Change/*.sql (callers)
---
--- LOADED BY
---   - Bootstrap/Loaders/06_Services.sql (before role-change workflows)
+-- BUSINESS WORKFLOW: sp_renew_employee_record
 -- =========================================================
 
-drop function if exists fn_renew_employee_record(int, int);
+drop procedure if exists sp_renew_employee_record(int, int, out int);
 
--- ---------------------------------------------------------
--- FUNCTION: fn_renew_employee_record
--- ---------------------------------------------------------
--- INTENT:
---   Replace the most recent employment row while preserving user linkage.
--- FLOW:
---   1. Validate registering employee is active.
---   2. Lock target row and read user id + active flag.
---   3. Confirm target is the ranked most recent row for that user.
---   4. Inactivate when still active, then INSERT successor employee row.
--- EXPECTED RESULT:
---   id_emp of the newly created active employment record.
--- ---------------------------------------------------------
-
-create or replace function fn_renew_employee_record(
+create or replace procedure sp_renew_employee_record(
     p_id_emp int,
-    p_id_emp_reg int
+    p_id_emp_reg int,
+    out p_id_emp_new int
 )
-returns int
 language plpgsql
 as $$
 declare
     v_id_usr int;
     v_is_active boolean;
     v_id_emp_most_recent int;
-    v_id_emp_new int;
 begin
 
     if not exists (
@@ -114,14 +87,12 @@ begin
     from employee e
     where e.id_emp = p_id_emp
     returning id_emp
-    into v_id_emp_new;
-
-    return v_id_emp_new;
+    into p_id_emp_new;
 
 exception
     when others then
         raise exception using
-            message = 'fn_renew_employee_record failed: ' || sqlerrm,
+            message = 'sp_renew_employee_record failed: ' || sqlerrm,
             errcode = sqlstate;
 end;
 $$;

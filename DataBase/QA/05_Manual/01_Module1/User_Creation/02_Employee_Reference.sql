@@ -5,7 +5,7 @@
 --   Exploratory reference scenarios
 --
 -- PURPOSE:
---   Manual validation of fn_create_employee registrar rules,
+--   Manual validation of svc_create_employee registrar rules,
 --   identity reuse, and validation errors using QA contracts.
 --
 -- REQUIRES:
@@ -64,7 +64,7 @@ delete from user_account
 -- SETUP (client-only identity for promotion test)
 --==============================
 
-select fn_create_client(
+select svc_create_client(
     'QA Manual Client To Employee',
     'Rua QA Manual 20, Braga',
     '4700-820',
@@ -85,7 +85,7 @@ select fn_create_client(
 -- - new user_account + employee
 -- - corporate email {id_usr}@miacaomigo.pt
 
-select fn_create_employee(
+select svc_create_employee(
     'QA Manual New Employee',
     'Rua QA Manual Employee 1, Braga',
     '4700-821',
@@ -105,7 +105,7 @@ select fn_create_employee(
 -- - identity reused
 -- - employee spell created
 
-select fn_create_employee(
+select svc_create_employee(
     'QA Manual Client To Employee',
     'Rua QA Manual 20, Braga',
     '4700-820',
@@ -127,7 +127,7 @@ select fn_create_employee(
 -- context: id_usr = 1 already has employee id_emp = 1
 -- expected: exception — user already has an employee account
 
-select fn_create_employee(
+select svc_create_employee(
     'MiaCaoMigo Platform Administrator',
     'IPCA Technology Campus, Barcelos, Portugal',
     '4750-810',
@@ -144,7 +144,7 @@ select fn_create_employee(
 -- invalid registrar employee id
 -- expected: exception — registering employee invalid
 
-select fn_create_employee(
+select svc_create_employee(
     'QA Manual Invalid Registrar Target',
     'Rua de Teste',
     '4700-999',
@@ -167,7 +167,7 @@ update employee
  where id_emp = 1
    and dea_dat_emp is null;
 
-select fn_create_employee(
+select svc_create_employee(
     'QA Manual Inactive Registrar Blocked',
     'Rua de Teste',
     '4700-999',
@@ -189,7 +189,7 @@ update employee
 -- context: admin NIF + secondary QA client email
 -- expected: exception — identity inconsistency
 
-select fn_create_employee(
+select svc_create_employee(
     'QA Manual Identity Conflict',
     'Rua de Teste',
     '4700-999',
@@ -206,7 +206,7 @@ select fn_create_employee(
 -- existing NIF + new email
 -- expected: exception — identity inconsistency
 
-select fn_create_employee(
+select svc_create_employee(
     'QA Manual Partial Conflict NIF',
     'Rua de Teste',
     '4700-999',
@@ -223,7 +223,7 @@ select fn_create_employee(
 -- existing email + new NIF
 -- expected: exception — identity inconsistency
 
-select fn_create_employee(
+select svc_create_employee(
     'QA Manual Partial Conflict Email',
     'Rua de Teste',
     '4700-999',
@@ -241,7 +241,7 @@ select fn_create_employee(
 -- FORMAT VALIDATION
 --==============================
 
-select fn_create_employee(
+select svc_create_employee(
     'QA Manual Invalid Professional Phone',
     'Rua de Teste',
     '4700-999',
@@ -254,7 +254,7 @@ select fn_create_employee(
     qa_registrar_emp_id()
 );
 
-select fn_create_employee(
+select svc_create_employee(
     'QA Manual Invalid Emergency Phone',
     'Rua de Teste',
     '4700-999',
@@ -267,7 +267,7 @@ select fn_create_employee(
     qa_registrar_emp_id()
 );
 
-select fn_create_employee(
+select svc_create_employee(
     'QA Manual Invalid Email',
     'Rua de Teste',
     '4700-999',
@@ -280,7 +280,7 @@ select fn_create_employee(
     qa_registrar_emp_id()
 );
 
-select fn_create_employee(
+select svc_create_employee(
     'QA Manual Invalid Postal',
     'Rua de Teste',
     '4700999',
@@ -293,7 +293,7 @@ select fn_create_employee(
     qa_registrar_emp_id()
 );
 
-select fn_create_employee(
+select svc_create_employee(
     'QA Manual Invalid Password',
     'Rua de Teste',
     '4700-999',
@@ -306,7 +306,7 @@ select fn_create_employee(
     qa_registrar_emp_id()
 );
 
-select fn_create_employee(
+select svc_create_employee(
     'QA Manual Invalid NIF',
     'Rua de Teste',
     '4700-999',

@@ -28,7 +28,7 @@
 -- Validates ownership insert against the referenced animal record Bloqueia a inserção de uma nova posse se o animal associado estiver inativo, falecido ou adotado
 -- =========================================================
 
-create or replace function fn_block_ownership_if_animal_inactive()
+create or replace function tfn_block_ownership_if_animal_inactive()
 returns trigger as $$
 begin
      
@@ -52,7 +52,7 @@ $$ language plpgsql;
 -- Ensures delivery date is not earlier than rescue date    Garante que a data de entrega não seja anterior à data de resgate 
 -- =========================================================
 
-create or replace function fn_check_delivery_date_after_rescue()
+create or replace function tfn_check_delivery_date_after_rescue()
 returns trigger as $$
 begin
     if new.del_dat_del is not null
@@ -71,7 +71,7 @@ $$ language plpgsql;
 -- Prevents a second active ownership while another remains open   Impede que um segundo registro de posse seja criado para o mesmo animal enquanto uma posse anterior ainda estiver ativa
 -- =========================================================
 
-create or replace function fn_prevent_overlapping_ownership()
+create or replace function tfn_prevent_overlapping_ownership()
 returns trigger as $$
 begin
     if exists (
@@ -93,7 +93,7 @@ $$ language plpgsql;
 -- Ensures the animal breed belongs to the selected species   Garante que a raça do animal pertença à espécie selecionada
 -- =========================================================
 
-create or replace function fn_validate_breed_species_consistency()
+create or replace function tfn_validate_breed_species_consistency()
 returns trigger as $$
 declare
     v_breed_species_id int;

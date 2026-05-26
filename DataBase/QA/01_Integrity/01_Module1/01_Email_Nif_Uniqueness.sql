@@ -2,8 +2,9 @@
 -- INTEGRITY — MODULE 1 — EMAIL / NIF UNIQUENESS
 -- =========================================================
 -- TYPE:     01_Integrity
--- REQUIRES: init_qa + fixtures/01_Module1/01_Core_Context.sql
+-- REQUIRES: init_qa + fixtures/seed/m1_core_context.sql
 -- RULE:     uq_ema_usr, uq_nif_usr on user_account
+-- CONTRACT: n/a — uses fixed emails/NIFs from Master + fixture overlap probes
 -- =========================================================
 -- expected:
 -- - duplicate email insert blocked (unique_violation)

@@ -6,7 +6,7 @@
 -- DOMAIN:    Module 2 — Animal Management
 -- LOADED BY: Bootstrap/Loaders/01_Structure.sql
 -- CLEANUP:   inline DROP (module 2 only) then CREATE
--- FK LAYER:  01_ForeignKeys_Mod2.sql (includes optional animal.id_cli link)
+-- FK LAYER:  01_ForeignKeys_Mod2.sql
 -- =========================================================
 
 --=========================================================
@@ -69,9 +69,6 @@ create table breed (
 create table animal (
     id_ani int generated always as identity,
     -- Animal identifier
-
-    id_cli int,
-    -- Owner (client) identifier
 
     reg_id_ani varchar(50) not null,
     -- Unique registration code

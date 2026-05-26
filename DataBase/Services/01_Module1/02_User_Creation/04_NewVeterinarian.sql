@@ -1,41 +1,16 @@
 -- =========================================================
 -- NEW VETERINARIAN (MODULE 1 — USER CREATION)
--- FILE: Services/01_Module1/02_User_Creation/04_NewVeterinarian.sql
--- =========================================================
---
--- PURPOSE
--- Create an employee identity and attach the veterinarian role (OMV).
---
--- DEPENDENCIES
---   - Services/01_Module1/02_User_Creation/02_NewEmployee.sql (fn_create_employee)
---   - Schema/01_Module1_User_Management/00_Tables_Mod1.sql (veterinarian, assistant)
---   - Schema/01_Module1_User_Management/02_Functions_Mod1.sql (role exclusion triggers)
---
--- LOADED BY
---   - Bootstrap/Loaders/06_Services.sql
+-- BUSINESS WORKFLOW: sp_create_veterinarian
 -- =========================================================
 
-drop function if exists fn_create_veterinarian(
+drop function if exists sp_create_veterinarian(
     varchar, text, varchar, varchar, varchar, varchar,
     varchar, varchar, varchar,
     int,
     varchar
 );
 
--- ---------------------------------------------------------
--- FUNCTION: fn_create_veterinarian
--- ---------------------------------------------------------
--- INTENT:
---   Onboard a new veterinarian (employee + veterinarian role).
--- FLOW:
---   1. Trim OMV number and delegate employee creation.
---   2. Reject when assistant role already exists on the same id_emp.
---   3. INSERT veterinarian row with num_omv_vet.
--- EXPECTED RESULT:
---   id_emp of the employee that now holds the veterinarian role.
--- ---------------------------------------------------------
-
-create or replace function fn_create_veterinarian(
+create or replace function sp_create_veterinarian(
     p_nam_usr varchar,
     p_add_usr text,
     p_pos_usr varchar,
@@ -51,15 +26,13 @@ create or replace function fn_create_veterinarian(
 returns int
 language plpgsql
 as $$
-
 declare
     v_id_emp int;
-
 begin
 
-    p_num_omv_vet := trim(p_num_omv_vet);
+    p_num_omv_vet := fn_normalize_text(p_num_omv_vet);
 
-    v_id_emp := fn_create_employee(
+    call sp_create_employee(
         p_nam_usr,
         p_add_usr,
         p_pos_usr,
@@ -69,7 +42,8 @@ begin
         p_pho_emp,
         p_pho_emg,
         p_pas_emp,
-        p_id_emp_reg
+        p_id_emp_reg,
+        v_id_emp
     );
 
     if exists (
@@ -108,5 +82,4 @@ exception
             detail = sqlerrm,
             errcode = sqlstate;
 end;
-
 $$;

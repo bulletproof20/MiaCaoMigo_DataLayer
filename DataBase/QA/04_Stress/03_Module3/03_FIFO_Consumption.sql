@@ -1,11 +1,12 @@
 -- =========================================================
 -- STRESS — MODULE 3 — FIFO CONSUMPTION UNDER LOAD
 -- =========================================================
--- OBJECTIVE: validate fn_stock_after_sale FIFO ordering at scale
+-- OBJECTIVE: validate tfn_stock_after_sale FIFO ordering at scale
 -- VOLUME:    sell 60 units across 3 batches (40+35+25 = 100)
 -- EXPECTED:  FIFO by val_dat_sto asc — C (30d) then B (90d); A (180d) untouched
 -- METRICS:   per-batch qty after sale, duration
--- REQUIRES:  00_Setup/01_Commercial_Stress_Fixture.sql
+-- REQUIRES:  fixtures/seed/m3_stress_commercial.sql (via stages/fixtures.ps1 -IncludeStress)
+-- NOTE:      00_Setup/01_Commercial_Stress_Fixture.sql is legacy; not used by ci.ps1
 -- =========================================================
 
 do $$

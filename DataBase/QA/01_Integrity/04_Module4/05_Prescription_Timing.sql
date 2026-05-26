@@ -4,6 +4,7 @@
 -- TYPE:     01_Integrity
 -- REQUIRES: init_qa + fixtures (M1–M4)
 -- RULE:     trg_validate_prescription_timing
+-- CONTRACT: qa_client_active_id(), qa_vet_primary_id()
 -- =========================================================
 -- expected:
 -- - prescription before appointment start blocked

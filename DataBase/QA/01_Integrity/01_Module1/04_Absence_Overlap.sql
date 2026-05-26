@@ -2,8 +2,8 @@
 -- INTEGRITY — MODULE 1 — ABSENCE OVERLAP
 -- =========================================================
 -- TYPE:     01_Integrity
--- REQUIRES: fixtures/01_Module1/01_Core_Context.sql
--- RULE:     trg_block_absence_overlap_by_user / fn_block_absence_overlap_by_user
+-- REQUIRES: fixtures/seed/m1_core_context.sql
+-- RULE:     trg_block_absence_overlap_by_user / tfn_block_absence_overlap_by_user
 -- CONTRACT: qa_emp_absence_overlap_id (pending absence +15 to +16 days)
 -- =========================================================
 -- expected:

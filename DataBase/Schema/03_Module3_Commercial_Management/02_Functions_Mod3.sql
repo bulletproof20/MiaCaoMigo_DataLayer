@@ -49,7 +49,7 @@ $$;
 -- Raises a notice when post-sale stock falls at or below minimum
 -- =========================================================
 
-create or replace function fn_warn_low_stock()
+create or replace function tfn_warn_low_stock()
 returns trigger
 language plpgsql
 as $$
@@ -79,7 +79,7 @@ $$;
 -- Blocks invoice lines when requested quantity exceeds available stock
 -- =========================================================
 
-create or replace function fn_check_stock_before_sale()
+create or replace function tfn_check_stock_before_sale()
 returns trigger
 language plpgsql
 as $$
@@ -102,7 +102,7 @@ $$;
 -- Applies FIFO stock reductions after an invoice line insert
 -- =========================================================
 
-create or replace function fn_stock_after_sale()
+create or replace function tfn_stock_after_sale()
 returns trigger
 language plpgsql
 as $$
@@ -140,7 +140,7 @@ $$;
 -- Recalculates invoice total from persisted invoice lines
 -- =========================================================
 
-create or replace function fn_update_invoice_total()
+create or replace function tfn_update_invoice_total()
 returns trigger
 language plpgsql
 as $$
@@ -168,32 +168,44 @@ $$;
 -- Restocks inventory when a return row is recorded
 -- =========================================================
 
-create or replace function fn_return_restock()
+create or replace function tfn_return_restock()
 returns trigger
 language plpgsql
 as $$
 declare
-    v_id_pro int;
+    v_line_pro int;
     v_qty_sold int;
 begin
-    select il.id_pro, il.qty_inv_lin
-      into v_id_pro, v_qty_sold
-    from invoice_line il
-    where il.id_inv_lin = new.id_inv_lin;
+    if new.id_inv_lin is not null then
+        select il.id_pro, il.qty_inv_lin
+          into v_line_pro, v_qty_sold
+        from invoice_line il
+        where il.id_inv_lin = new.id_inv_lin;
 
-    if new.qty_ret > v_qty_sold then
-        raise exception
-            'Quantidade devolvida (%) excede a quantidade vendida (%)',
-            new.qty_ret, v_qty_sold;
+        if not found then
+            raise exception 'Linha de fatura com ID % não encontrada.', new.id_inv_lin;
+        end if;
+
+        if v_line_pro <> new.id_pro then
+            raise exception
+                'O produto da devolução (%) não coincide com o da linha de fatura (%).',
+                new.id_pro, v_line_pro;
+        end if;
+
+        if new.qty_ret > v_qty_sold then
+            raise exception
+                'Quantidade devolvida (%) excede a quantidade vendida (%)',
+                new.qty_ret, v_qty_sold;
+        end if;
     end if;
 
     insert into stock (id_pro, bat_sto, qty_sto, ent_dat_sto, val_dat_sto)
     values (
-        v_id_pro,
+        new.id_pro,
         (
             select bat_sto
             from stock
-            where id_pro = v_id_pro
+            where id_pro = new.id_pro
             order by ent_dat_sto desc
             limit 1
         ),
@@ -210,7 +222,7 @@ $$;
 -- Blocks sales lines targeting inactive products
 -- =========================================================
 
-create or replace function fn_prevent_inactive_product_sale()
+create or replace function tfn_prevent_inactive_product_sale()
 returns trigger
 language plpgsql
 as $$
@@ -234,7 +246,7 @@ $$;
 -- Defaults return inactivation timestamp when omitted on insert
 -- =========================================================
 
-create or replace function fn_set_return_inactivation_date()
+create or replace function tfn_set_return_inactivation_date()
 returns trigger
 language plpgsql
 as $$

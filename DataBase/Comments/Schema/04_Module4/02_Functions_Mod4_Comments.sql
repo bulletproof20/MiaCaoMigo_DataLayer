@@ -5,29 +5,32 @@
 -- and inventory hooks supporting appointment workflows.
 -- =========================================================
 
-comment on function fn_block_appointment_if_vet_unavailable() is
+comment on function tfn_block_appointment_if_vet_unavailable() is
 'blocks scheduling when absence records intersect the proposed slot';
 
-comment on function fn_validate_prescription_timing() is
+comment on function tfn_validate_prescription_timing() is
 'ensures prescription issue time is not earlier than coalesce(actual start, scheduled start) on the parent appointment';
 
-comment on function fn_deduct_product_stock() is
+comment on function tfn_deduct_product_stock() is
 'validates and decrements inventory for appointment product usage';
 
-comment on function fn_block_past_appointments() is
+comment on function tfn_block_past_appointments() is
 'rejects appointments scheduled in the past';
 
-comment on function fn_appointment_duration_check() is
+comment on function tfn_appointment_duration_check() is
 'validates that completed visits end after they start';
 
 comment on function fn_appointment_list_by_client(integer) is
 'returns appointment projections for client self-service views including veterinarian display name and specialty metadata';
 
-comment on function fn_validate_appointment_vet_specialty() is
+comment on function tfn_validate_appointment_vet_specialty() is
 'enforces that appointment.id_spe matches an expert row for the assigned veterinarian';
 
-comment on function fn_validate_animal_client_relationship() is
+comment on function tfn_validate_animal_client_relationship() is
 'ensures the scheduled animal is actively owned by the client';
 
-comment on function fn_prevent_completed_appointment_modification() is
+comment on function tfn_prevent_completed_appointment_modification() is
 'blocks edits once an appointment reaches a terminal status';
+
+comment on function tfn_sync_invoice_appointment_link() is
+'maintains invoice.id_app when appointment.id_inv is set, changed, or cleared (1:1 consultation billing)';

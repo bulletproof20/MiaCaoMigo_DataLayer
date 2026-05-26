@@ -33,7 +33,7 @@ drop function if exists fn_block_overlapping_appointments();
 -- Blocks scheduling when the veterinarian is absent in the appointment window
 -- =========================================================
 
-create or replace function fn_block_appointment_if_vet_unavailable()
+create or replace function tfn_block_appointment_if_vet_unavailable()
 returns trigger as $$
 begin
     -- Check if the veterinarian is absent during the proposed appointment time.
@@ -57,7 +57,7 @@ $$ language plpgsql;
 -- Ensures prescription issue time is not before the appointment start
 -- =========================================================
 
-create or replace function fn_validate_prescription_timing()
+create or replace function tfn_validate_prescription_timing()
 returns trigger as $$
 declare
     v_appointment_start_time timestamp;
@@ -84,7 +84,7 @@ $$ language plpgsql;
 -- Validates and decrements stock when appointment products are recorded
 -- =========================================================
 
-create or replace function fn_deduct_product_stock()
+create or replace function tfn_deduct_product_stock()
 returns trigger as $$
 declare
     v_current_stock_qty int;
@@ -113,7 +113,7 @@ $$ language plpgsql;
 -- Blocks appointments scheduled in the past
 -- =========================================================
 
-create or replace function fn_block_past_appointments()
+create or replace function tfn_block_past_appointments()
 returns trigger as $$
 begin
     -- Check against the scheduled date, not the start date
@@ -128,7 +128,7 @@ $$ language plpgsql;
 -- Ensures appointment end time is strictly after start time
 -- =========================================================
 
-create or replace function fn_appointment_duration_check()
+create or replace function tfn_appointment_duration_check()
 returns trigger as $$
 begin
     if new.end_dat_app <= new.sta_dat_app then
@@ -143,7 +143,7 @@ $$ language plpgsql;
 -- Ensures the veterinarian is credentialed for the appointment specialty
 -- =========================================================
 
-create or replace function fn_validate_appointment_vet_specialty()
+create or replace function tfn_validate_appointment_vet_specialty()
 returns trigger as $$
 begin
     if not exists (
@@ -203,7 +203,7 @@ $$;
 -- Ensures the animal is actively owned by the scheduling client
 -- =========================================================
 
-create or replace function fn_validate_animal_client_relationship()
+create or replace function tfn_validate_animal_client_relationship()
 returns trigger as $$
 begin
     if not exists (
@@ -224,12 +224,48 @@ $$ language plpgsql;
 -- Blocks updates to appointments already in a terminal state
 -- =========================================================
 
-create or replace function fn_prevent_completed_appointment_modification()
+create or replace function tfn_prevent_completed_appointment_modification()
 returns trigger as $$
 begin
     if old.status_app in ('completed', 'cancelled', 'no_show') then
         raise exception 'Não é possível alterar uma consulta que já foi concluída, cancelada ou marcada como não comparência.';
     end if;
+    return new;
+end;
+$$ language plpgsql;
+
+-- =========================================================
+-- Keeps invoice.id_app in sync with appointment.id_inv (1:1 consultation billing)
+-- =========================================================
+
+create or replace function tfn_sync_invoice_appointment_link()
+returns trigger as $$
+begin
+    if tg_op = 'DELETE' then
+        if old.id_inv is not null then
+            update invoice
+            set id_app = null
+            where id_inv = old.id_inv
+              and id_app = old.id_app;
+        end if;
+        return old;
+    end if;
+
+    if tg_op = 'UPDATE'
+       and old.id_inv is distinct from new.id_inv
+       and old.id_inv is not null then
+        update invoice
+        set id_app = null
+        where id_inv = old.id_inv
+          and id_app = old.id_app;
+    end if;
+
+    if new.id_inv is not null then
+        update invoice
+        set id_app = new.id_app
+        where id_inv = new.id_inv;
+    end if;
+
     return new;
 end;
 $$ language plpgsql;

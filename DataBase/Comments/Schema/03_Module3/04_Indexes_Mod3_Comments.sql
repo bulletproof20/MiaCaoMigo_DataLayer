@@ -2,6 +2,9 @@
 -- comments: indexes - module 3
 -- =========================================================
 
+comment on index uq_invoice_appointment is
+'partial unique: one consultation invoice per appointment (invoice.id_app mirrored from Module 4)';
+
 comment on index ix_stock_id_pro is
 'b-tree: stock availability and fifo consumption by product';
 

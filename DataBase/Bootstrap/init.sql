@@ -6,15 +6,15 @@
 -- Docker/CI entry point. Orchestration lives under Bootstrap/;
 -- structural DDL lives under Schema/; data tiers under DataSeed/.
 --
--- DEFAULT PROFILE
+-- DEFAULT PROFILE (docker-compose.yml)
 --   Profiles/init_demo.sql — core + MasterData + DemoData + sanity
 --
--- OTHER PROFILES (manual, from container or psql)
---   Profiles/init_minimal.sql
---   Profiles/init_master.sql
---   Profiles/init_qa.sql      — Master only (CI: docker-compose.qa.yml)
---   Profiles/init_test.sql    — alias init_qa
---   Profiles/init_full_qa.sql — init_qa + run QA/runners/run_ci.ps1
+-- QA PROFILE (docker-compose.qa.yml → entrypoints/init_qa_entry.sql)
+--   Profiles/init_qa.sql — core + MasterData + sanity (no DemoData)
+--   Then run QA/runners/ci.ps1 on the host.
+--
+-- SHARED BASE (not a standalone Docker profile)
+--   Profiles/init_core.sql — DDL + services + comments
 --
 -- MOUNTS (docker-compose.yml)
 --   DataBase/Bootstrap  → /docker-entrypoint-initdb.d
@@ -42,4 +42,3 @@ SET timezone TO 'Europe/Lisbon';
 \echo '========================================'
 \echo 'INITIALIZATION COMPLETE'
 \echo '========================================'
-

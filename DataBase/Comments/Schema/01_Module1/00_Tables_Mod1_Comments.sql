@@ -1,6 +1,13 @@
---=========================================================
+-- =========================================================
+-- comments: Schema — Module 1 (tables)
+-- =========================================================
+-- Loaded by: Bootstrap/Loaders/05_Comments.sql
+-- Mirrors:   Schema/01_Module1_User_Management/00_Tables_Mod1.sql
+-- =========================================================
+
+-- =========================================================
 -- 1. user_account
---=========================================================
+-- =========================================================
 
 comment on table user_account is
 'stores general personal, contact, and identification data for all system users';

@@ -70,10 +70,6 @@ restart identity cascade;
 truncate table
     invoice_line,
     purchase_line,
-    employee_purchase,
-    employee_return,
-    purchase_product,
-    return_product,
     return,
     stock,
     purchase,

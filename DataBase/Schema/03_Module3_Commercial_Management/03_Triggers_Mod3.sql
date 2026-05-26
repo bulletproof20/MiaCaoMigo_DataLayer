@@ -33,7 +33,7 @@ drop trigger if exists trg_check_stock_before_sale on invoice_line;
 create trigger trg_check_stock_before_sale
 before insert on invoice_line
 for each row
-execute function fn_check_stock_before_sale();
+execute function tfn_check_stock_before_sale();
 
 
 -- =========================================================
@@ -45,7 +45,7 @@ drop trigger if exists trg_stock_after_sale on invoice_line;
 create trigger trg_stock_after_sale
 after insert on invoice_line
 for each row
-execute function fn_stock_after_sale();
+execute function tfn_stock_after_sale();
 
 
 -- =========================================================
@@ -57,7 +57,7 @@ drop trigger if exists trg_update_invoice_total on invoice_line;
 create trigger trg_update_invoice_total
 after insert or update or delete on invoice_line
 for each row
-execute function fn_update_invoice_total();
+execute function tfn_update_invoice_total();
 
 
 -- =========================================================
@@ -69,7 +69,7 @@ drop trigger if exists trg_return_restock on "return";
 create trigger trg_return_restock
 after insert on "return"
 for each row
-execute function fn_return_restock();
+execute function tfn_return_restock();
 
 
 -- =========================================================
@@ -81,7 +81,7 @@ drop trigger if exists trg_prevent_inactive_product_sale on invoice_line;
 create trigger trg_prevent_inactive_product_sale
 before insert on invoice_line
 for each row
-execute function fn_prevent_inactive_product_sale();
+execute function tfn_prevent_inactive_product_sale();
 
 
 -- =========================================================
@@ -93,7 +93,7 @@ drop trigger if exists trg_set_return_return_date on "return";
 create trigger trg_set_return_return_date
 before insert on "return"
 for each row
-execute function fn_set_return_inactivation_date();
+execute function tfn_set_return_inactivation_date();
 
 
 -- =========================================================
@@ -105,4 +105,4 @@ drop trigger if exists trg_warn_low_stock on invoice_line;
 create trigger trg_warn_low_stock
 after insert on invoice_line
 for each row
-execute function fn_warn_low_stock();
+execute function tfn_warn_low_stock();

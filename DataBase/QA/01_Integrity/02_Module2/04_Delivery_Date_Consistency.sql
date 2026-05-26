@@ -2,7 +2,7 @@
 -- INTEGRITY — MODULE 2 — DELIVERY DATE CONSISTENCY
 -- =========================================================
 -- TYPE:     01_Integrity
--- REQUIRES: init_qa + fixtures/02_Module2/01_Animals_Ownership.sql
+-- REQUIRES: init_qa + fixtures/seed/m2_animals_ownership.sql
 -- RULE:     trg_check_delivery_date_consistency
 -- CONTRACT: qa_animal_no_delivery_id(), qa_external_entity_shelter_id()
 -- =========================================================

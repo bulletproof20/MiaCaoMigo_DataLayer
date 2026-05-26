@@ -2,8 +2,8 @@
 -- INTEGRITY — MODULE 1 — LOGIN / SESSION RULES
 -- =========================================================
 -- TYPE:     01_Integrity
--- REQUIRES: init_qa + fixtures/01_Module1/01_Core_Context.sql
--- RULE:     login_user — single active session; logout_user semantics
+-- REQUIRES: init_qa + fixtures/seed/m1_core_context.sql
+-- RULE:     svc_auth_login — single active session; svc_auth_logout semantics
 -- FIXTURES: qa_login_session_emp_email (open session), qa_registrar_emp_email
 -- CONTRACT: qa_login_session_emp_email(), qa_registrar_emp_email()
 -- =========================================================
@@ -20,7 +20,7 @@ declare
 begin
     select login_success
       into v_success
-      from login_user(
+      from svc_auth_login(
           qa_login_session_emp_email(),
           '$2b$12$cstress_u12_active',
           '127.0.0.1'::inet
@@ -42,7 +42,7 @@ do $$
 declare
     v_ok boolean;
 begin
-    v_ok := logout_user('integrity.no.session@pessoal.com');
+    v_ok := svc_auth_logout('integrity.no.session@pessoal.com');
 
     if v_ok is false then
         raise notice 'PASS: logout without active session returns false';
@@ -62,7 +62,7 @@ declare
 begin
     select login_success
       into v_success
-      from login_user(
+      from svc_auth_login(
           qa_registrar_emp_email(),
           '$2b$12$cstress_registrar_emp001',
           '127.0.0.2'::inet

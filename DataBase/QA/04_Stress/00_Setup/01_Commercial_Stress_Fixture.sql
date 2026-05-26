@@ -1,9 +1,13 @@
 -- =========================================================
--- STRESS SETUP — MODULE 3 COMMERCIAL (idempotent)
+-- STRESS SETUP — MODULE 3 COMMERCIAL (idempotent) — LEGACY
 -- =========================================================
 -- TYPE:     04_Stress / setup only (no metrics assertions)
 -- REQUIRES: Bootstrap schema + services loaded
 -- CREATES:  STRESS-M3 product, FIFO batches, isolated invoice header
+--
+-- NOTE: Superseded by fixtures/seed/m3_stress_commercial.sql loaded by
+--       stages/fixtures.ps1 -IncludeStress (used by ci.ps1 -IncludeStress).
+--       Kept for manual/ad-hoc runs only; not invoked by stages/stress.ps1.
 -- =========================================================
 
 do $$

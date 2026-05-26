@@ -2,7 +2,7 @@
 -- INTEGRITY — MODULE 1 — ROLE DISJUNCTION (ASSISTANT / VET)
 -- =========================================================
 -- TYPE:     01_Integrity
--- REQUIRES: fixtures/01_Module1/01_Core_Context.sql
+-- REQUIRES: fixtures/seed/m1_core_context.sql
 -- RULE:     trg_block_assistant_disjunction / trg_block_veterinarian_disjunction
 -- CONTRACT: qa_vet_primary_id
 -- =========================================================

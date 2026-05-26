@@ -29,7 +29,7 @@
 #   • docker-compose.yml
 #   • docker-compose.qa.yml
 #   • PostgreSQL container
-#   • DataBase/QA/runners/run_qa.sh
+#   • DataBase/QA/runners/qa.sh
 #
 # EXPECTED RESULT:
 #   Pipeline succeeds only if the complete QA environment
@@ -163,7 +163,7 @@ jobs:
         run: |
 
           # Allow script execution
-          chmod +x DataBase/QA/runners/run_qa.sh
+          chmod +x DataBase/QA/runners/qa.sh
 
           # Execute QA validation pipeline
-          DataBase/QA/runners/run_qa.sh
+          DataBase/QA/runners/qa.sh

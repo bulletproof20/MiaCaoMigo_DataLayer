@@ -8,8 +8,9 @@
 -- employee profiles used by client/employee creation flows.
 --
 -- DEPENDENCIES
---   - Services/00_Core/00_Normalization.sql (normalize_email)
---   - Schema/01_Module1_User_Management/02_Functions_Mod1.sql (fn_create_default_setup trigger)
+--   - Services/00_Core/00_Normalization_Text.sql
+--   - Services/00_Core/01_Normalization_Identity.sql
+--   - Schema/01_Module1_User_Management/02_Functions_Mod1.sql (tfn_create_default_setup trigger)
 --   - Schema/01_Module1_User_Management/00_Tables_Mod1.sql (user_account, occupies)
 --
 -- LOADED BY
@@ -26,7 +27,7 @@ drop function if exists fn_create_user_account(
 -- INTENT:
 --   Insert a new shared user_account identity row.
 -- FLOW:
---   1. Trim and normalize input fields.
+--   1. Normalize input fields via 00_Core helpers.
 --   2. INSERT into user_account; setup row is created by trigger.
 -- EXPECTED RESULT:
 --   id_usr of the newly created user.
@@ -49,12 +50,12 @@ declare
 
 begin
 
-    p_nam_usr := trim(p_nam_usr);
-    p_add_usr := trim(p_add_usr);
-    p_pos_usr := trim(p_pos_usr);
-    p_nif_usr := trim(p_nif_usr);
-    p_pho_usr := trim(p_pho_usr);
-    p_ema_usr := normalize_email(p_ema_usr);
+    p_nam_usr := fn_normalize_name(p_nam_usr);
+    p_add_usr := fn_normalize_text(p_add_usr);
+    p_pos_usr := fn_normalize_postal_code_pt(p_pos_usr);
+    p_nif_usr := fn_normalize_nif(p_nif_usr);
+    p_pho_usr := fn_normalize_phone_nullable(p_pho_usr);
+    p_ema_usr := fn_normalize_email(p_ema_usr);
 
     insert into user_account (
         nam_usr,
@@ -103,7 +104,7 @@ end;
 $$;
 
 
-drop function if exists fn_assign_profile(int, int);
+-- drop function if exists fn_assign_profile(int, int);
 
 -- ---------------------------------------------------------
 -- FUNCTION: fn_assign_profile
@@ -116,35 +117,35 @@ drop function if exists fn_assign_profile(int, int);
 --   void; profile association persisted or constraint error raised.
 -- ---------------------------------------------------------
 
-create or replace function fn_assign_profile(
-    p_id_emp int,
-    p_id_pro int
-)
-returns void
-language plpgsql
-as $$
+-- create or replace function fn_assign_profile(
+--     p_id_emp int,
+--     p_id_pro int
+-- )
+-- returns void
+-- language plpgsql
+-- as $$
 
-begin
+-- begin
 
-    insert into occupies (id_emp, id_pro)
-    values (p_id_emp, p_id_pro);
+--     insert into occupies (id_emp, id_pro)
+--     values (p_id_emp, p_id_pro);
 
-exception
-    when unique_violation then
-        raise exception using
-            message = 'Profile already assigned to employee.',
-            detail = sqlerrm,
-            errcode = sqlstate;
-    when foreign_key_violation then
-        raise exception using
-            message = 'Invalid employee or profile reference.',
-            detail = sqlerrm,
-            errcode = sqlstate;
-    when others then
-        raise exception using
-            message = 'Unexpected error while assigning profile.',
-            detail = sqlerrm,
-            errcode = sqlstate;
-end;
+-- exception
+--     when unique_violation then
+--         raise exception using
+--             message = 'Profile already assigned to employee.',
+--             detail = sqlerrm,
+--             errcode = sqlstate;
+--     when foreign_key_violation then
+--         raise exception using
+--             message = 'Invalid employee or profile reference.',
+--             detail = sqlerrm,
+--             errcode = sqlstate;
+--     when others then
+--         raise exception using
+--             message = 'Unexpected error while assigning profile.',
+--             detail = sqlerrm,
+--             errcode = sqlstate;
+-- end;
 
-$$;
+-- $$;

@@ -30,14 +30,6 @@ alter table animal
         references breed(id_bre)
         on delete set null;
 
--- optional owner link (client may be set before formal ownership)
-alter table animal drop constraint if exists fk_animal_client;
-alter table animal
-    add constraint fk_animal_client
-        foreign key (id_cli)
-        references client(id_cli)
-        on delete set null;
-
 -- ownership → client, animal, employee
 alter table ownership drop constraint if exists fk_ownership_client;
 alter table ownership

@@ -17,6 +17,7 @@
 -- - btree_gist extension
 -- =========================================================
 
+drop index if exists uq_appointment_invoice;
 drop index if exists ix_appointment_status_for_jobs;
 drop index if exists ix_appointment_id_cli;
 drop index if exists ix_appointment_id_emp;
@@ -26,6 +27,18 @@ drop index if exists ix_appointment_sch_dat_app;
 drop index if exists ix_appointment_operational_day;
 drop index if exists ix_notification_client_read_status;
 alter table appointment drop constraint if exists ex_appointment_vet_overlap;
+
+
+-- =========================================================
+-- INTEGRITY — one consultation invoice per appointment
+-- =========================================================
+-- Canonical link: appointment.id_inv → invoice (trg_sync_invoice_appointment_link).
+-- Partial UNIQUE: at most one appointment may reference a given invoice.
+-- =========================================================
+
+create unique index uq_appointment_invoice
+on appointment (id_inv)
+where id_inv is not null;
 
 
 -- =========================================================
@@ -47,8 +60,8 @@ exclude using gist (
 -- SCHEDULING — cron jobs on scheduled appointments
 -- =========================================================
 -- Optimizes:
---   - sp_auto_update_no_show_appointments
---   - sp_generate_appointment_warnings (scheduled + date filter)
+--   - jpr_auto_update_no_show_appointments
+--   - jpr_generate_appointment_warnings (scheduled + date filter)
 --   - partial scans on status_app = scheduled ordered by time
 --
 -- Replaces a generic sch_dat_app index for job-shaped queries.

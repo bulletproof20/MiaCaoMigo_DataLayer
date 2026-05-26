@@ -1,6 +1,6 @@
 # Bootstrap — orchestration only
 
-Docker runs `init.sql` → default profile `init_demo`.
+Docker runs `init.sql` → profile `init_demo` (see `docker-compose.yml`).
 
 ## Pipeline (init_demo)
 
@@ -14,15 +14,15 @@ init_core
 07_Sanity_Check
 ```
 
-## Loaders
+## Loaders (all in use)
 
 | Loader | Target |
 |--------|--------|
 | `00_Extensions` | pg_cron, btree_gist |
 | `01_Structure` | `Schema/*/00_Tables_Mod*` |
 | `02_ForeignKeys` | `Schema/*/01_ForeignKeys_*` |
-| `03_Integrity` | functions, triggers, indexes, views, procedures, jobs (M1+M4 only) |
-| `05_Comments` | `Comments/Schema/` (skips empty placeholders) |
+| `03_Integrity` | functions, triggers, indexes, views, procedures, jobs |
+| `05_Comments` | `Comments/Schema/` |
 | `06_Services` | `Services/` |
 | `08_Service_Comments` | `Comments/Services/` |
 | `07_Sanity_Check` | post-init smoke |
@@ -31,22 +31,19 @@ init_core
 
 ## Profiles
 
-| Profile | Data tiers |
-|---------|------------|
-| `init_core` | DDL + services only |
-| `init_minimal` | core + sanity |
-| `init_master` | core + Master + sanity |
-| `init_demo` | core + Master + Demo + sanity (**default** in `init.sql`) |
-| `init_qa` | core + Master + sanity (**CI / automated QA**) |
-| `init_test` | alias → `init_qa` |
-| `init_full_qa` | alias → `init_qa` + host step `QA/runners/run_ci.ps1` |
+| Profile / entry | Use |
+|-----------------|-----|
+| `init_core.sql` | Shared DDL + services base (composed by demo/qa) |
+| `init_demo.sql` | **Default** — Master + Demo + sanity |
+| `init_qa.sql` | **CI / automated QA** — Master + sanity, no Demo |
+| `entrypoints/init_qa_entry.sql` | Mounted as `init.sql` by `docker-compose.qa.yml` |
 
 ## CI (init_qa)
 
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.qa.yml down -v
 docker compose -f docker-compose.yml -f docker-compose.qa.yml up -d --build
-cd DataBase/QA/runners && ./run_ci.ps1
+cd DataBase/QA/runners && ./ci.ps1
 ```
 
 ## Reset (local demo)

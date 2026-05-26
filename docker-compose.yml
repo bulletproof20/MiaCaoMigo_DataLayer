@@ -45,6 +45,9 @@ services:
       # Application service functions (Bootstrap/Loaders/06_Services.sql)
       - ./DataBase/Services:/docker-entrypoint-initdb.d/Services
 
+      # Manual inspection SQL (not loaded by bootstrap)
+      - ./DataBase/Queries:/docker-entrypoint-initdb.d/Queries
+
       # DataSeed datasets (Bootstrap/Loaders/11_MasterData.sql, 12_DemoData.sql)
       - ./DataBase/DataSeed:/docker-entrypoint-initdb.d/DataSeed
 

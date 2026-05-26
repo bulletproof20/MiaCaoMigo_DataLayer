@@ -5,7 +5,8 @@
 -- VOLUME:    200 sale lines then 200 return rows (1 unit each)
 -- EXPECTED:  returns accepted; stock increases; no qty_sto < 0
 -- METRICS:   returns processed, duration, final stock
--- REQUIRES:  00_Setup/01_Commercial_Stress_Fixture.sql
+-- REQUIRES:  fixtures/seed/m3_stress_commercial.sql (via stages/fixtures.ps1 -IncludeStress)
+-- NOTE:      00_Setup/01_Commercial_Stress_Fixture.sql is legacy; not used by ci.ps1
 -- =========================================================
 
 do $$
@@ -44,8 +45,15 @@ begin
          limit v_lines
     loop
         begin
-            insert into "return" (id_inv_lin, qty_ret, mot_ret)
-            values (v_rec.id_inv_lin, 1, 'STRESS return');
+            insert into "return" (id_cli, id_emp, id_pro, id_inv_lin, qty_ret, mot_ret)
+            values (
+                qa_client_active_id(),
+                qa_registrar_emp_id(),
+                v_pro,
+                v_rec.id_inv_lin,
+                1,
+                'STRESS return'
+            );
             v_ret := v_ret + 1;
         exception
             when others then

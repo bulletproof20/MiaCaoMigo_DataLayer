@@ -5,7 +5,7 @@
 --   Exploratory reference scenarios
 --
 -- PURPOSE:
---   Manual validation of fn_create_client identity rules,
+--   Manual validation of svc_create_client identity rules,
 --   validation errors, and QA contract bindings.
 --
 -- REQUIRES:
@@ -14,7 +14,7 @@
 -- RELATED:
 --   Services/01_Module1/02_User_Creation/01_NewClient.sql
 --   QA/contracts/01_QA_Functions.sql
---   QA/fixtures/01_Module1/01_Core_Context.sql
+--   QA/fixtures/seed/m1_core_context.sql
 --   Queries/01_Module1/02_User_Creation_Inspection.sql
 -- =========================================================
 
@@ -42,7 +42,7 @@ delete from user_account
 -- - new user_account + client row
 -- - returns id_cli
 
-select fn_create_client(
+select svc_create_client(
     'QA Manual New Client',
     'Rua QA Manual Client 1, Braga',
     '4700-801',
@@ -59,7 +59,7 @@ select fn_create_client(
 -- - existing user reused
 -- - client row created
 
-select fn_create_client(
+select svc_create_client(
     'MiaCaoMigo Platform Administrator',
     'IPCA Technology Campus, Barcelos, Portugal',
     '4750-810',
@@ -77,7 +77,7 @@ select fn_create_client(
 -- - existing user reused
 -- - client row created
 
-select fn_create_client(
+select svc_create_client(
     'Bruno Filipe Matos QA Vet',
     'Rua da Junqueira 55, Coimbra',
     '3000-341',
@@ -97,7 +97,7 @@ select fn_create_client(
 -- context: goncalo.pratas.cstress@gmail.com already has client
 -- expected: exception — user already has a client account
 
-select fn_create_client(
+select svc_create_client(
     'Goncalo Miguel Pratas QA',
     'Rua da Se 12, Faro',
     '8000-078',
@@ -112,7 +112,7 @@ select fn_create_client(
 -- context: QA registrar personal email (claudia.faria.cstress@icloud.com)
 -- expected: exception — ownership / password validation failed
 
-select fn_create_client(
+select svc_create_client(
     'QA Registrar Spell',
     'Rua Goncalo Sampaio 412, Porto',
     '4150-564',
@@ -128,7 +128,7 @@ select fn_create_client(
 -- context: admin NIF + secondary client email
 -- expected: exception — identity inconsistency
 
-select fn_create_client(
+select svc_create_client(
     'QA Manual Identity Conflict',
     'Rua de Teste',
     '4700-999',
@@ -143,7 +143,7 @@ select fn_create_client(
 -- context: vet NIF + fresh email
 -- expected: exception — identity inconsistency
 
-select fn_create_client(
+select svc_create_client(
     'QA Manual Partial Conflict NIF',
     'Rua de Teste',
     '4700-999',
@@ -158,7 +158,7 @@ select fn_create_client(
 -- context: vet email + fresh NIF
 -- expected: exception — identity inconsistency
 
-select fn_create_client(
+select svc_create_client(
     'QA Manual Partial Conflict Email',
     'Rua de Teste',
     '4700-999',
@@ -175,7 +175,7 @@ select fn_create_client(
 
 -- invalid email format — expected: validation exception
 
-select fn_create_client(
+select svc_create_client(
     'QA Manual Invalid Email',
     'Rua de Teste',
     '4700-999',
@@ -188,7 +188,7 @@ select fn_create_client(
 
 -- invalid postal code — expected: validation exception
 
-select fn_create_client(
+select svc_create_client(
     'QA Manual Invalid Postal',
     'Rua de Teste',
     '4700999',
@@ -201,7 +201,7 @@ select fn_create_client(
 
 -- invalid phone format — expected: validation exception
 
-select fn_create_client(
+select svc_create_client(
     'QA Manual Invalid Phone',
     'Rua de Teste',
     '4700-999',
@@ -214,7 +214,7 @@ select fn_create_client(
 
 -- invalid password hash — expected: validation exception
 
-select fn_create_client(
+select svc_create_client(
     'QA Manual Invalid Password',
     'Rua de Teste',
     '4700-999',
@@ -227,7 +227,7 @@ select fn_create_client(
 
 -- invalid NIF format — expected: validation exception
 
-select fn_create_client(
+select svc_create_client(
     'QA Manual Invalid NIF',
     'Rua de Teste',
     '4700-999',

@@ -29,7 +29,7 @@
 -- Marks overdue scheduled appointments as no-shows Atualiza o status de consultas agendadas para 'no_show' se a data de agendamento for anterior ao momento atual.
 -- =========================================================
 
-create or replace procedure sp_auto_update_no_show_appointments()
+create or replace procedure jpr_auto_update_no_show_appointments()
 language plpgsql
 as $$
 begin
@@ -47,7 +47,7 @@ $$;
 -- Queues reminder notifications for next-day appointments Gera mensagens de lembrete para consultas agendadas para o dia seguinte, inserindo registros na tabela appointment_notification.
 -- =========================================================
 
-create or replace procedure sp_generate_appointment_warnings()
+create or replace procedure jpr_generate_appointment_warnings()
 language plpgsql
 as $$
 declare

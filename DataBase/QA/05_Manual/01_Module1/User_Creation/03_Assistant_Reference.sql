@@ -5,7 +5,7 @@
 --   Exploratory reference scenarios
 --
 -- PURPOSE:
---   Manual validation of fn_create_assistant onboarding,
+--   Manual validation of svc_create_assistant onboarding,
 --   role exclusivity, and validation rules.
 --
 -- REQUIRES:
@@ -56,7 +56,7 @@ delete from user_account
 -- - employee + assistant rows
 -- - returns id_emp
 
-select fn_create_assistant(
+select svc_create_assistant(
     'QA Manual New Assistant',
     'Rua QA Manual Assistant 1, Braga',
     '4700-831',
@@ -77,7 +77,7 @@ select fn_create_assistant(
 -- - identity reused
 -- - employee + assistant created
 
-select fn_create_assistant(
+select svc_create_assistant(
     'Goncalo Filipe Machado QA',
     'Rua de Santa Justa 14, Lisboa',
     '1100-483',
@@ -111,7 +111,7 @@ select e.id_emp, 'duplicated role'
 -- context: qa_vet_primary_id() already holds veterinarian role
 -- expected: exception — employee already has veterinarian role
 
-select fn_create_assistant(
+select svc_create_assistant(
     'Bruno Filipe Matos QA Vet',
     'Rua da Junqueira 55, Coimbra',
     '3000-341',
@@ -129,7 +129,7 @@ select fn_create_assistant(
 -- invalid function description (check constraint)
 -- expected: validation exception
 
-select fn_create_assistant(
+select svc_create_assistant(
     'QA Manual Invalid Assistant',
     'Rua Teste',
     '4700-999',
@@ -147,7 +147,7 @@ select fn_create_assistant(
 -- invalid registering employee
 -- expected: exception during employee creation (invalid registrar)
 
-select fn_create_assistant(
+select svc_create_assistant(
     'QA Manual Invalid Registrar Assistant',
     'Rua Teste',
     '4700-999',

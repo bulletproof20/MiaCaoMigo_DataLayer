@@ -2,7 +2,7 @@
 -- INTEGRITY — MODULE 2 — DUPLICATE ACTIVE OWNERSHIP
 -- =========================================================
 -- TYPE:     01_Integrity
--- REQUIRES: init_qa + fixtures/02_Module2/01_Animals_Ownership.sql
+-- REQUIRES: init_qa + fixtures/seed/m2_animals_ownership.sql
 -- RULE:     sp_assign_ownership + trg_prevent_duplicate_active_ownership
 -- CONTRACT: qa_animal_adopted_id, qa_client_secondary_id, qa_registrar_emp_id
 -- =========================================================

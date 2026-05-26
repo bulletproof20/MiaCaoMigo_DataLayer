@@ -2,10 +2,10 @@
 -- comments: procedures - module 4
 -- =========================================================
 
-comment on procedure sp_auto_update_no_show_appointments() is
+comment on procedure jpr_auto_update_no_show_appointments() is
 'marks past scheduled appointments as no_show for nightly hygiene';
 
-comment on procedure sp_generate_appointment_warnings() is
+comment on procedure jpr_generate_appointment_warnings() is
 'creates next-day reminder notifications from vw_scheduled_appointments_tomorrow';
 
 comment on procedure sp_cancel_appointment(integer) is

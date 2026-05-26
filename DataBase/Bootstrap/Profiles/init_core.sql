@@ -2,8 +2,8 @@
 -- BOOTSTRAP PROFILE — CORE (DDL + services, no data, no sanity)
 -- =========================================================
 --
--- Shared base for all profiles. Sanity and data tiers are composed
--- by downstream profiles (init_minimal, init_demo, etc.).
+-- Shared base for init_demo and init_qa. Data tiers and sanity are
+-- composed by those profiles.
 -- =========================================================
 
 \set ON_ERROR_STOP on

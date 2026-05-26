@@ -1,36 +1,14 @@
 -- =========================================================
 -- TIME TRACKING (MODULE 1 — ATTENDANCE)
--- FILE: Services/01_Module1/04_Attendance_Management/01_TimeTracking.sql
--- =========================================================
---
--- PURPOSE
--- Toggle clock-in and clock-out for employees with active contracts.
---
--- DEPENDENCIES
---   - Schema/01_Module1_User_Management/07_Views_Mod1.sql (vw_active_employee_directory)
---   - Schema/01_Module1_User_Management/08_Query_Helpers_Mod1.sql (fn_pick_open_clock_session)
---   - Schema/01_Module1_User_Management/00_Tables_Mod1.sql (clock_in)
---   - Schema/01_Module1_User_Management/04_Indexes_Mod1.sql (uq_clock_in_active_per_employee)
---
--- LOADED BY
---   - Bootstrap/Loaders/06_Services.sql
+-- BUSINESS WORKFLOW: sp_clock_toggle
 -- =========================================================
 
--- ---------------------------------------------------------
--- FUNCTION: fn_clock_employee
--- ---------------------------------------------------------
--- INTENT:
---   Open a new attendance session or close the current open session.
--- FLOW:
---   1. Validate employee is active in vw_active_employee_directory.
---   2. Resolve open clock-in via fn_pick_open_clock_session.
---   3. UPDATE end_dat_clk or INSERT a new clock_in row.
--- EXPECTED RESULT:
---   'CLOCK_OUT' when a session was closed; 'CLOCK_IN' when a new session started.
--- ---------------------------------------------------------
+drop procedure if exists sp_clock_toggle(int, out varchar);
 
-create or replace function fn_clock_employee(p_id_emp int)
-returns varchar(50)
+create or replace procedure sp_clock_toggle(
+    p_id_emp int,
+    out p_action varchar
+)
 language plpgsql
 as $$
 declare
@@ -53,13 +31,14 @@ begin
         set end_dat_clk = current_timestamp
         where id_clk = v_id_clk;
 
-        return 'CLOCK_OUT';
+        p_action := 'CLOCK_OUT';
+        return;
     end if;
 
     insert into clock_in (id_emp, sta_dat_clk)
     values (p_id_emp, current_timestamp);
 
-    return 'CLOCK_IN';
+    p_action := 'CLOCK_IN';
 
 end;
 $$;

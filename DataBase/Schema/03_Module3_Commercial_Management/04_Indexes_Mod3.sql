@@ -16,9 +16,23 @@
 -- - 02_Functions_Mod3.sql (fn_get_available_stock)
 -- =========================================================
 
+drop index if exists uq_invoice_appointment;
 drop index if exists ix_stock_id_pro;
 drop index if exists ix_purchase_line_id_pur;
 drop index if exists ix_invoice_line_id_inv;
+
+
+-- =========================================================
+-- INTEGRITY — one appointment per consultation invoice
+-- =========================================================
+-- Mirror of appointment.id_inv: invoice.id_app is maintained by
+-- trg_sync_invoice_appointment_link (Module 4).
+-- Partial UNIQUE: retail invoices keep id_app null.
+-- =========================================================
+
+create unique index uq_invoice_appointment
+on invoice (id_app)
+where id_app is not null;
 
 
 -- =========================================================
@@ -26,7 +40,7 @@ drop index if exists ix_invoice_line_id_inv;
 -- =========================================================
 -- Optimizes:
 --   - fn_get_available_stock
---   - fn_stock_after_sale (qty_sto > 0, order by val_dat_sto)
+--   - tfn_stock_after_sale (qty_sto > 0, order by val_dat_sto)
 --   - vw_product_stock_levels / vw_products_to_reorder
 --
 -- High-frequency filter: stock.id_pro with positive quantities.
@@ -54,7 +68,7 @@ on purchase_line (id_pur);
 -- OPERATIONAL — invoice line aggregation
 -- =========================================================
 -- Optimizes:
---   - fn_update_invoice_total
+--   - tfn_update_invoice_total
 --   - invoice line triggers (insert/update/delete)
 --
 -- Supports recalculating invoice.val_inv from child rows.

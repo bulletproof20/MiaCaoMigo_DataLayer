@@ -68,7 +68,7 @@ Dockerfile
   Single orchestration layer (`00_Extensions` … `12_DemoData`). Data tiers `\i` datasets under `DataSeed/` directly.
 
 * **Bootstrap/Profiles/**
-  Reusable compositions: `init_minimal`, `init_master`, `init_demo`, `init_test`, `init_full_qa`.
+  `init_core` (shared base), `init_demo` (default Docker), `init_qa` (CI overlay via `docker-compose.qa.yml`).
 
 * **DataSeed/**
   INSERT tiers only (MasterData and DemoData).
@@ -88,7 +88,7 @@ Master-only bootstrap for automated validation:
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.qa.yml up -d --build
 cd DataBase/QA/runners
-./run_ci.ps1
+./ci.ps1
 ```
 
 Requires a **fresh volume** when switching from `init_demo` to `init_qa` (`docker compose down -v`). See `DataBase/QA/README.md`.

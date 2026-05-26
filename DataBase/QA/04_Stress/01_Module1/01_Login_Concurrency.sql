@@ -2,10 +2,10 @@
 -- STRESS — MODULE 1 — LOGIN CONCURRENCY (session race)
 -- =========================================================
 -- OBJECTIVE: repeated login while active session exists
--- VOLUME:    100 login_user calls on qa_login_session_emp_email (open session fixture)
+-- VOLUME:    100 svc_auth_login calls on qa_login_session_emp_email (open session fixture)
 -- EXPECTED:  login_success = false when session active; no duplicate open sessions
 -- METRICS:   attempts, blocked logins, open sessions count, duration
--- REQUIRES:  init_qa + fixtures/01_Module1/01_Core_Context.sql
+-- REQUIRES:  init_qa + fixtures/seed/m1_core_context.sql
 -- CONTRACT:  qa_login_session_emp_email()
 -- =========================================================
 
@@ -30,7 +30,7 @@ begin
     for v_i in 1..v_attempts loop
         select login_success
           into v_login_success
-          from login_user(
+          from svc_auth_login(
               v_email,
               '$2b$12$cstress_u12_active',
               '127.0.0.1'::inet

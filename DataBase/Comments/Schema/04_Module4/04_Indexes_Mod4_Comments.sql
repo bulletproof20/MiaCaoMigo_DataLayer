@@ -2,6 +2,9 @@
 -- comments: indexes - module 4
 -- =========================================================
 
+comment on index uq_appointment_invoice is
+'partial unique: one appointment per consultation invoice (appointment.id_inv canonical)';
+
 comment on constraint ex_appointment_vet_overlap on appointment is
 'gist exclusion: prevents overlapping 30-minute scheduled slots per veterinarian';
 

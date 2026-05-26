@@ -1,13 +1,13 @@
 # QA entity catalog
 
-Guaranteed entities after `run_fixtures.ps1` (not bulk datasets).
+Guaranteed entities after `stages/fixtures.ps1` (not bulk datasets).
 
 ## QA_CLIENT_ACTIVE
 
 | | |
 |--|--|
 | Key | `goncalo.pratas.cstress@gmail.com` |
-| Fixture | `01_Module1/01_Core_Context.sql` |
+| Fixture | `fixtures/seed/m1_core_context.sql` |
 | Lookup | `qa_client_active_id()` |
 | Use | Mod2 adoption owner, Mod4 scheduling |
 
@@ -59,7 +59,7 @@ Guaranteed entities after `run_fixtures.ps1` (not bulk datasets).
 | Shelter delivery | QA-ANI-004 | Interno | shelter intake delivery |
 | Stress internal | QA-ANI-005 | Interno | concurrent adoption stress |
 
-Fixture: `02_Module2/01_Animals_Ownership.sql`
+Fixture: `fixtures/seed/m2_animals_ownership.sql`
 
 Lookups: `qa_animal_internal_id()`, `qa_animal_no_delivery_id()`, `qa_animal_adopted_id()`, `qa_animal_delivery_shelter_id()`, `qa_animal_stress_internal_id()`
 
@@ -83,7 +83,7 @@ Lookups: `qa_animal_internal_id()`, `qa_animal_no_delivery_id()`, `qa_animal_ado
 | | |
 |--|--|
 | Key | `ref_pro = QA-PRO-001` |
-| Fixture | `03_Module3/01_Commercial_Product.sql` |
+| Fixture | `fixtures/seed/m3_commercial_product.sql` |
 | Lookup | `qa_product_int_p001_id()` |
 
 ## QA_PRODUCT_STRESS
@@ -91,7 +91,7 @@ Lookups: `qa_animal_internal_id()`, `qa_animal_no_delivery_id()`, `qa_animal_ado
 | | |
 |--|--|
 | Key | `ref_pro = STRESS-M3` |
-| Fixture | `03_Module3/02_Stress_Commercial.sql` |
+| Fixture | `fixtures/seed/m3_stress_commercial.sql` |
 | Lookup | `qa_stress_product_id()` |
 
 ## Time slots (Mod4)

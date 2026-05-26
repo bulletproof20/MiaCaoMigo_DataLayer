@@ -5,12 +5,14 @@
 -- Deferred and cross-module FKs for commercial entities live here
 -- so that all tables (Modules 1–4) exist before linking.
 --
--- Order respects circular links between product, stock, purchase,
--- and return (same semantics as previous end-of-file ALTER block).
+-- Only required (non-optional) relationships are enforced. Nullable
+-- cross-references (invoice on purchase, client on purchase, stock on
+-- purchase_line, invoice_line on return, product snapshot pointers)
+-- are application-maintained without FK constraints.
 --
 --=========================================================
 
--- product → family (declared first; other product FKs applied below)
+-- product → family
 alter table product drop constraint if exists fk_product_family;
 alter table product
     add constraint fk_product_family
@@ -26,29 +28,9 @@ alter table stock
         references product(id_pro)
         on delete cascade;
 
--- invoice → appointment (optional link)
-alter table invoice drop constraint if exists fk_invoice_appointment;
-alter table invoice
-    add constraint fk_invoice_appointment
-        foreign key (id_app)
-        references appointment(id_app)
-        on delete set null;
-
--- purchase → invoice, client, employee
+-- purchase → employee (required on every purchase in domain model)
 alter table purchase drop constraint if exists fk_purchase_invoice;
-alter table purchase
-    add constraint fk_purchase_invoice
-        foreign key (id_inv)
-        references invoice(id_inv)
-        on delete cascade;
-
 alter table purchase drop constraint if exists fk_purchase_client;
-alter table purchase
-    add constraint fk_purchase_client
-        foreign key (id_cli)
-        references client(id_cli)
-        on delete set null;
-
 alter table purchase drop constraint if exists fk_purchase_employee;
 alter table purchase
     add constraint fk_purchase_employee
@@ -56,7 +38,7 @@ alter table purchase
         references employee(id_emp)
         on delete set null;
 
--- purchase_line → purchase, product, stock
+-- purchase_line → purchase, product
 alter table purchase_line drop constraint if exists fk_purchase_line_purchase;
 alter table purchase_line
     add constraint fk_purchase_line_purchase
@@ -72,11 +54,6 @@ alter table purchase_line
         on delete restrict;
 
 alter table purchase_line drop constraint if exists fk_purchase_line_stock;
-alter table purchase_line
-    add constraint fk_purchase_line_stock
-        foreign key (id_sto)
-        references stock(id_sto)
-        on delete set null;
 
 -- invoice_line → invoice, product
 alter table invoice_line drop constraint if exists fk_invoice_line_invoice;
@@ -93,92 +70,31 @@ alter table invoice_line
         references product(id_pro)
         on delete restrict;
 
--- return → invoice_line (optional)
-alter table "return" drop constraint if exists fk_return_invoice_line;
+-- return → client, employee, product (required on every return)
+alter table "return" drop constraint if exists fk_return_client;
 alter table "return"
-    add constraint fk_return_invoice_line
-        foreign key (id_inv_lin)
-        references invoice_line(id_inv_lin)
-        on delete set null;
+    add constraint fk_return_client
+        foreign key (id_cli)
+        references client(id_cli)
+        on delete restrict;
 
--- purchase_product
-alter table purchase_product drop constraint if exists fk_pur_pro_purchase;
-alter table purchase_product
-    add constraint fk_pur_pro_purchase
-        foreign key (id_pur)
-        references purchase(id_pur)
-        on delete cascade;
+alter table "return" drop constraint if exists fk_return_employee;
+alter table "return"
+    add constraint fk_return_employee
+        foreign key (id_emp)
+        references employee(id_emp)
+        on delete restrict;
 
-alter table purchase_product drop constraint if exists fk_pur_pro_product;
-alter table purchase_product
-    add constraint fk_pur_pro_product
+alter table "return" drop constraint if exists fk_return_product;
+alter table "return"
+    add constraint fk_return_product
         foreign key (id_pro)
         references product(id_pro)
         on delete restrict;
 
--- return_product
-alter table return_product drop constraint if exists fk_ret_pro_return;
-alter table return_product
-    add constraint fk_ret_pro_return
-        foreign key (id_ret)
-        references "return"(id_ret)
-        on delete cascade;
+alter table "return" drop constraint if exists fk_return_invoice_line;
 
-alter table return_product drop constraint if exists fk_ret_pro_product;
-alter table return_product
-    add constraint fk_ret_pro_product
-        foreign key (id_pro)
-        references product(id_pro)
-        on delete restrict;
-
--- employee_purchase
-alter table employee_purchase drop constraint if exists fk_emp_pur_employee;
-alter table employee_purchase
-    add constraint fk_emp_pur_employee
-        foreign key (id_emp)
-        references employee(id_emp)
-        on delete cascade;
-
-alter table employee_purchase drop constraint if exists fk_emp_pur_purchase;
-alter table employee_purchase
-    add constraint fk_emp_pur_purchase
-        foreign key (id_pur)
-        references purchase(id_pur)
-        on delete cascade;
-
--- employee_return
-alter table employee_return drop constraint if exists fk_emp_ret_employee;
-alter table employee_return
-    add constraint fk_emp_ret_employee
-        foreign key (id_emp)
-        references employee(id_emp)
-        on delete cascade;
-
-alter table employee_return drop constraint if exists fk_emp_ret_return;
-alter table employee_return
-    add constraint fk_emp_ret_return
-        foreign key (id_ret)
-        references "return"(id_ret)
-        on delete cascade;
-
--- product circular references (after purchase, stock, return rows can be targeted)
+-- legacy optional FKs on product (columns removed)
 alter table product drop constraint if exists fk_purchase_product;
-alter table product
-    add constraint fk_purchase_product
-        foreign key (id_pur)
-        references purchase(id_pur)
-        on delete set null;
-
 alter table product drop constraint if exists fk_product_stock;
-alter table product
-    add constraint fk_product_stock
-        foreign key (id_sto)
-        references stock(id_sto)
-        on delete set null;
-
 alter table product drop constraint if exists fk_product_return;
-alter table product
-    add constraint fk_product_return
-        foreign key (id_ret)
-        references "return"(id_ret)
-        on delete set null;

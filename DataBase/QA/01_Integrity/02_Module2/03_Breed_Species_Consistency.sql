@@ -2,7 +2,7 @@
 -- INTEGRITY — MODULE 2 — BREED / SPECIES CONSISTENCY
 -- =========================================================
 -- TYPE:     01_Integrity
--- REQUIRES: init_qa + fixtures/02_Module2/01_Animals_Ownership.sql
+-- REQUIRES: init_qa + fixtures/seed/m2_animals_ownership.sql
 -- RULE:     trg_validate_animal_breed_species
 -- CONTRACT: qa_animal_stress_internal_id (dog); mismatched cat breed by name
 -- =========================================================

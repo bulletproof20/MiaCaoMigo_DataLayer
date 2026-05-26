@@ -26,7 +26,7 @@
 -- =========================================================
 
 -- =========================================================
--- Validates ownership inserts against the animal record
+-- Validates ownership inserts against the animal record       Bloqueia a inserção de uma nova posse se o animal associado estiver inativo, falecido ou adotado
 -- =========================================================
 
 drop trigger if exists trg_block_ownership_if_animal_inactive on ownership;
@@ -37,7 +37,7 @@ execute function fn_block_ownership_if_animal_inactive();
 
 
 -- =========================================================
--- Ensures delivery dates are not earlier than rescue dates
+-- Ensures delivery dates are not earlier than rescue dates   Garante que a data de entrega não seja anterior à data de resgate
 -- =========================================================
 
 drop trigger if exists trg_check_delivery_date_consistency on delivery;
@@ -48,7 +48,7 @@ execute function fn_check_delivery_date_after_rescue();
 
 
 -- =========================================================
--- Prevents parallel active ownership rows for the same animal
+-- Prevents parallel active ownership rows for the same animal  Impede que um segundo registro de posse seja criado para o mesmo animal enquanto uma posse anterior ainda estiver ativa
 -- =========================================================
 
 drop trigger if exists trg_prevent_duplicate_active_ownership on ownership;
@@ -59,7 +59,7 @@ execute function fn_prevent_overlapping_ownership();
 
 
 -- =========================================================
--- Validates breed/species consistency on animal changes
+-- Validates breed/species consistency on animal changes        Garante que a raça do animal pertença à espécie selecionada
 -- =========================================================
 
 drop trigger if exists trg_validate_animal_breed_species on animal;

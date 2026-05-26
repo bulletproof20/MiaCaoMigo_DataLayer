@@ -26,7 +26,7 @@
 -- =========================================================
 
 -- =========================================================
--- Marks overdue scheduled appointments as no-shows
+-- Marks overdue scheduled appointments as no-shows Atualiza o status de consultas agendadas para 'no_show' se a data de agendamento for anterior ao momento atual.
 -- =========================================================
 
 create or replace procedure sp_auto_update_no_show_appointments()
@@ -44,7 +44,7 @@ end;
 $$;
 
 -- =========================================================
--- Queues reminder notifications for next-day appointments
+-- Queues reminder notifications for next-day appointments Gera mensagens de lembrete para consultas agendadas para o dia seguinte, inserindo registros na tabela appointment_notification.
 -- =========================================================
 
 create or replace procedure sp_generate_appointment_warnings()
@@ -78,7 +78,7 @@ end;
 $$;
 
 -- =========================================================
--- Cancels appointments outside the 24-hour change window
+-- Cancels appointments outside the 24-hour change window   Cancela consultas agendadas, alterando o status para 'cancelled', se a solicitação de cancelamento for feita com mais de 24 horas de antecedência.
 -- =========================================================
 
 create or replace procedure sp_cancel_appointment(p_id_app int)
@@ -106,7 +106,7 @@ end;
 $$;
 
 -- =========================================================
--- Moves appointments to a new slot when policy allows
+-- Moves appointments to a new slot when policy allows  Reagenda consultas para um novo horário, alterando a data de agendamento, se a solicitação for feita com mais de 24 horas de antecedência. Os gatilhos e a exclusão GiST ex_appointment_vet_overlap garantem: datas passadas, sobreposição de horários, ausências, posse, vet × especialidade.
 -- =========================================================
 
 create or replace procedure sp_reschedule_appointment(
@@ -140,7 +140,7 @@ end;
 $$;
 
 -- =========================================================
--- Inserts a freshly scheduled appointment row
+-- Inserts a freshly scheduled appointment row                   Cria uma nova consulta com o estado 'scheduled'. Os campos de data de início e fim ficam NULL, a serem preenchidos pelo veterinário posteriormente. Os gatilhos e a exclusão GiST ex_appointment_vet_overlap garantem: datas passadas, sobreposição de horários, ausências, posse, vet × especialidade.
 -- =========================================================
 
 create or replace procedure sp_create_appointment(
@@ -162,7 +162,7 @@ end;
 $$;
 
 -- =========================================================
--- Transitions an appointment into in-progress clinical state
+-- Transitions an appointment into in-progress clinical state          Marca o início de uma consulta, preenchendo a data de início e alterando o estado para 'in_progress'. Os gatilhos garantem que apenas consultas agendadas possam ser iniciadas.
 -- =========================================================
 
 create or replace procedure sp_start_appointment(p_id_app int)
@@ -184,7 +184,7 @@ end;
 $$;
 
 -- =========================================================
--- Finalizes consult details and marks completion
+-- Finalizes consult details and marks completion                 Marca o término de uma consulta, preenchendo a data de término, detalhes clínicos e alterando o estado para 'completed'. Os gatilhos garantem que apenas consultas em andamento possam ser finalizadas.
 -- =========================================================
 
 create or replace procedure sp_end_appointment(
@@ -213,7 +213,7 @@ $$;
 
 
 -- =========================================================
--- Inserts prescription narrative linked to a completed appointment
+-- Inserts prescription narrative linked to a completed appointment     
 -- =========================================================
 
 create or replace procedure sp_prescription_for_appointment(

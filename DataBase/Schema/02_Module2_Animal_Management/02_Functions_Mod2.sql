@@ -25,7 +25,7 @@
 -- =========================================================
 
 -- =========================================================
--- Validates ownership insert against the referenced animal record
+-- Validates ownership insert against the referenced animal record Bloqueia a inserção de uma nova posse se o animal associado estiver inativo, falecido ou adotado
 -- =========================================================
 
 create or replace function fn_block_ownership_if_animal_inactive()
@@ -49,7 +49,7 @@ $$ language plpgsql;
 
 
 -- =========================================================
--- Ensures delivery date is not earlier than rescue date
+-- Ensures delivery date is not earlier than rescue date    Garante que a data de entrega não seja anterior à data de resgate 
 -- =========================================================
 
 create or replace function fn_check_delivery_date_after_rescue()
@@ -68,7 +68,7 @@ $$ language plpgsql;
 
 
 -- =========================================================
--- Prevents a second active ownership while another remains open
+-- Prevents a second active ownership while another remains open   Impede que um segundo registro de posse seja criado para o mesmo animal enquanto uma posse anterior ainda estiver ativa
 -- =========================================================
 
 create or replace function fn_prevent_overlapping_ownership()
@@ -90,7 +90,7 @@ $$ language plpgsql;
 
 
 -- =========================================================
--- Ensures the animal breed belongs to the selected species
+-- Ensures the animal breed belongs to the selected species   Garante que a raça do animal pertença à espécie selecionada
 -- =========================================================
 
 create or replace function fn_validate_breed_species_consistency()

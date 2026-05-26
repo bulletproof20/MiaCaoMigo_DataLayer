@@ -1,6 +1,16 @@
 -- =========================================================
 -- SERVICES — CORE (fn_* normalization — text / names)
--- FILE: 00_Normalization_Text.sql
+-- FILE: Services/00_Core/00_Normalization_Text.sql
+-- =========================================================
+--
+-- PURPOSE
+-- Immutable text/name normalization helpers shared across Modules 1–4.
+--
+-- DEPENDENCIES
+--   - None (core tier; loaded before Module 1 workflows)
+--
+-- LOADED BY
+--   - Bootstrap/Loaders/06_Services.sql
 -- =========================================================
 
 drop function if exists fn_normalize_text(text);

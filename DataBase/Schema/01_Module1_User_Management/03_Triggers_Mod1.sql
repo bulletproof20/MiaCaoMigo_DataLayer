@@ -88,3 +88,8 @@ create trigger trg_create_default_setup
 after insert on user_account
 for each row
 execute function tfn_create_default_setup();
+
+-- =========================================================
+-- create later a trigger to prevente more than 2 clock in 
+-- per day for the same user/ Or leave it to the AAPI
+-- !!!!!! ask the others opinion

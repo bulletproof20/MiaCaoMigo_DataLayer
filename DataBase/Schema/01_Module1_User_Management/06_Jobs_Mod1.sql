@@ -29,7 +29,7 @@
 
 select cron.schedule(
     'auto_close_clockin_midnight',
-    '0 0 * * *',  -- every day at 00:00
+    '0 0 * * *',  -- every day at 00:00 (min, hr, day, month, weekday)
     $$ call jpr_auto_close_clock_in_midnight(); $$
 );
 

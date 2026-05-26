@@ -40,8 +40,18 @@ Optional stress in CI: `.\ci.ps1 -IncludeStress`
 | `stages/bootstrap.ps1` | stage | `00_Bootstrap` |
 | `stages/fixtures.ps1` | stage | contracts + fixtures |
 | `stages/integrity.ps1` | stage | 21 integrity scripts |
-| `stages/stress.ps1` | optional | `04_Stress` |
-| `run_manual_module.ps1` | no | `05_Manual` |
+| `stages/stress.ps1` | optional | `04_Stress` (`-IncludeStress` on `ci.ps1`) |
+
+## Manual (`05_Manual`)
+
+Exploratory reference SQL (not CI). Run directly with `psql` or your SQL client after `init_demo` or `init_qa` + fixtures as noted in each file header.
+
+```
+05_Manual/
+└── 01_Module1/
+    ├── Authentication/   # login / logout reference
+    └── User_Creation/    # client, employee, assistant, vet reference
+```
 
 ## Tiers
 

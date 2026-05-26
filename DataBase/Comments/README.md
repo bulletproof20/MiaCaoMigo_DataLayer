@@ -12,6 +12,10 @@ Loaded by `Bootstrap/Loaders/05_Comments.sql` and `08_Service_Comments.sql`.
 | `Schema/01_Module1/` … `04_Module4/` | tables, FKs, functions, triggers, indexes, views, procedures |
 | `Services/00_Core/` … `04_Module4/` | application functions |
 
+## File headers
+
+Schema comment files may start with a `comments: Schema — Module N` banner (loader path + mirror target). Example: `Schema/01_Module1/00_Tables_Mod1_Comments.sql`.
+
 ## Skipped at bootstrap (placeholders)
 
 Not `\i`'d during init: `00_Common_Functions_Comments.sql`, `06_Jobs_Mod2/3_Comments.sql`, empty job narrative files.

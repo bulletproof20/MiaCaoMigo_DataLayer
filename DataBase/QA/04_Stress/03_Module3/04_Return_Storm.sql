@@ -5,7 +5,8 @@
 -- VOLUME:    200 sale lines then 200 return rows (1 unit each)
 -- EXPECTED:  returns accepted; stock increases; no qty_sto < 0
 -- METRICS:   returns processed, duration, final stock
--- REQUIRES:  00_Setup/01_Commercial_Stress_Fixture.sql
+-- REQUIRES:  fixtures/seed/m3_stress_commercial.sql (via stages/fixtures.ps1 -IncludeStress)
+-- NOTE:      00_Setup/01_Commercial_Stress_Fixture.sql is legacy; not used by ci.ps1
 -- =========================================================
 
 do $$

@@ -1,6 +1,16 @@
 -- =========================================================
 -- SERVICES — CORE (fn_* normalization — identity fields)
--- FILE: 01_Normalization_Identity.sql
+-- FILE: Services/00_Core/01_Normalization_Identity.sql
+-- =========================================================
+--
+-- PURPOSE
+-- Immutable normalization for email, NIF, phone, and postal code (PT).
+--
+-- DEPENDENCIES
+--   - Services/00_Core/00_Normalization_Text.sql (fn_normalize_text)
+--
+-- LOADED BY
+--   - Bootstrap/Loaders/06_Services.sql
 -- =========================================================
 
 drop function if exists fn_normalize_email(varchar);

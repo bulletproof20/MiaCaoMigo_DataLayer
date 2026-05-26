@@ -5,7 +5,8 @@
 -- VOLUME:    500 lines (adjust v_lines for heavier runs)
 -- EXPECTED:  all lines persist; val_inv recalculated; stock reduced
 -- METRICS:   lines, duration, lines/sec, final invoice total
--- REQUIRES:  00_Setup/01_Commercial_Stress_Fixture.sql
+-- REQUIRES:  fixtures/seed/m3_stress_commercial.sql (via stages/fixtures.ps1 -IncludeStress)
+-- NOTE:      00_Setup/01_Commercial_Stress_Fixture.sql is legacy; not used by ci.ps1
 -- =========================================================
 
 do $$

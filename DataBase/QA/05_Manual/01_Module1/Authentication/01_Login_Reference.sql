@@ -16,7 +16,7 @@
 --   Services/01_Module1/01_Authentication/02_Logout.sql
 --   QA/fixtures/seed/m1_core_context.sql
 --   QA/01_Integrity/01_Module1/02_Login_Session_Rules.sql
---   Queries/01_Module1/01_Authentication.sql
+--   Queries/01_Module1/01_Auth_Analysis.sql
 -- =========================================================
 
 --==============================

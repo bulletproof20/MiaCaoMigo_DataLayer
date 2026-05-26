@@ -5,7 +5,8 @@
 -- VOLUME:    80 transactions x 1 unit (stock pool = 100)
 -- EXPECTED:  successes <= initial stock; no negative qty_sto; no oversell
 -- METRICS:   attempts, successes, blocks, final stock, duration, rows/sec
--- REQUIRES:  00_Setup/01_Commercial_Stress_Fixture.sql
+-- REQUIRES:  fixtures/seed/m3_stress_commercial.sql (via stages/fixtures.ps1 -IncludeStress)
+-- NOTE:      00_Setup/01_Commercial_Stress_Fixture.sql is legacy; not used by ci.ps1
 -- NOTE:      true parallel sessions need multiple psql clients (see README)
 -- =========================================================
 

@@ -104,7 +104,7 @@ end;
 $$;
 
 
--- drop function if exists fn_assign_profile(int, int);
+drop function if exists fn_assign_profile(int, int);
 
 -- ---------------------------------------------------------
 -- FUNCTION: fn_assign_profile
@@ -117,35 +117,35 @@ $$;
 --   void; profile association persisted or constraint error raised.
 -- ---------------------------------------------------------
 
--- create or replace function fn_assign_profile(
---     p_id_emp int,
---     p_id_pro int
--- )
--- returns void
--- language plpgsql
--- as $$
+create or replace function fn_assign_profile(
+    p_id_emp int,
+    p_id_pro int
+)
+returns void
+language plpgsql
+as $$
 
--- begin
+begin
 
---     insert into occupies (id_emp, id_pro)
---     values (p_id_emp, p_id_pro);
+    insert into occupies (id_emp, id_pro)
+    values (p_id_emp, p_id_pro);
 
--- exception
---     when unique_violation then
---         raise exception using
---             message = 'Profile already assigned to employee.',
---             detail = sqlerrm,
---             errcode = sqlstate;
---     when foreign_key_violation then
---         raise exception using
---             message = 'Invalid employee or profile reference.',
---             detail = sqlerrm,
---             errcode = sqlstate;
---     when others then
---         raise exception using
---             message = 'Unexpected error while assigning profile.',
---             detail = sqlerrm,
---             errcode = sqlstate;
--- end;
+exception
+    when unique_violation then
+        raise exception using
+            message = 'Profile already assigned to employee.',
+            detail = sqlerrm,
+            errcode = sqlstate;
+    when foreign_key_violation then
+        raise exception using
+            message = 'Invalid employee or profile reference.',
+            detail = sqlerrm,
+            errcode = sqlstate;
+    when others then
+        raise exception using
+            message = 'Unexpected error while assigning profile.',
+            detail = sqlerrm,
+            errcode = sqlstate;
+end;
 
--- $$;
+$$;

@@ -21,6 +21,7 @@ drop function if exists svc_create_veterinarian(
     varchar, text, varchar, varchar, varchar, varchar,
     varchar, varchar, varchar, int, varchar
 );
+drop function if exists svc_assign_profile(int, int);
 
 create or replace function svc_create_client(
     p_nam_usr varchar,
@@ -151,3 +152,19 @@ as $$
         p_num_omv_vet
     );
 $$;
+
+create or replace function svc_assign_profile(
+    p_id_emp int,
+    p_id_pro int
+)
+returns void
+language plpgsql
+as $$
+begin
+    perform fn_assign_profile(p_id_emp, p_id_pro);
+end;
+$$;
+
+
+
+

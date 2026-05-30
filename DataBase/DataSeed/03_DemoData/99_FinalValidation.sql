@@ -13,11 +13,17 @@ begin
     if not exists (select 1 from employee where id_emp = 2 and dea_dat_emp is null) then
         raise exception 'VALIDATION: Ivo Sá (id_emp=2) missing';
     end if;
-    if not exists (select 1 from occupies where id_emp = 3 and id_pro = 5) then
-        raise exception 'VALIDATION: Tiago animal_manager profile missing';
+    if not exists (select 1 from occupies where id_emp = 3 and id_pro = 3) then
+        raise exception 'VALIDATION: Tiago assistente profile missing';
     end if;
-    if not exists (select 1 from occupies where id_emp = 4 and id_pro = 6) then
-        raise exception 'VALIDATION: Navarro commercial_manager profile missing';
+    if not exists (select 1 from occupies where id_emp = 4 and id_pro = 4) then
+        raise exception 'VALIDATION: Navarro gestor comercial profile missing';
+    end if;
+    if not exists (select 1 from occupies where id_emp = 5 and id_pro = 2) then
+        raise exception 'VALIDATION: Marcelo veterinario profile missing';
+    end if;
+    if not exists (select 1 from occupies where id_emp = 6 and id_pro = 3) then
+        raise exception 'VALIDATION: Isabel assistente profile missing';
     end if;
 
     -- Animal states

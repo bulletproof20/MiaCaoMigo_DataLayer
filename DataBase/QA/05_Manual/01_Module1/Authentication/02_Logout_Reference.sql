@@ -26,3 +26,7 @@ select svc_auth_logout('12@miacaomigo.pt');
 -- expected: false
 
 select svc_auth_logout('12@miacaomigo.pt');
+
+
+
+select svc_auth_logout('goncalo.rego.dev@gmail.com');

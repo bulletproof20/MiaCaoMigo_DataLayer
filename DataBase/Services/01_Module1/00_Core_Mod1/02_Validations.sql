@@ -124,3 +124,10 @@ as $$
     );
 $$;
 
+
+
+
+select *
+from client c
+join user_account u
+    on u.id_usr = c.id_usr;

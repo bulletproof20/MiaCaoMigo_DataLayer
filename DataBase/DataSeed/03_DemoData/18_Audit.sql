@@ -16,7 +16,7 @@ insert into login_record (sig_tim_log, suc_log, ip_add_log, ema_log, id_usr, sou
     -- Gonçalo email typos 23 May
     ('2026-05-23 09:10:00+01', false, '203.0.113.10', 'goncalo.rego.dev@gmai.com', null, null),
     ('2026-05-23 09:11:00+01', false, '203.0.113.10', 'goncalo.rego.dev@gmail.co', null, null),
-    ('2026-05-23 09:12:00+01', true, '203.0.113.10', 'goncalo.rego.dev@gmail.com', 8, null),
+    ('2026-05-23 09:12:00+01', true, '203.0.113.10', 'goncalo.rego.dev@gmail.com', 8, '2026-05-23 18:10:00+01'),
     -- Navarro stable session 22 May
     ('2026-05-22 08:00:00+01', true, '192.168.10.30', '4@miacaomigo.pt', 4, '2026-05-22 18:05:00+01'),
     -- Pedro inactive attempt 5 Jun (story); clamped for ck_login_dates at seed load

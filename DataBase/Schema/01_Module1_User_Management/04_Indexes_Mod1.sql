@@ -22,6 +22,8 @@
 -- =========================================================
 
 drop index if exists uq_login_single_active_session_email;
+drop index if exists uq_employee_ema_emp_active;
+alter table employee drop constraint if exists uq_ema_emp;
 drop index if exists uq_employee_active_per_user;
 drop index if exists uq_clock_in_active_per_employee;
 drop index if exists ix_absence_id_emp;
@@ -62,6 +64,18 @@ where sou_tim_log is null
 
 create unique index uq_employee_active_per_user
 on employee (id_usr)
+where dea_dat_emp is null;
+
+
+-- =========================================================
+-- INTEGRITY — single active row per corporate email
+-- =========================================================
+-- Versioned employment: inactive historical rows may repeat ema_emp;
+-- at most one active employee may hold a given corporate login email.
+-- =========================================================
+
+create unique index uq_employee_ema_emp_active
+on employee (ema_emp)
 where dea_dat_emp is null;
 
 

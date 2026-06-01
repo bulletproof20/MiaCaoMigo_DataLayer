@@ -7,7 +7,7 @@ comment on function fn_is_employee_email(character varying) is
 'Internal: true when email belongs to corporate @miacaomigo.pt domain.';
 
 comment on function fn_get_user_by_email(character varying) is
-'Internal: resolves id_usr from employee.ema_emp or user_account.ema_usr.';
+'Internal: resolves id_usr from active employee.ema_emp or user_account.ema_usr.';
 
 comment on function fn_get_user_by_nif(character varying) is
 'Internal: returns id_usr for a NIF on user_account.';
@@ -60,7 +60,7 @@ comment on function fn_pick_open_clock_session(integer) is
 'Internal: active open clock-in session for employee.';
 
 comment on function fn_validate_password(character varying, character varying) is
-'Internal: compares API hash with pas_emp or pas_cli.';
+'Internal: compares API hash with active employee pas_emp or client pas_cli.';
 
 -- session helpers (fn_* internal)
 comment on function fn_has_active_sessions(character varying) is

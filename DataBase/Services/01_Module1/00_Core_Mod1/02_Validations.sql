@@ -101,11 +101,16 @@ as $$
         select fn_normalize_email(p_email) as email_norm
     ),
     stored_hash as (
-        select e.pas_emp as pass_hash
-        from employee e
-        cross join normalized_identity ni
-        where e.ema_emp = ni.email_norm
-          and fn_is_employee_email(ni.email_norm)
+        (
+            select e.pas_emp as pass_hash
+            from employee e
+            cross join normalized_identity ni
+            where e.ema_emp = ni.email_norm
+              and e.dea_dat_emp is null
+              and fn_is_employee_email(ni.email_norm)
+            order by e.reg_dat_emp desc, e.id_emp desc
+            limit 1
+        )
         union all
         select c.pas_cli
         from client c

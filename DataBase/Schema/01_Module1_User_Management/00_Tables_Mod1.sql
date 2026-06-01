@@ -226,8 +226,8 @@ create table employee (
     constraint pk_employee primary key (id_emp),
     -- Unique identifier
 
-    constraint uq_ema_emp unique (ema_emp),
-    -- Prevents duplicate professional emails
+    -- ema_emp uniqueness: see 04_Indexes_Mod1.sql (uq_employee_ema_emp_active)
+    -- Historical versions may share the same corporate email; only one active row per ema_emp.
 
     constraint ck_ema_emp_format
     check (

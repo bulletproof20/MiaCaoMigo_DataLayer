@@ -182,8 +182,8 @@ comment on column employee.pas_emp is
 comment on constraint pk_employee on employee is
 'ensures unique identification of each employee';
 
-comment on constraint uq_ema_emp on employee is
-'prevents duplicated professional email addresses';
+comment on index uq_employee_ema_emp_active is
+'prevents duplicated professional email addresses among active employment versions; historical rows may repeat ema_emp';
 
 comment on constraint ck_ema_emp_format on employee is
 'validates corporate email normalization and domain';

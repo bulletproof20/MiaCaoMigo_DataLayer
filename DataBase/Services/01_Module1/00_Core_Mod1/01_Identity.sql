@@ -67,7 +67,10 @@ begin
         select e.id_usr
         into v_user_id
         from employee e
-        where e.ema_emp = p_email;
+        where e.ema_emp = p_email
+          and e.dea_dat_emp is null
+        order by e.reg_dat_emp desc, e.id_emp desc
+        limit 1;
     else
         select u.id_usr
         into v_user_id

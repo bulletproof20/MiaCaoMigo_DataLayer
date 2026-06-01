@@ -127,10 +127,3 @@ create type appointment_status as enum (
 );
 
 
-
-select * 
-from login_record
---where suc_log is true --and sou_tim_log is null
-where id_usr = 2
-order by sig_tim_log desc
-;

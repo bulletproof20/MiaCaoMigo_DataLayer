@@ -25,6 +25,18 @@ begin
     if not exists (select 1 from occupies where id_emp = 6 and id_pro = 3) then
         raise exception 'VALIDATION: Isabel assistente profile missing';
     end if;
+    if not exists (select 1 from occupies where id_emp = 2 and id_pro = 1) then
+        raise exception 'VALIDATION: Ivo administrador profile missing';
+    end if;
+    if not exists (select 1 from occupies where id_emp = 8 and id_pro = 5) then
+        raise exception 'VALIDATION: Sofia gestor rh profile missing';
+    end if;
+    if not exists (select 1 from occupies where id_emp = 9 and id_pro = 6) then
+        raise exception 'VALIDATION: Ricardo diretor clinico profile missing';
+    end if;
+    if exists (select 1 from occupies where id_emp = 10) then
+        raise exception 'VALIDATION: Miguel must have no RBAC profile (funcionario generico)';
+    end if;
 
     -- Animal states
     select count(*) into v_cnt from animal where sta_ani = 'Interno';

@@ -3,6 +3,7 @@
 -- Story: Ivo (1 May), team (4 May), Isabel (5 May), Bernardo inactive (15 Mar)
 -- =========================================================
 -- id_emp 2 Ivo | 3 Tiago | 4 Navarro | 5 Marcelo | 6 Isabel | 7 Bernardo (inactive)
+-- id_emp 8 Sofia (gestor rh) | 9 Ricardo (diretor clinico) | 10 Miguel (funcionario generico)
 -- =========================================================
 
 set timezone to 'Europe/Lisbon';
@@ -18,7 +19,10 @@ values
     (4, 4, '2026-05-04 08:05:00+01', 2, null, null, '+351933933934', null, '4@miacaomigo.pt', '15e2b0d3c33891ebb0f1ef609ec419420c20e320ce94c65fbc8c3312448eb225'),
     (5, 5, '2026-05-04 08:10:00+01', 2, null, null, '+351944944945', '+351944944946', '5@miacaomigo.pt', '15e2b0d3c33891ebb0f1ef609ec419420c20e320ce94c65fbc8c3312448eb225'),
     (6, 6, '2026-05-05 08:00:00+01', 2, null, null, '+351955955956', null, '6@miacaomigo.pt', '15e2b0d3c33891ebb0f1ef609ec419420c20e320ce94c65fbc8c3312448eb225'),
-    (7, 7, '2025-09-01 09:00:00+01', 1, '2026-03-15 17:00:00+01', 2, '+351912340299', null, '7@miacaomigo.pt', '15e2b0d3c33891ebb0f1ef609ec419420c20e320ce94c65fbc8c3312448eb225');
+    (7, 7, '2025-09-01 09:00:00+01', 1, '2026-03-15 17:00:00+01', 2, '+351912340299', null, '7@miacaomigo.pt', '15e2b0d3c33891ebb0f1ef609ec419420c20e320ce94c65fbc8c3312448eb225'),
+    (8, 12, '2026-05-06 09:00:00+01', 2, null, null, '+351977977978', null, '8@miacaomigo.pt', '15e2b0d3c33891ebb0f1ef609ec419420c20e320ce94c65fbc8c3312448eb225'),
+    (9, 13, '2026-05-06 09:05:00+01', 2, null, null, '+351988988989', null, '9@miacaomigo.pt', '15e2b0d3c33891ebb0f1ef609ec419420c20e320ce94c65fbc8c3312448eb225'),
+    (10, 14, '2026-05-07 08:30:00+01', 2, null, null, '+351999999990', null, '10@miacaomigo.pt', '15e2b0d3c33891ebb0f1ef609ec419420c20e320ce94c65fbc8c3312448eb225');
 
 insert into assistant (id_emp, fun_ass) values
     (3, 'Animal care and shelter intake'),

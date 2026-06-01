@@ -51,16 +51,15 @@ as $$
             ) as login_rank
         from login_scope ls
     )
-    select
-        lr.id_log,
-        lr.sig_tim_log,
-        lr.sou_tim_log,
-        lr.suc_log,
-        lr.ip_add_log,
-        lr.ema_log,
-        lr.id_usr
-    from login_ranked lr
-    where lr.login_rank = 1;
+
+    select ls.*
+    from login_scope ls
+    where ls.id_log = (
+        select lr.id_log
+        from login_ranked lr
+        where lr.login_rank = 1
+    );
+
 $$;
 
 

@@ -414,6 +414,9 @@ create table login_record (
     id_usr int,
     -- User reference (nullable for failed attempts)
 
+    dat_las_hea_bea TIMESTAMP,
+    -- date of the last heat beat (verify if browser is closed)
+
     constraint pk_login_record primary key (id_log),
 
     constraint ck_login_time

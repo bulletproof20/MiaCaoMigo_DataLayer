@@ -25,7 +25,7 @@ select svc_auth_logout('12@miacaomigo.pt');
 -- logout again (already closed)
 -- expected: false
 
-select svc_auth_logout('12@miacaomigo.pt');
+select svc_auth_logout('2@miacaomigo.pt');
 
 
 
